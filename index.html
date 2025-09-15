@@ -6307,6 +6307,24 @@ document.getElementById("generateBlankMeritBtn").addEventListener("click", () =>
         generateBlankMeritLists(snapshot, selectedGrade);
     }, { onlyOnce: true });
 });
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("generateBlankMeritBtn");
+    if (btn) {
+        btn.addEventListener("click", () => {
+            const selectedGrade = document.getElementById("reportGradeSelect").value; // ✅ correct ID
+
+            if (!selectedGrade) {
+                showCustomAlert("Please select a grade first.");
+                return;
+            }
+
+            onValue(learnersRef, (snapshot) => {
+                generateBlankMeritLists(snapshot, selectedGrade);
+            }, { onlyOnce: true });
+        });
+    }
+});
+
 function generateBlankMeritLists(learnersSnapshot, selectedGrade) {
     const container = document.createElement("div");
     container.style.marginTop = "20px";

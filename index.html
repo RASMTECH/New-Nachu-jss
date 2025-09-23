@@ -629,6 +629,40 @@ button[onclick^="show"] {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+/* General report/print button styles */
+.report-button,
+.print-button {
+  width: 45%;          /* reduced width */
+  margin-bottom: 12px;
+  display: block;      /* ensures stacking */
+  text-align: left;    /* keeps content aligned left */
+  padding: 10px 14px;  /* consistent spacing */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;       /* aligns icon + text */
+  align-items: center;
+  gap: 8px;            /* space between icon and text */
+}
+
+/* Optional: keep gray theme */
+.report-button.gray {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+/* Optional: style print-button separately if needed */
+.print-button {
+  background-color: #28a745; /* green example */
+  color: #fff;
+}
+
+/* Special case: blue button */
+#showMarksStatusBtn {
+  width: 45%;   /* shrink like others */
+  background-color: #007bff;
+  color: #fff;
+}
 
     </style>
 </head>
@@ -1694,69 +1728,71 @@ Rasm Does It All – One Click and You’re Done!.</span>
 <!-- Button Container with Two Boxes -->
 <div class="button-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
   <!-- First Box with Background Image and Equal Height -->
-  <div class="button-box" style="flex: 1; background-image: url('https://i.imgur.com/KI9qQYp.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); height: 100%; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 20px;">
+  <div class="button-box" style="flex: 1; background-image: url('https://i.imgur.com/O65vJEI.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); height: 100%; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 20px;">
     
-    <button class="report-button red" id="subjectChampionsBtn" style="width: 65%; margin-bottom: 12px;">
-      <i class="fas fa-trophy"></i> Subjects Champions
-    </button>
+   <button class="report-button red" id="subjectChampionsBtn">
+  <i class="fas fa-trophy"></i> Subjects Champions
+</button>
 
-    <button class="report-button blue" id="subjectPerformanceBtn" style="width: 65%; margin-bottom: 12px;">
-      <i class="fas fa-chart-line"></i> Subject Performance
-    </button>
+<button class="report-button blue" id="subjectPerformanceBtn">
+  <i class="fas fa-chart-line"></i> Subject Performance
+</button>
 
-    <button class="report-button green" id="genderPerformanceBtn" style="width: 65%; margin-bottom: 12px;">
-      <i class="fas fa-venus-mars"></i> Gender Performance
-    </button>
+<button class="report-button green" id="genderPerformanceBtn">
+  <i class="fas fa-venus-mars"></i> Gender Performance
+</button>
 
-    <button class="report-button purple" id="levelSummaryBtn" style="width:65%; margin-bottom: 12px;">
-      <i class="fas fa-layer-group"></i> Subject Level Summary
-    </button>
+<button class="report-button purple" id="levelSummaryBtn">
+  <i class="fas fa-layer-group"></i> Subject Level Summary
+</button>
 
-    <button class="report-button orange" id="combineMarksByGradeBtn" style="width: 65%; margin-bottom: 12px;">
-      <i class="fas fa-object-group"></i> Combine Marks Per Grade
-    </button>
+<button class="report-button orange" id="combineMarksByGradeBtn">
+  <i class="fas fa-object-group"></i> Combine Marks Per Grade
+</button>
 
-    <button class="report-button teal" id="groupByPathwaysBtn" style="width: 68%; margin-bottom: 12px;">
-      <i class="fas fa-project-diagram"></i> Group Learners Per Pathways
-    </button>
+<button class="report-button teal" id="groupByPathwaysBtn">
+  <i class="fas fa-project-diagram"></i> Group Learners Per Pathways
+</button>
 
-    <button class="report-button green" id="generateAssessmentReportsBtn" style="width: 68%; margin-bottom: 12px;">
-      <i class="fas fa-file-alt"></i> Generate Assessment Reports
-    </button>
+<button class="report-button green" id="generateAssessmentReportsBtn">
+  <i class="fas fa-file-alt"></i> Generate Assessment Reports
+</button>
+
 
   </div> <!-- End of First Button Box -->
 
   <!-- Second Box with Background Image and Equal Height -->
   <div class="button-box" style="flex: 1; background-image: url('https://i.imgur.com/EJoyk7N.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); height: 100%; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 20px;">
     
-    <button class="report-button gray" id="subjectRankingReportBtn" style="width: 65%; margin-bottom: 12px;">
-      <i class="fas fa-list-ol"></i> Track Learner Progress
-    </button>
+   <button class="report-button gray" id="subjectRankingReportBtn">
+  <i class="fas fa-list-ol"></i> Track Learner Progress
+</button>
 
-    <button class="report-button gray" id="generateBlankMeritBtn" style="width: 65%; margin-bottom: 12px;">
-      <i class="fas fa-file-alt"></i> Generate Blank Merit Lists
-    </button>
+<button class="report-button gray" id="generateBlankMeritBtn">
+  <i class="fas fa-file-alt"></i> Generate Blank Merit Lists
+</button>
 
-    <button onclick="countMarksStatusPerGrade()" style="width: 65%; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-      <i class="fas fa-file-alt" style="font-size: 16px;"></i> Generate Marks Summary
-    </button>
+<button onclick="countMarksStatusPerGrade()" class="report-button">
+  <i class="fas fa-file-alt"></i> Generate Marks Summary
+</button>
 
-    <button class="print-button" id="generateSubjectRankBtn" style="width: 70%; margin-bottom: 12px;">
-      <i class="fas fa-list-ol"></i> Generate Subject Tracker Analysis
-    </button>
+<button class="print-button" id="generateSubjectRankBtn">
+  <i class="fas fa-list-ol"></i> Generate Subject Tracker Analysis
+</button>
 
-    <button id="printAssessmentReportBtn" class="print-button" style="width: 65%; margin-bottom: 12px;">
-      <i class="fas fa-print"></i> Print Assessment Report
-    </button>
+<button id="printAssessmentReportBtn" class="print-button">
+  <i class="fas fa-print"></i> Print Assessment Report
+</button>
 
-    <button onclick="countMarksStatusPerGrade()" class="print-button" style="width: 80%; margin-bottom: 12px;">
-      <i class="fas fa-eye"></i> View Summary by Grade & Period
-    </button>
+<button onclick="countMarksStatusPerGrade()" class="print-button">
+  <i class="fas fa-eye"></i> View Summary by Grade & Period
+</button>
 
-    <button id="showMarksStatusBtn" style="padding: 10px 16px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 95%; margin-bottom: 12px;">
-      <i id="toggleIcon" class="fas fa-eye" style="color: white;"></i>
-      Show Marks Recording Status Per Grade
-    </button>
+<button id="showMarksStatusBtn">
+  <i id="toggleIcon" class="fas fa-eye"></i>
+  Show Marks Recording Status Per Grade
+</button>
+
 
   </div> <!-- End of Second Button Box -->
 </div> <!-- End of Button Container -->

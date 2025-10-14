@@ -5784,15 +5784,30 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
     // ✅ Clear the error if shown
     document.getElementById("loginError").style.display = "none";
 
-    // Optional: success message
+    // ✅ Success message
     if (typeof Swal !== "undefined") {
-      Swal.fire("Login Successful", "Welcome, Nachu!", "success");
+      Swal.fire({
+        title: "Login Successful",
+        text: "Welcome, Nachu!",
+        icon: "success",
+        confirmButtonText: "Continue"
+      }).then(() => {
+        // 🎄 Holiday popup after user clicks "Continue"
+        Swal.fire({
+          title: "🎉 Happy December Holidays!",
+          text: "RASM wishes you joy, peace, and success this festive season!",
+          icon: "info",
+          background: "#fffbe6",
+          color: "#333",
+          confirmButtonText: "Thank You!",
+          confirmButtonColor: "#3085d6"
+        });
+      });
     }
   } else {
     document.getElementById("loginError").style.display = "block";
   }
 });
-
 document.getElementById("printFilteredMarksBtn").addEventListener("click", () => {
   const visibleRows = Array.from(document.querySelectorAll("#marksList tr"))
     .filter(row => row.style.display !== "none");

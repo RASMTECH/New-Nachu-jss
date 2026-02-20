@@ -6,6 +6,7 @@
     <title>Nachu Junior school</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 
     <style>
@@ -663,6 +664,275 @@ button[onclick^="show"] {
   background-color: #007bff;
   color: #fff;
 }
+/* ================= SINGLE ID CARD (MODAL) ================= */
+
+.id-card {
+  width: 340px;
+  background: linear-gradient(135deg,#4f46e5,#06b6d4);
+  padding: 10px;
+  border-radius: 16px;
+}
+
+.id-front, .id-back {
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 6px;
+}
+
+.id-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #4f46e5;
+  padding-bottom: 6px;
+}
+
+.school-logo {
+  width: 45px;
+  height: 45px;
+}
+
+.school-info h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.school-info small {
+  font-size: 10px;
+  color: #555;
+}
+
+.id-body {
+  text-align: center;
+}
+
+.id-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  border: 3px solid #4f46e5;
+  object-fit: cover;
+  margin: 6px auto;
+}
+
+.id-body h4 {
+  font-size: 14px;
+  margin: 3px 0;
+}
+
+.id-body p {
+  font-size: 11px;
+  color: #555;
+}
+
+.id-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.id-grid div {
+  background: #eef2ff;
+  padding: 5px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.id-grid span {
+  display: block;
+  font-size: 9px;
+  font-weight: bold;
+  color: #4f46e5;
+}
+
+.qr-box {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.id-footer {
+  text-align: center;
+  font-size: 10px;
+  margin-top: 5px;
+  color: #555;
+}
+
+.print-btn {
+  width: 100%;
+  border: none;
+  background: #22c55e;
+  color: white;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.print-btn:hover {
+  background: #16a34a;
+}
+
+
+/* ================= BULK ID CARD ================= */
+
+.id-card-print {
+  width: 8.6cm;
+  height: 5.6cm;
+  background: linear-gradient(135deg,#4f46e5,#06b6d4);
+  padding: 4px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 4px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  flex-direction: column; /* ensures front/back stack vertically */
+}
+
+.id-card-print .id-front,
+.id-card-print .id-back {
+  width: 100%; /* take full width of card */
+  background: #fff;
+  border-radius: 8px;
+  padding: 5px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  margin-bottom: 4px; /* spacing between front/back */
+}
+
+.id-card-print .id-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid #4f46e5;
+  padding-bottom: 3px;
+}
+
+.id-card-print .school-logo {
+  width: 22px;
+  height: 22px;
+}
+
+.id-card-print .id-photo {
+  width: 46px;
+  height: 46px;
+  border-radius: 6px;
+  border: 2px solid #4f46e5;
+  object-fit: cover;
+  margin: 4px auto;
+}
+
+.id-card-print h5 {
+  font-size: 10px;
+  margin: 2px 0;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.id-card-print p {
+  font-size: 9px;
+  margin: 1px 0;
+  text-align: center;
+  color: #555;
+  line-height: 1.2;
+}
+
+.id-mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  font-size: 8px;
+}
+
+.id-mini-grid div {
+  background: #eef2ff;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.id-mini-grid span {
+  display: block;
+  font-size: 7px;
+  font-weight: bold;
+  color: #4f46e5;
+}
+
+.return-text {
+  font-size: 7px;
+  text-align: center;
+  border-top: 1px dashed #999;
+  padding-top: 2px;
+  margin-top: 2px;
+}
+
+
+/* ================= BULK PRINT LAYOUT ================= */
+
+.id-print-area {
+  display: none;
+}
+
+@media print {
+
+  @page {
+    size: A4;
+    margin: 8mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .id-print-area,
+  .id-print-area * {
+    visibility: visible;
+  }
+
+  .id-print-area {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 cards per row */
+    grid-auto-rows: min-content; /* auto height for each card */
+    gap: 10mm; /* spacing between cards */
+    justify-items: center;
+    align-items: start;
+  }
+
+  .id-card-print {
+    width: 8.6cm;
+    height: auto; /* let front/back stack naturally */
+    flex-direction: column;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  /* hide buttons and modal during print */
+  .print-btn,
+  .close,
+  .bulk-print-btn {
+    display: none !important;
+  }
+}
+
+.report-button {
+    width: fit-content;
+    min-width: max-content;
+    padding: 10px 18px;
+    white-space: nowrap;
+  }
+@media print {
+  img {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
 
     </style>
 </head>
@@ -885,6 +1155,10 @@ button[onclick^="show"] {
 <button id="deleteGradeBtn" class="btn-red">
   <i class="fas fa-trash"></i> Delete All In Selected Grade
 </button>
+<button id="printAllIDsBtn" class="bulk-print-btn">
+  🖨 Print Student ID Cards
+</button>
+
 
 
     <button class="print-button action-btn" onclick="undoPromotion()" style="background-color: #607D8B; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer;">
@@ -944,10 +1218,12 @@ Rasm Does It All – Just Click and See It Done!.</span>
 <div id="learnerModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
-    <h3>Learner Details</h3>
     <div id="modalDetails"></div>
   </div>
 </div>
+
+<div id="idPrintArea" class="id-print-area"></div>
+
 <!-- Record Marks Section -->
 <div id="recordMarksSection" style="max-width: 400px; margin: auto; display: none; background-color: #8BC34A; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
   background-image: url('https://i.imgur.com/jvsjwnI.jpeg'), url('https://i.imgur.com/L38mwvO.jpeg'); 
@@ -1966,235 +2242,243 @@ document.getElementById('registerButton').addEventListener('click', () => {
             });
         });
 });
-const tableBody = document.getElementById('learnersList');
-const filterGradeSelect = document.getElementById('filterGrade');
-const spinnerContainer = document.getElementById('spinnerContainer');
-const spinnerCountdown = document.getElementById('spinnerCountdown');
-const loadMoreBtn = document.getElementById('loadMoreBtn');
-const scrollContainer = document.getElementById('tableScrollContainer');
+// ================= ELEMENT REFERENCES =================
+const tableBody = document.getElementById("learnersList");
+const filterGradeSelect = document.getElementById("filterGrade");
+const spinnerContainer = document.getElementById("spinnerContainer");
+const spinnerCountdown = document.getElementById("spinnerCountdown");
+const scrollContainer = document.getElementById("tableScrollContainer");
+const searchInput = document.getElementById("searchInput");
 
 // ================= GLOBAL STATE =================
 let allLearners = [];
-let currentIndex = 0;
-const pageSize = 250;
-let countdownInterval;
-let seconds = 0;
 let filteredLearners = [];
+let currentIndex = 0;
 
+const PAGE_SIZE = 250;
+let countdownInterval = null;
+let seconds = 0;
 
 // ================= LOADING SPINNER =================
 function showLoadingSpinner() {
-  if (spinnerContainer) {
-    spinnerContainer.style.display = 'block';
-    seconds = 0;
-    spinnerCountdown.innerHTML = `Loading... <span>${seconds}</span>s`;
+  if (!spinnerContainer) return;
 
-    countdownInterval = setInterval(() => {
-      seconds++;
-      spinnerCountdown.innerHTML = `Loading... <span>${seconds}</span>s`;
-    }, 1000);
-  }
+  spinnerContainer.style.display = "block";
+  seconds = 0;
+  spinnerCountdown.innerHTML = `Loading... <span>${seconds}</span>s`;
+
+  countdownInterval = setInterval(() => {
+    seconds++;
+    spinnerCountdown.innerHTML = `Loading... <span>${seconds}</span>s`;
+  }, 1000);
+
   tableBody.innerHTML = "";
 }
 
 function hideLoadingSpinner() {
-  if (spinnerContainer) {
-    spinnerContainer.style.display = 'none';
-    clearInterval(countdownInterval);
-  }
+  if (!spinnerContainer) return;
+  spinnerContainer.style.display = "none";
+  clearInterval(countdownInterval);
 }
 
-// ================= LOAD LEARNERS (FAST) =================
+// ================= DATA FETCH =================
 async function loadLearners() {
   try {
     showLoadingSpinner();
 
     const snapshot = await get(learnersRef);
+
     allLearners = [];
     const grades = new Set();
 
-    snapshot.forEach(childSnapshot => {
-      const data = childSnapshot.val();
-      if (data?.name && data?.grade) {
-        allLearners.push({
-          key: childSnapshot.key,
-          ...data
-        });
-        grades.add(data.grade);
-      }
+    snapshot.forEach(child => {
+      const data = child.val();
+      if (!data?.name || !data?.grade) return;
+
+      allLearners.push({
+        key: child.key,
+        ...data
+      });
+
+      grades.add(data.grade);
     });
 
-    // Populate grade filter + attach filter logic
-if (filterGradeSelect) {
+    setupGradeFilter(grades);
+
+    filteredLearners = [...allLearners];
+    resetPagination();
+    hideLoadingSpinner();
+
+  } catch (err) {
+    console.error("Load error:", err);
+    showToast("Failed to load learners", "error");
+    hideLoadingSpinner();
+  }
+}
+
+// ================= FILTER =================
+function setupGradeFilter(grades) {
+  if (!filterGradeSelect) return;
+
   filterGradeSelect.innerHTML = `<option value="">Filter by Grade</option>`;
 
-  grades.forEach(g => {
+  [...grades].sort().forEach(g => {
     const opt = document.createElement("option");
     opt.value = g;
     opt.textContent = g;
     filterGradeSelect.appendChild(opt);
   });
 
-  // 🔥 Filter by grade & reset numbering
   filterGradeSelect.onchange = () => {
-    const selectedGrade = filterGradeSelect.value;
+    const grade = filterGradeSelect.value;
+    filteredLearners = grade
+      ? allLearners.filter(l => l.grade === grade)
+      : [...allLearners];
 
-    if (!selectedGrade) {
-      filteredLearners = [...allLearners]; // show all learners
-    } else {
-      filteredLearners = allLearners.filter(
-        learner => learner.grade === selectedGrade
-      );
-    }
-
-    // 🔁 Reset pagination & numbering
-    currentIndex = 0;
-    tableBody.innerHTML = "";
-    loadNextBatch();
+    resetPagination();
   };
 }
 
-// ===== Default load (no filter) =====
-filteredLearners = [...allLearners];
-currentIndex = 0;
-tableBody.innerHTML = "";
-loadNextBatch();
-hideLoadingSpinner();
-
-} catch (err) {
-  console.error("Error loading learners:", err);
-  showToast("Failed to load learners", "error");
-  hideLoadingSpinner();
-}
-}
-
-loadLearners(); // ✅ INITIAL FETCH
-
-
-filteredLearners = [...allLearners];
-currentIndex = 0;
-tableBody.innerHTML = "";
-loadNextBatch();
-
-
 // ================= PAGINATION =================
+function resetPagination() {
+  currentIndex = 0;
+  tableBody.innerHTML = "";
+  loadNextBatch();
+}
+
 function loadNextBatch() {
   const fragment = document.createDocumentFragment();
-  const end = Math.min(currentIndex + pageSize, filteredLearners.length);
-
-  let index = currentIndex + 1; // pagination-safe, filter-safe
-
+  const end = Math.min(currentIndex + PAGE_SIZE, filteredLearners.length);
 
   for (let i = currentIndex; i < end; i++) {
-    const data = filteredLearners[i];
-
-    const learnerKey = data.key;
-
-    const newRow = document.createElement("tr");
-    newRow.dataset.key = learnerKey;
-    newRow.dataset.grade = data.grade || "";
-
-    newRow.innerHTML = `
-      <td>${index++}</td>
-      <td><img src="${data.photo || 'default.png'}" width="60" height="60" class="learner-photo"></td>
-      <td contenteditable="true" class="editable">${data.name || ''}</td>
-      <td contenteditable="true" class="editable">${data.gender || ''}</td>
-      <td contenteditable="true" class="editable">${data.grade || ''}</td>
-      <td contenteditable="true" class="editable">${data.age || ''}</td>
-      <td contenteditable="true" class="editable">${data.parentName || ''}</td>
-      <td contenteditable="true" class="editable">${data.parentPhone || ''}</td>
-      <td contenteditable="true" class="editable">${data.birthCert || ''}</td>
-      <td contenteditable="true" class="editable">${data.admissionNo || ''}</td>
-      <td><button class="edit-photo-btn btn-blue"><i class="fas fa-camera"></i></button></td>
-      <td><button class="delete-btn btn-red"><i class="fas fa-trash-alt"></i></button></td>
-    `;
-
-    // ================= INLINE EDIT =================
-    const fields = ['name','gender','grade','age','parentName','parentPhone','birthCert','admissionNo'];
-    newRow.querySelectorAll(".editable").forEach((cell, idx) => {
-      const field = fields[idx];
-
-      cell.addEventListener("blur", () => {
-        if (!isAdminLoggedIn) {
-          showToast("Admins only", "error");
-          cell.textContent = data[field] || '';
-          return;
-        }
-
-        const value = cell.textContent.trim();
-        if (!value) {
-          cell.textContent = data[field] || '';
-          showToast("Field cannot be empty", "error");
-          return;
-        }
-
-        set(ref(database, `learners/${learnerKey}`), { ...data, [field]: value })
-          .then(() => showToast(`${field} updated`, "success"))
-          .catch(() => showToast("Update failed", "error"));
-      });
-    });
-
-    // ================= PHOTO UPDATE =================
-    newRow.querySelector(".edit-photo-btn").onclick = () => {
-      if (!isAdminLoggedIn) return Swal.fire("Access Denied","Admins only","error");
-
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.click();
-
-      input.onchange = () => {
-        const file = input.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = () => {
-          set(ref(database, `learners/${learnerKey}`), { ...data, photo: reader.result })
-            .then(() => {
-              newRow.querySelector("img").src = reader.result;
-              showToast("Photo updated", "success");
-            });
-        };
-        reader.readAsDataURL(file);
-      };
-    };
-
-    // ================= DELETE (PERMANENT FIX) =================
-    newRow.querySelector(".delete-btn").onclick = () => {
-      if (!isAdminLoggedIn) {
-        Swal.fire("Access Denied","Admins only","error");
-        return;
-      }
-
-      Swal.fire({
-        title: "Confirm Deletion",
-        text: "This learner will be permanently removed",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33"
-      }).then(result => {
-        if (!result.isConfirmed) return;
-
-        // 🔥 Remove locally first
-        newRow.remove();
-        allLearners = allLearners.filter(l => l.key !== learnerKey);
-
-        currentIndex = 0;
-        tableBody.innerHTML = "";
-        loadNextBatch();
-
-        // 🔥 Remove from Firebase
-        remove(ref(database, `learners/${learnerKey}`))
-          .then(() => Swal.fire("Deleted","Learner permanently removed","success"))
-          .catch(() => Swal.fire("Error","Delete failed","error"));
-      });
-    };
-
-    fragment.appendChild(newRow);
+    fragment.appendChild(buildRow(filteredLearners[i], i + 1));
   }
 
   tableBody.appendChild(fragment);
   currentIndex = end;
+}
+
+// ================= ROW BUILDER =================
+function buildRow(data, index) {
+  const tr = document.createElement("tr");
+  tr.dataset.key = data.key;
+
+  tr.innerHTML = `
+    <td>${index}</td>
+    <td><img src="${data.photo || 'default.png'}" class="learner-photo"></td>
+    ${editableCell(data.name)}
+    ${editableCell(data.gender)}
+    ${editableCell(data.grade)}
+    ${editableCell(data.age)}
+    ${editableCell(data.parentName)}
+    ${editableCell(data.parentPhone)}
+    ${editableCell(data.birthCert)}
+    ${editableCell(data.admissionNo)}
+    <td><button class="edit-photo-btn btn-blue"><i class="fas fa-camera"></i></button></td>
+    <td><button class="delete-btn btn-red"><i class="fas fa-trash-alt"></i></button></td>
+  `;
+
+  attachInlineEdit(tr, data);
+  attachPhotoEdit(tr, data);
+  attachDelete(tr, data);
+
+  return tr;
+}
+
+function editableCell(value) {
+  return `<td contenteditable="true" class="editable">${value || ""}</td>`;
+}
+
+// ================= INLINE EDIT =================
+function attachInlineEdit(row, data) {
+  const fields = ["name","gender","grade","age","parentName","parentPhone","birthCert","admissionNo"];
+
+  row.querySelectorAll(".editable").forEach((cell, i) => {
+    const field = fields[i];
+
+    cell.addEventListener("blur", async () => {
+      if (!isAdminLoggedIn) {
+        cell.textContent = data[field] || "";
+        return showToast("Admins only", "error");
+      }
+
+      const value = cell.textContent.trim();
+      if (!value) {
+        cell.textContent = data[field] || "";
+        return showToast("Field cannot be empty", "error");
+      }
+
+      try {
+        await set(ref(database, `learners/${data.key}`), {
+          ...data,
+          [field]: value
+        });
+        data[field] = value;
+        showToast(`${field} updated`, "success");
+      } catch {
+        showToast("Update failed", "error");
+      }
+    });
+  });
+}
+
+// ================= PHOTO UPDATE =================
+function attachPhotoEdit(row, data) {
+  row.querySelector(".edit-photo-btn").onclick = () => {
+    if (!isAdminLoggedIn) return Swal.fire("Access Denied","Admins only","error");
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          await set(ref(database, `learners/${data.key}`), {
+            ...data,
+            photo: reader.result
+          });
+          row.querySelector("img").src = reader.result;
+          showToast("Photo updated", "success");
+        } catch {
+          showToast("Photo update failed", "error");
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+  };
+}
+
+// ================= DELETE =================
+function attachDelete(row, data) {
+  row.querySelector(".delete-btn").onclick = () => {
+    if (!isAdminLoggedIn) return Swal.fire("Access Denied","Admins only","error");
+
+    Swal.fire({
+      title: "Confirm Deletion",
+      text: "This learner will be permanently removed",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33"
+    }).then(async result => {
+      if (!result.isConfirmed) return;
+
+      try {
+        await remove(ref(database, `learners/${data.key}`));
+        allLearners = allLearners.filter(l => l.key !== data.key);
+        filteredLearners = filteredLearners.filter(l => l.key !== data.key);
+        resetPagination();
+        Swal.fire("Deleted","Learner removed","success");
+      } catch {
+        Swal.fire("Error","Delete failed","error");
+      }
+    });
+  };
 }
 
 // ================= INFINITE SCROLL =================
@@ -2203,26 +2487,29 @@ if (scrollContainer) {
     if (
       scrollContainer.scrollTop + scrollContainer.clientHeight >=
       scrollContainer.scrollHeight - 10 &&
-      currentIndex < allLearners.length
+      currentIndex < filteredLearners.length
     ) {
       loadNextBatch();
     }
   });
 }
 
+// ================= SEARCH =================
+if (searchInput) {
+  searchInput.addEventListener("input", function () {
+    const query = this.value.toLowerCase();
 
-// 🔍 Search filter
-document.getElementById("searchInput").addEventListener("input", function () {
-  const query = this.value.toLowerCase();
-  const rows = document.querySelectorAll("#learnersList tr");
+    filteredLearners = allLearners.filter(l =>
+      l.name?.toLowerCase().includes(query) ||
+      l.admissionNo?.toLowerCase().includes(query)
+    );
 
-  rows.forEach(row => {
-    const name = row.cells[2].textContent.toLowerCase();
-    const admissionNo = row.cells[9].textContent.toLowerCase();
-    row.style.display = name.includes(query) || admissionNo.includes(query) ? "" : "none";
+    resetPagination();
   });
-});
+}
 
+// ================= INIT =================
+loadLearners();
 
 
 printButton.addEventListener('click', () => {
@@ -2346,63 +2633,187 @@ function printRegisteredLearners(schoolName, year, term, learners) {
 }
 
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Get modal and close button
-    const modal = document.getElementById('learnerModal');
-    const closeBtn = document.querySelector('.close');
+  const modal = document.getElementById('learnerModal');
+  const closeBtn = document.querySelector('.close');
+  const modalDetails = document.getElementById('modalDetails');
 
-    // Function to open the modal with learner details
-    function openModal(learnerData) {
-        const modalDetails = document.getElementById('modalDetails');
-        modalDetails.innerHTML = `
-            <p><strong>Name:</strong> ${learnerData.name}</p>
-            <p><strong>Gender:</strong> ${learnerData.gender}</p>
-            <p><strong>Grade:</strong> ${learnerData.grade}</p>
-            <p><strong>Age:</strong> ${learnerData.age}</p>
-            <p><strong>Parent Name:</strong> ${learnerData.parentName}</p>
-            <p><strong>Parent Phone:</strong> ${learnerData.parentPhone}</p>
-            <p><strong>Birth Certificate No:</strong> ${learnerData.birthCert}</p>
-            <p><strong>Admission No:</strong> ${learnerData.admissionNo}</p>
-            <p><strong>Photo:</strong> <img src="${learnerData.photo}" alt="Learner Photo" style="max-width: 150px; border-radius: 50%;"></p>
-        `;
-        modal.style.display = "block"; // Show the modal
+  // ===== OPEN MODAL WITH SINGLE STUDENT ID CARD =====
+  function openModal(learnerData) {
+    modalDetails.innerHTML = `
+      <div class="id-card">
+
+        <!-- FRONT -->
+        <div class="id-front">
+          <div class="id-header">
+            <img src="https://i.imgur.com/VSAh48K.jpeg" class="school-logo">
+
+            <div class="school-info">
+              <h3>NACHU JUNIOR SCHOOL</h3>
+              <small>Student Identification Card</small>
+            </div>
+          </div>
+
+          <div class="id-body">
+            <img src="${learnerData.photo}" class="id-photo">
+            <h4>${learnerData.name}</h4>
+            <p>${learnerData.grade} • ${learnerData.gender}</p>
+
+            <div class="id-grid">
+              <div><span>Adm No</span>${learnerData.admissionNo}</div>
+              <div><span>Age</span>${learnerData.age}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BACK -->
+        <div class="id-back">
+          <div class="id-grid">
+            <div><span>Parent</span>${learnerData.parentName}</div>
+            <div><span>Phone</span>${learnerData.parentPhone}</div>
+            <div><span>Birth Cert</span>${learnerData.birthCert}</div>
+          </div>
+
+          <div id="qrCode" class="qr-box"></div>
+          <p class="id-footer">If found please return to school office</p>
+        </div>
+
+        <button class="print-btn" onclick="printSingleID('${learnerData.name}')">🖨 Print ID Card</button>
+      </div>
+    `;
+
+    // Generate QR code
+    const qrText = 
+      "Name: " + learnerData.name + "\n" +
+      "Gender: " + learnerData.gender + "\n" +
+      "Grade: " + learnerData.grade + "\n" +
+      "Age: " + learnerData.age + "\n" +
+      "Parent Name: " + learnerData.parentName + "\n" +
+      "Parent Phone: " + learnerData.parentPhone + "\n" +
+      "Birth Certificate: " + learnerData.birthCert + "\n" +
+      "Admission Number: " + learnerData.admissionNo;
+
+    new QRCode(document.getElementById("qrCode"), {
+      text: qrText,
+      width: 150,
+      height: 150
+    });
+
+    modal.style.display = "flex";
+  }
+
+  // ===== CLOSE MODAL =====
+  closeBtn.addEventListener('click', () => modal.style.display = "none");
+  window.addEventListener('click', e => { if(e.target === modal) modal.style.display = "none"; });
+
+  // ===== CLICK TABLE ROW TO OPEN MODAL =====
+  tableBody.addEventListener('click', e => {
+    if (e.target && e.target.nodeName === "TD" && e.target.cellIndex === 2) {
+      const row = e.target.closest('tr');
+      const learnerData = {
+        name: row.cells[2].textContent,
+        gender: row.cells[3].textContent,
+        grade: row.cells[4].textContent,
+        age: row.cells[5].textContent,
+        parentName: row.cells[6].textContent,
+        parentPhone: row.cells[7].textContent,
+        birthCert: row.cells[8].textContent,
+        admissionNo: row.cells[9].textContent,
+        photo: row.cells[1].querySelector("img").src
+      };
+      openModal(learnerData);
     }
+  });
 
-    // Function to close the modal
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = "none"; // Hide the modal
+  // ===== PRINT SINGLE ID =====
+  window.printSingleID = function(name) {
+    const card = modalDetails.querySelector('.id-card').cloneNode(true);
+    const printArea = document.createElement('div');
+    printArea.appendChild(card);
+    document.body.appendChild(printArea);
+    window.print();
+    document.body.removeChild(printArea);
+  }
+
+  // ===== BULK PRINT ID CARDS =====
+  document.getElementById("printAllIDsBtn").addEventListener("click", () => {
+    const idPrintArea = document.getElementById("idPrintArea");
+    idPrintArea.innerHTML = "";
+    let count = 0;
+
+    tableBody.querySelectorAll("tr").forEach(row => {
+      if (row.style.display === "none") return;
+
+      const learner = {
+        name: row.cells[2].textContent,
+        gender: row.cells[3].textContent,
+        grade: row.cells[4].textContent,
+        age: row.cells[5].textContent,
+        parentName: row.cells[6].textContent,
+        phone: row.cells[7].textContent,
+        birthCert: row.cells[8].textContent,
+        admissionNo: row.cells[9].textContent,
+        photo: row.cells[1].querySelector("img").src
+      };
+
+      idPrintArea.insertAdjacentHTML("beforeend", generateIDCard(learner));
+      count++;
+
+      // page break every 4 cards (2 per row x 2 rows)
+      if (count % 4 === 0) {
+        idPrintArea.insertAdjacentHTML("beforeend", `<div class="page-break"></div>`);
+      }
     });
 
-    // Click event for learner names
-    tableBody.addEventListener('click', (e) => {
-        if (e.target && e.target.nodeName === "TD" && e.target.cellIndex === 2) {
-            const row = e.target.closest('tr');
-            const learnerKey = row.getAttribute('data-key');
-            
-            // Fetch learner data from Firebase or get the data from `row`
-            const learnerData = {
-                name: row.cells[2].textContent,
-                gender: row.cells[3].textContent,
-                grade: row.cells[4].textContent,
-                age: row.cells[5].textContent,
-                parentName: row.cells[6].textContent,
-                parentPhone: row.cells[7].textContent,
-                birthCert: row.cells[8].textContent,
-                admissionNo: row.cells[9].textContent,
-                photo: row.cells[1].querySelector('img').src // Assuming photo is in the second cell
-            };
-            
-            openModal(learnerData); // Open the modal and pass learner data
-        }
-    });
+    if (!count) return alert("No learners available for printing");
 
-    // Close the modal when clicking outside the modal content
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = "none";
-        }
-    });
+    setTimeout(() => window.print(), 500);
+  });
+
+  // ===== GENERATE ID CARD HTML =====
+  function generateIDCard(l) {
+    return `
+      <div class="id-card-print">
+
+        <div class="id-front">
+          <div class="id-header">
+            <img src="logo.png" class="school-logo">
+            <div>
+              <h4>NACHU JUNIOR SCHOOL</h4>
+              <small>Student ID Card</small>
+            </div>
+          </div>
+
+          <img src="${l.photo}" class="id-photo">
+          <h5>${l.name}</h5>
+          <p>${l.grade} • ${l.gender}</p>
+
+          <div class="id-mini-grid">
+            <div><span>Adm</span>${l.admissionNo}</div>
+            <div><span>Age</span>${l.age}</div>
+          </div>
+        </div>
+
+        <div class="id-back">
+          <div class="id-mini-grid">
+            <div><span>Parent</span>${l.parentName}</div>
+            <div><span>Phone</span>${l.phone}</div>
+            <div><span>Birth Cert</span>${l.birthCert}</div>
+          </div>
+          <div class="return-text">
+            If found return to school office
+          </div>
+        </div>
+
+      </div>
+    `;
+  }
+
 });
+
+
 // Populate grades and learner dropdowns
 onValue(learnersRef, (snapshot) => {
     const gradeSelect = document.getElementById("gradeSelect");
@@ -5063,22 +5474,26 @@ function combineMarksByGradeWithDetails(mainGrade, selectedPeriod) {
 
 
 
-
 const filterGender = document.getElementById('filterGender');
 
 filterGender.addEventListener('change', () => {
   const selectedGender = filterGender.value;
   const rows = tableBody.querySelectorAll('tr');
 
+  let index = 1; // restart numbering
+
   rows.forEach(row => {
     const learnerGender = row.cells[3].textContent.trim();
+
     if (selectedGender === "" || learnerGender === selectedGender) {
       row.style.display = "";
+      row.cells[0].textContent = index++; // update index
     } else {
       row.style.display = "none";
     }
   });
 });
+
 document.getElementById("printGroupedByGenderButton").addEventListener("click", () => {
   const schoolName = "Your School Name";
   const year = "2025";

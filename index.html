@@ -933,7 +933,114 @@ button[onclick^="show"] {
     print-color-adjust: exact;
   }
 }
+.action-box {
+  border: 2px solid #ccc;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.action-btn {
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.green-btn { background-color: #4CAF50; }
+.blue-btn { background-color: #2196F3; }
+.orange-btn { background-color: #FF9800; }
+.purple-btn { background-color: #9C27B0; }
+.red-btn { background-color: #FF5722; }
+.gray-btn { background-color: #607D8B; }
+#classListModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+}
+
+.modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f9f9f9;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  width: 400px;
+  max-width: 90%;
+}
+
+.modal-content h2 {
+  background-color: #ffff00;
+  padding: 8px 16px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.filter-bar {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f9f9f9;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  width: 400px;
+  max-width: 90%;
+}
+
+.close-modal {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #607D8B;
+  color: white;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
     </style>
 </head>
 <body>
@@ -1122,48 +1229,39 @@ button[onclick^="show"] {
   </div>
 
 
-
- <!-- Action Box -->
-<div class="action-box" style="border: 2px solid #ccc; padding: 16px; border-radius: 8px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+<!-- Action Box -->
+<div class="action-box">
   <!-- Action Buttons -->
-  <div class="action-buttons" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px;">
-    
-    <button class="print-button action-btn" id="printButton" style="background-color: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer;">
+  <div class="action-buttons">
+
+    <button class="action-btn green-btn" id="printButton">
       <i class="fas fa-print"></i> Print Filtered Learners
     </button>
-    
-    <button class="print-button action-btn" id="printGroupedByGenderButton" style="background-color: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer;">
+
+    <button class="action-btn blue-btn" id="printGroupedByGenderButton">
       <i class="fas fa-venus-mars"></i> Print Grouped by Gender
     </button>
-    
-    <button class="print-button action-btn" id="generateParentsListBtn" style="background-color: #FF9800; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer;">
+
+    <button class="action-btn orange-btn" id="generateParentsListBtn">
       <i class="fas fa-users"></i> Generate Parents List
     </button>
-    
-    <button class="print-button action-btn" id="toggleClassListSectionBtn" style="background-color: #9C27B0; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer;">
+
+    <button class="action-btn purple-btn" id="toggleClassListSectionBtn">
       <i class="fas fa-chevron-down"></i> Class List Generator
     </button>
-    
-    <button class="print-button action-btn" onclick="promoteLearners()" style="background-color: #FF5722; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer;">
+
+    <button class="action-btn red-btn" onclick="promoteLearners()">
       <i class="fas fa-level-up-alt"></i> Promote Learners
     </button>
 
-  <select id="filterGradeSelect">
-  <option value="">Select Grade</option>
-</select>
+    <button class="action-btn red-btn" id="bulkDeleteButton">
+      <i class="fas fa-trash-alt"></i> Delete Selected Learners
+    </button>
 
-<button id="deleteGradeBtn" class="btn-red">
-  <i class="fas fa-trash"></i> Delete All In Selected Grade
-</button>
-<button id="printAllIDsBtn" class="bulk-print-btn">
-  🖨 Print Student ID Cards
-</button>
-
-
-
-    <button class="print-button action-btn" onclick="undoPromotion()" style="background-color: #607D8B; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer;">
+    <button class="action-btn gray-btn" onclick="undoPromotion()">
       <i class="fas fa-undo-alt"></i> Undo Promotion
     </button>
+
   </div>
 </div>
 
@@ -1176,6 +1274,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
   <table class="learners-table" style="margin-top: 20px;">
     <thead>
       <tr>
+<th style="background-color: #f44336; color: white; text-align: center;">Select</th>
         <th>No.</th>
         <th>Photo</th>
         <th>Name</th>
@@ -1196,6 +1295,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
   <div class="spinner"></div>
   <p id="spinnerCountdown" style="font-size: 14px; color: #555; margin-top: 10px;">Loading... 0s</p>
 </div>
+
 
   <!-- Class List Generator Section -->
   <div id="classListSection" class="table-container" style="display: none; margin-top: 20px;">
@@ -1226,7 +1326,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
 
 <!-- Record Marks Section -->
 <div id="recordMarksSection" style="max-width: 400px; margin: auto; display: none; background-color: #8BC34A; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-  background-image: url('https://i.imgur.com/jvsjwnI.jpeg'), url('https://i.imgur.com/L38mwvO.jpeg'); 
+  background-image: url('https://i.imgur.com/z2Id4hq.jpeg'), url('https://i.imgur.com/L38mwvO.jpeg'); 
   background-size: cover, cover; 
   background-position: center, bottom right; 
   height: auto;">
@@ -1489,36 +1589,54 @@ Rasm Does It All – Just Click and See It Done!.</span>
 
 <!-- Action Box for Marks Display -->
 <div id="marksSection" style="display: none; margin-top: 20px;">
-  <div class="action-box" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-image: url('https://i.imgur.com/h7ijdv9.jpeg'); background-size: cover; background-position: center; border-radius: 8px; color: white;">
+  <div class="action-box" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-image: url('https://i.imgur.com/ywYQdxE.jpeg'); background-size: cover; background-position: center; border-radius: 8px; color: white;">
     <h2 style="background-color: rgba(255, 255, 255, 0.7); padding: 8px 16px; border-radius: 6px; display: inline-block; color: #2c3e50;">
       <span style="color: #e74c3c;">Power Up Your Exams with Rasm!
 Fast, Secure, and Reliable.</span>
     </h2>
 
     <!-- Search Input -->
-    <div class="form-group" style="flex: 1; min-width: 220px;">
-      <label for="searchMarksInput" style="font-weight: bold; color: #3498db;"><strong>Search by Name or Admission Number</strong></label>
-      <input 
-        type="text" 
-        id="searchMarksInput" 
-        placeholder="Enter learner name or admission number"
-        style="width: 100%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
-    </div>
+<div class="form-group" style="flex: 1; min-width: 220px;">
+  
+  <label for="searchMarksInput" 
+         style="font-weight: bold; color: red;">
+         Search by Name or Admission Number
+  </label>
 
-    <!-- Filter by Grade -->
-    <div class="form-group" style="flex: 1; min-width: 220px;">
-      <label for="filterMarksGrade" style="font-weight: bold; color: #3498db;"><strong>Filter by Grade</strong></label>
-      <select id="filterMarksGrade" 
+  <input 
+    type="text" 
+    id="searchMarksInput" 
+    placeholder="Enter learner name or admission number"
+    style="width: 100%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
+    
+</div>
+  <!-- Filter by Grade -->
+<div class="form-group" style="flex: 1; min-width: 220px;">
+  
+  <label for="filterMarksGrade" 
+         style="font-weight: bold; color: red;">
+         Filter by Grade
+  </label>
+
+  <select id="filterMarksGrade" 
         style="width: 100%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
+        
         <option value="">-- Select Grade --</option>
         <!-- Add Grade Options Dynamically -->
-      </select>
-    </div>
+        
+  </select>
+</div>
 
-    <!-- Filter by Exam Period -->
-    <div class="form-group" style="flex: 1; min-width: 220px;">
-      <label for="marksExamPeriodSelect" style="font-weight: bold; color: #3498db;"><strong>Filter by Exam Period</strong></label>
-      <select id="marksExamPeriodSelect" 
+ <!-- Filter by Exam Period -->
+
+<div class="form-group" style="flex: 1; min-width: 220px;">
+  
+  <label for="marksExamPeriodSelect" 
+         style="font-weight: bold; color: red;">
+         Filter by Exam Period
+  </label>
+
+  <select id="marksExamPeriodSelect">
         style="width: 100%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
         <option value="">-- Select Exam Period --</option>
     <option value="2024, Term 1, Opener Exam">2024, Term 1, Opener Exam</option>
@@ -1706,15 +1824,15 @@ Fast, Secure, and Reliable.</span>
     <!-- Load Marks Button -->
     <div class="form-group" style="flex: 1; min-width: 220px;">
       <label>&nbsp;</label> <!-- Empty label for alignment -->
-      <button id="loadMarksByPeriodBtn" class="print-button" style="width: 100%; padding: 10px; background-color: #1abc9c; border: 1px solid #16a085; border-radius: 4px; display: block; color: white;">
+      <button id="loadMarksByPeriodBtn" class="print-button" style="width: 40%; padding: 10px; background-color: #1abc9c; border: 1px solid #16a085; border-radius: 4px; display: block; color: white;">
         <i class="fas fa-download"></i> Load Marks
       </button>
     </div>
 
     <!-- Print Marks Button -->
-    <div class="form-group" style="flex: 1; min-width: 220px;">
+    <div class="form-group" style="flex: 1; min-width: 100px;">
       <label>&nbsp;</label> <!-- Empty label for alignment -->
-      <button id="printFilteredMarksBtn" class="print-button" style="width: 100%; padding: 10px; background-color: #f39c12; border: 1px solid #e67e22; border-radius: 4px; display: block; color: white;">
+      <button id="printFilteredMarksBtn" class="print-button" style="width: 40%; padding: 10px; background-color: #f39c12; border: 1px solid #e67e22; border-radius: 4px; display: block; color: white;">
         <i class="fas fa-print"></i> Print Merit List
       </button>
     </div>
@@ -2358,12 +2476,12 @@ function loadNextBatch() {
   currentIndex = end;
 }
 
-// ================= ROW BUILDER =================
 function buildRow(data, index) {
   const tr = document.createElement("tr");
   tr.dataset.key = data.key;
 
   tr.innerHTML = `
+    <td><input type="checkbox" class="select-learner"></td>
     <td>${index}</td>
     <td><img src="${data.photo || 'default.png'}" class="learner-photo"></td>
     ${editableCell(data.name)}
@@ -2384,7 +2502,6 @@ function buildRow(data, index) {
 
   return tr;
 }
-
 function editableCell(value) {
   return `<td contenteditable="true" class="editable">${value || ""}</td>`;
 }
@@ -3220,13 +3337,25 @@ function populateGradeSelectors(grades) {
     document.getElementById("filterMarksGrade"),
     document.getElementById("reportGradeSelect")
   ];
+
   selectors.forEach(select => {
     if (select) {
       select.innerHTML = `<option value="">Select Grade</option>`;
+
       grades.forEach(grade => {
         const option = document.createElement("option");
-        option.value = grade;
-        option.textContent = grade;
+
+        const rawGrade = grade.toString().trim();
+
+        option.value = rawGrade;
+
+        let formattedGrade = rawGrade;
+        if (!rawGrade.toUpperCase().startsWith("GRADE")) {
+          formattedGrade = "GRADE " + rawGrade;
+        }
+
+        option.textContent = formattedGrade;
+
         select.appendChild(option);
       });
     }
@@ -7734,111 +7863,63 @@ document.getElementById('searchMarksInput').addEventListener('input', function (
   });
 });
 
-function displayLearnersCount() {
-    const learnersRef = ref(db, 'learners'); // Adjust the path if needed
-    get(learnersRef).then((snapshot) => {
-        if (snapshot.exists()) {
-            const learners = snapshot.val();
-            const totalLearners = Object.keys(learners).length; // Get the number of learners
-            document.getElementById('totalLearners').textContent = totalLearners;
-        } else {
-            document.getElementById('totalLearners').textContent = "No learners found.";
-        }
-    }).catch((error) => {
-        console.error("Error fetching learners count: ", error);
-    });
-}
-
-// Call the function to display the learners count
-displayLearnersCount();
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  const deleteGradeBtn = document.getElementById("deleteGradeBtn");
-
-  if (!deleteGradeBtn) {
-    console.error("❌ deleteGradeBtn not found");
-    return;
+document.getElementById("bulkDeleteButton").addEventListener("click", async () => {
+  if (!isAdminLoggedIn) {
+    return Swal.fire("Access Denied", "Admins only", "error");
   }
 
-  deleteGradeBtn.addEventListener("click", async () => {
+  const selectedCheckboxes = tableBody.querySelectorAll(".select-learner:checked");
 
-    if (!isAdminLoggedIn) {
-      Swal.fire("Access Denied", "Admins only", "error");
-      return;
-    }
+  if (selectedCheckboxes.length === 0) {
+    return Swal.fire("No Selection", "Please select learners to delete.", "info");
+  }
 
-    // 🔥 USE EXISTING FILTER SELECT
-    if (!filterGradeSelect) {
-      Swal.fire("Error", "Grade filter not found", "error");
-      return;
-    }
+  const keysToDelete = Array.from(selectedCheckboxes).map(cb => cb.closest("tr").dataset.key);
 
-    const selectedGrade = filterGradeSelect.value;
-
-    if (!selectedGrade) {
-      Swal.fire("Select Grade", "Please select a grade first", "warning");
-      return;
-    }
-
-    if (!allLearners.length) {
-      Swal.fire("Please Wait", "Learners are still loading", "info");
-      return;
-    }
-
-    const learnersToDelete = allLearners.filter(
-      l => String(l.grade).trim() === String(selectedGrade).trim()
-    );
-
-    if (!learnersToDelete.length) {
-      Swal.fire("No Learners", "No learners found in this grade", "info");
-      return;
-    }
-
-    const confirm = await Swal.fire({
-      title: `Delete ALL learners in ${selectedGrade}?`,
-      html: `<b>${learnersToDelete.length}</b> learners will be 
-             <span style="color:red;">PERMANENTLY deleted</span>`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      confirmButtonText: "Yes, delete all"
-    });
-
-    if (!confirm.isConfirmed) return;
+  Swal.fire({
+    title: `Delete ${keysToDelete.length} learners?`,
+    text: "This action is irreversible!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    confirmButtonText: "Yes, delete"
+  }).then(async result => {
+    if (!result.isConfirmed) return;
 
     try {
-      showLoadingSpinner?.();
+      // Delete each learner from Firebase
+      const deletePromises = keysToDelete.map(key => remove(ref(database, `learners/${key}`)));
+      await Promise.all(deletePromises);
 
-      const updates = {};
-      learnersToDelete.forEach(l => {
-        updates[`learners/${l.key}`] = null;
-      });
+      // Remove from local arrays
+      allLearners = allLearners.filter(l => !keysToDelete.includes(l.key));
+      filteredLearners = filteredLearners.filter(l => !keysToDelete.includes(l.key));
 
-      await update(ref(database), updates);
+      // Refresh table
+      resetPagination();
 
-      allLearners = allLearners.filter(l => l.grade !== selectedGrade);
-      filteredLearners = [...allLearners];
-
-      currentIndex = 0;
-      tableBody.innerHTML = "";
-      loadNextBatch();
-
-      hideLoadingSpinner?.();
-
-      Swal.fire("Deleted", `${learnersToDelete.length} learners removed`, "success");
-
+      Swal.fire("Deleted!", "Selected learners have been removed.", "success");
     } catch (err) {
-      hideLoadingSpinner?.();
-      console.error("❌ Bulk delete error:", err);
-      Swal.fire("Error", "Bulk delete failed", "error");
+      console.error("Bulk delete error:", err);
+      Swal.fire("Error", "Failed to delete learners. Try again.", "error");
     }
   });
-
 });
 
+// Show modal when Class List Generator button is clicked
+document.getElementById("toggleClassListSectionBtn").addEventListener("click", () => {
+  document.getElementById("classListModal").style.display = "block";
+});
 
+// Close modal
+document.getElementById("closeClassListModal").addEventListener("click", () => {
+  document.getElementById("classListModal").style.display = "none";
+});
 
+// Optional: close modal when clicking outside content
+document.querySelector("#classListModal .modal-overlay").addEventListener("click", () => {
+  document.getElementById("classListModal").style.display = "none";
+});
 </script>
 
 

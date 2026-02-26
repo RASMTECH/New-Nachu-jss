@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nachu Junior school</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -1041,7 +1043,67 @@ button[onclick^="show"] {
   align-items: center;
   justify-content: center;
 }
-    </style>
+.dash-card {
+  background: linear-gradient(135deg,#4CAF50,#2196F3);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.dash-card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.dash-card p {
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.grade-box {
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow:0 4px 12px rgba(0,0,0,0.08), 0 0 0px rgba(0,121,107,0.4);
+  }
+  50% {
+    box-shadow:0 6px 14px rgba(0,0,0,0.1), 0 0 10px rgba(0,121,107,0.5);
+  }
+  100% {
+    box-shadow:0 4px 12px rgba(0,0,0,0.08), 0 0 0px rgba(0,121,107,0.4);
+  }
+}
+
+#onlineSafetyNote span:hover {
+  color:#00796b;
+}
+
+.action-box{
+  position:relative;
+  padding:30px 20px;
+  border-radius:12px;
+  overflow:hidden;
+  margin:20px 0;
+  background-image:url('https://i.imgur.com/z8F7qLN.jpeg'); /* Replace with your own image */
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+
+
+</style>
+
 </head>
 <body>
 <!-- LOGIN SECTION -->
@@ -1078,80 +1140,299 @@ button[onclick^="show"] {
 
 <!-- MAIN CONTENT SECTION -->
 <div id="mainContent" style="display: none; padding: 20px;">
+<!-- ================= DASHBOARD ================= -->
+<div id="dashboardSection" style="margin-bottom:20px;">
 
-  <!-- Learners Database Master Toggle -->
-  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
-    <button
-      type="button"
-      id="masterToggleBtn"
-      style="background-color: #673AB7; color: white; height: 50px; padding: 0 20px; border: none; border-radius: 4px; font-size: 1rem; display: inline-flex; align-items: center; cursor: pointer;"
-    >
-      <i class="fas fa-database" style="margin-right: 8px; font-size: 1.2em;"></i>
-      Learners Database
-    </button>
-
-    <div id="learnersButtons" style="display: none; flex-direction: column; gap: 8px; width: 100%;">
-      <button
-        type="button"
-        id="toggleTableBtn"
-        style="background-color: #2196F3; color: white; height: 48px; padding: 0 16px; border: none; border-radius: 4px; font-size: 1rem; display: inline-flex; align-items: center; cursor: pointer;"
-      >
-        <i class="fas fa-list" style="margin-right: 6px;"></i>
-        Registered Learners
-      </button>
-
-      <button
-        type="button"
-        id="toggleFormBtn"
-        style="background-color: #4CAF50; color: white; height: 50px; padding: 0 20px; border: none; border-radius: 4px; font-size: 1rem; display: inline-flex; align-items: center; cursor: pointer;"
-      >
-        <i class="fas fa-user-plus" style="margin-right: 8px;"></i>
-        Register Learner
-      </button>
-    </div>
+<!-- School Name with Logo and Date/Time -->
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; border: 2px solid #673AB7; border-radius:8px; padding:10px; background:#f0e7ff;">
+  
+  <!-- School Name -->
+  <h1 style="font-size:24px; color:#673AB7; margin:0; font-weight:bold;">
+    NACHU JUNIOR SCHOOL ...PO BOX 561-00902 KIKUYU KENYA
+  </h1>
+  
+  <!-- Logo and Date/Time -->
+  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
+    <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="height:50px; object-fit:contain;">
+    <span id="dateTime" style="font-size:16px; color:#673AB7; font-weight:bold;"></span>
   </div>
+</div>
 
-  <div id="announcement" style="margin: 10px 0; padding: 10px 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px; font-size: 0.95rem;">
-    📢 <strong>Note:</strong> All new learners must be registered before entering marks.
-  </div>
+<!-- ================= ANNOUNCEMENT ================= -->
+<div
+  id="announcement"
+  style="
+    padding:14px 18px;
+    background-color:#f8d7da;       /* light red background */
+    border:1px solid #f5c6cb;      /* red border */
+    color:#721c24;                  /* dark red text */
+    border-radius:8px;
+    font-size:1rem;
+    font-weight:600;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    display:flex;
+    align-items:center;
+    gap:8px;">
+  📢 <strong>Note:</strong> All new learners must be registered before entering marks.
+</div>
 
-  <!-- Exam & Marks Controls Master Toggle -->
-  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 20px;">
+
+  <h2 style="background:#222;color:white;padding:10px;border-radius:6px;">
+    📊 School Dashboard
+  </h2>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-top:15px;">
+
+<div class="dash-card">
+  <h3>Current Day & Time</h3>
+  <p id="currentDateTime" style="font-weight:bold; font-size:16px; color:#673AB7;">Loading...</p>
+</div>
+
+<div class="dash-card">
+  <h3>Total Classes</h3>
+  <p id="totalClasses">0</p>
+</div>
+
+<div class="dash-card">
+  <h3>Total Subjects</h3>
+  <p id="totalSubjects">0</p>
+</div>
+
+<div class="dash-card">
+  <h3>Total Students</h3>
+  <p id="totalStudents">0</p>
+</div>
+</div>
+ <h3 style="margin-top:25px; color:#d32f2f; font-weight:bold;">
+  Students Per Grade
+</h3>
+<div id="gradeStats" 
+     style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px;">
+</div>
+<h3 style="margin-top:30px; color:#d32f2f; font-weight:bold;">
+  📊 Students Per Grade Chart
+</h3>
+<canvas id="gradeChart" height="100"></canvas>
+
+<h3 style="margin-top:30px; color:#d32f2f; font-weight:bold;">
+  👦👧 Gender Distribution
+</h3>
+<canvas id="genderChart" height="100"></canvas>
+
+<h3 style="
+  margin-top:30px;
+  background-color: #FFEB3B;   /* bright yellow */
+  color: #333;                 /* dark text for contrast */
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+">
+  🏆 Performance Insight
+</h3>
+<div id="topGradeBox" class="dash-card" style="margin-top:10px;background:linear-gradient(135deg,#ff9800,#f44336);">
+<h3 style="
+  background-color: #FFEB3B;   /* bright yellow */
+  color: #333;                 /* dark text for contrast */
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  margin-top: 20px;
+">
+  Top Performing Grade
+</h3>
+  <p id="topGrade">Loading...</p>
+</div>
+<h3 style="
+  margin-top:30px;
+  background-color: #FFEB3B;   /* bright yellow */
+  color: #333;                 /* dark text for contrast */
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+">
+  🏆 Top 5 Students Overall
+</h3>
+<div id="topStudentsList" class="dash-card" style="background:linear-gradient(135deg,#673ab7,#3f51b5);margin-top:10px;"></div>
+
+<h3 style="margin-top:30px;">📈 Term Comparison</h3>
+<canvas id="termChart" height="100"></canvas>
+
+ <!-- ================= LEARNERS & REPORTS CONTROLS SECTION ================= -->
+<div style="display:flex; flex-direction:column; gap:20px; max-width:600px;">
+
+<!-- ================= LEARNERS DATABASE ================= --> 
+<div style="max-width:500px; display:flex; flex-direction:column; gap:18px; align-items:center;">
+
+  <!-- Master Toggle Button -->
+  <button
+    type="button"
+    id="masterToggleBtn"
+    style="
+      width:50%;
+      background:linear-gradient(135deg,#673AB7,#5E35B1);
+      color:white;
+      height:52px;
+      padding:0 20px;
+      border:none;
+      border-radius:8px;
+      font-size:1rem;
+      font-weight:500;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      transition:all 0.3s ease;">
+    <i class="fas fa-database" style="font-size:1.2em;"></i>
+    Learners Database
+  </button>
+
+<!-- Sub Buttons Container (hidden initially) -->
+<div
+  id="learnersButtons"
+  style="
+    display:none;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:25px;
+    width:100%;
+    padding:30px;
+    background:#f4f6fb;
+    border-radius:14px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+
+  <!-- Registered Learners -->
+  <button
+    type="button"
+    id="toggleTableBtn"
+    class="learner-btn blue-btn">
+    <i class="fas fa-list"></i>
+    Registered Learners
+  </button>
+
+  <!-- Register Learner -->
+  <button
+    type="button"
+    id="toggleFormBtn"
+    class="learner-btn green-btn">
+    <i class="fas fa-user-plus"></i>
+    Register Learner
+  </button>
+
+</div>
+</div>
+
+
+
+
+  <!-- ================= EXAM & MARKS CONTROLS ================= -->
+  <div style="display:flex; flex-direction:column; gap:10px;">
+
+    <!-- Master Reports Button -->
     <button
       type="button"
       id="masterReportsBtn"
-      style="background-color: #9C27B0; color: white; height: 48px; padding: 0 20px; border: none; border-radius: 4px; font-size: 1rem; display: inline-flex; align-items: center; cursor: pointer;"
-    >
-      <i class="fas fa-chart-bar" style="margin-right: 8px;"></i>
+      style="
+        background-color:#9C27B0;
+        color:white;
+        height:48px;
+        padding:0 20px;
+        border:none;
+        border-radius:6px;
+        font-size:1rem;
+        display:inline-flex;
+        align-items:center;
+        cursor:pointer;">
+      <i class="fas fa-chart-bar" style="margin-right:8px;"></i>
       <span class="btn-label">Exam & Marks Controls</span>
     </button>
+
+    <!-- Reports Sub Controls -->
+    <div
+      id="reportsControls"
+      style="
+        display:none;
+        flex-direction:column;
+        gap:10px;
+        width:50%;">
+
+      <button
+        class="print-button"
+        id="togglePerformanceReportsBtn"
+        style="
+          background-color:#03A9F4;
+          color:white;
+          height:44px;
+          padding:0 16px;
+          border:none;
+          border-radius:6px;
+          font-size:1rem;
+          display:inline-flex;
+          align-items:center;
+          cursor:pointer;">
+        <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
+        Exam Reports
+      </button>
+
+      <button
+        class="print-button"
+        id="toggleMarksSectionBtn"
+        style="
+          background-color:#03A9F4;
+          color:white;
+          height:44px;
+          padding:0 16px;
+          border:none;
+          border-radius:6px;
+          font-size:1rem;
+          display:inline-flex;
+          align-items:center;
+          cursor:pointer;">
+        <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
+        Marks Section
+      </button>
+
+    </div>
   </div>
 
-  <div id="reportsControls" style="display: none; flex-direction: column; gap: 8px; width: 100%;">
-    <button
-      class="print-button"
-      id="togglePerformanceReportsBtn"
-      style="background-color: #03A9F4; color: white; height: 44px; padding: 0 16px; border: none; border-radius: 4px; font-size: 1rem; display: inline-flex; align-items: center; cursor: pointer;"
-    >
-      <i class="fas fa-chevron-down" style="margin-right: 6px;"></i>
-      Exam Reports
-    </button>
-
-    <button
-      class="print-button"
-      id="toggleMarksSectionBtn"
-      style="background-color: #03A9F4; color: white; height: 44px; padding: 0 16px; border: none; border-radius: 4px; font-size: 1rem; display: inline-flex; align-items: center; cursor: pointer;"
-    >
-      <i class="fas fa-chevron-down" style="margin-right: 6px;"></i>
-      Marks Section
-    </button>
+<!-- ================= ONLINE SAFETY NOTE ================= -->
+<div
+  id="onlineSafetyNote"
+  style="
+    position:relative;
+    padding:16px 22px;
+    background-color:#e0f7fa;       
+    border-left:6px solid #00796b;  
+    color:#004d40;                  
+    border-radius:10px;
+    font-size:1rem;                 
+    line-height:1.6;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    animation:glowPulse 2.5s infinite alternate;">
+    
+  🔒 <strong>Online Safety Tip:</strong> Always protect your personal information and avoid sharing passwords or sensitive data on public networks.
   
-  <!-- Online Safety Note -->
-  <div id="onlineSafetyNote" style="position: relative; margin: 15px 0; padding: 14px 20px; background-color: #e0f7fa; border-left: 5px solid #00796b; color: #004d40; border-radius: 5px; font-size: 0.95rem; line-height: 1.5;">
-    🔒 <strong>Online Safety Tip:</strong> Always protect your personal information and avoid sharing passwords or sensitive data on public networks.<br><br>
-    🌸 <em>RASM Wishes you a productive and wonderful day ahead!</em>
-    <span onclick="this.parentElement.style.display='none';" style="position: absolute; top: 10px; right: 14px; cursor: pointer; color: #004d40; font-weight: bold;">&times;</span>
-  </div>
+  🌸 <em>RASM Wishes you a productive and wonderful day ahead!</em>
+
+  <span
+    onclick="this.parentElement.style.display='none';"
+    style="
+      position:absolute;
+      top:10px;
+      right:16px;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:1.3rem;
+      color:#004d40;
+      transition:color 0.2s ease;">
+    &times;
+  </span>
 
 </div>
 
@@ -1231,6 +1512,9 @@ button[onclick^="show"] {
 
 <!-- Action Box -->
 <div class="action-box">
+  <!-- Overlay for better contrast -->
+  <div class="action-box-overlay"></div>
+
   <!-- Action Buttons -->
   <div class="action-buttons">
 
@@ -1264,6 +1548,7 @@ button[onclick^="show"] {
 
   </div>
 </div>
+
 
   </h2>
     <h2 style="background-color: rgba(255, 255, 255, 0.7); padding: 8px 16px; border-radius: 6px; display: inline-block; color: #2c3e50;">
@@ -2342,14 +2627,15 @@ document.getElementById('registerButton').addEventListener('click', () => {
     const newLearnerRef = push(learnersRef);
     set(newLearnerRef, learnerData)
         .then(() => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: 'Learner registered successfully.',
-                confirmButtonColor: '#28a745'
-            });
-            document.getElementById('learnerForm').reset();
-        })
+    Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Learner registered successfully.',
+        confirmButtonColor: '#28a745'
+    });
+    document.getElementById('learnerForm').reset();
+    loadLearners();   // 👈 ADD THIS
+})
         .catch(err => {
             console.error("Error adding learner: ", err);
             Swal.fire({
@@ -2370,9 +2656,94 @@ const searchInput = document.getElementById("searchInput");
 
 // ================= GLOBAL STATE =================
 let allLearners = [];
+// ================= DASHBOARD =================
+function updateDashboard() {
+
+  const totalStudentsEl = document.getElementById("totalStudents");
+  const totalClassesEl = document.getElementById("totalClasses");
+  const totalSubjectsEl = document.getElementById("totalSubjects");
+  const gradeStatsEl = document.getElementById("gradeStats");
+
+  if (!totalStudentsEl) return;
+
+  // ================= COUNTS =================
+  const gradeCounts = {};
+  const genderCounts = { Male: 0, Female: 0 };
+
+  allLearners.forEach(l => {
+    const grade = l.grade?.trim();
+    const gender = l.gender?.trim();
+
+    if (grade) {
+      gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
+    }
+
+    if (gender === "Male") genderCounts.Male++;
+    if (gender === "Female") genderCounts.Female++;
+  });
+
+  animateCounter("totalStudents", allLearners.length);
+  animateCounter("totalClasses", Object.keys(gradeCounts).length);
+  animateCounter("totalSubjects", 9);
+
+  // ================= STUDENTS PER GRADE BOXES =================
+  gradeStatsEl.innerHTML = "";
+  Object.keys(gradeCounts).sort().forEach(grade => {
+    const box = document.createElement("div");
+    box.className = "grade-box";
+    box.innerHTML = `
+      ${grade}<br>
+      <span style="color:#2196F3;font-size:18px;">
+        ${gradeCounts[grade]} Students
+      </span>
+    `;
+    gradeStatsEl.appendChild(box);
+  });
+
+  // ================= BAR CHART =================
+  const ctx = document.getElementById("gradeChart");
+
+  if (gradeChart) gradeChart.destroy();
+
+  gradeChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(gradeCounts),
+      datasets: [{
+        label: 'Students',
+        data: Object.values(gradeCounts),
+        backgroundColor: '#4CAF50'
+      }]
+    }
+  });
+
+  // ================= GENDER CHART =================
+  const genderCtx = document.getElementById("genderChart");
+
+  if (genderChart) genderChart.destroy();
+
+  genderChart = new Chart(genderCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Male', 'Female'],
+      datasets: [{
+        data: [genderCounts.Male, genderCounts.Female],
+        backgroundColor: ['#2196F3', '#E91E63']
+      }]
+    }
+  });
+
+  // ================= TOP PERFORMING GRADE =================
+  calculateTopGrade();
+calculateTopStudents();
+generateInsight();
+generateTermComparison();
+}
 let filteredLearners = [];
 let currentIndex = 0;
-
+let gradeChart;
+let genderChart;
+let termChart;
 const PAGE_SIZE = 250;
 let countdownInterval = null;
 let seconds = 0;
@@ -2392,7 +2763,157 @@ function showLoadingSpinner() {
 
   tableBody.innerHTML = "";
 }
+function animateCounter(id, target) {
+  const el = document.getElementById(id);
+  let count = 0;
+  const increment = Math.ceil(target / 50);
 
+  const interval = setInterval(() => {
+    count += increment;
+    if (count >= target) {
+      el.innerText = target;
+      clearInterval(interval);
+    } else {
+      el.innerText = count;
+    }
+  }, 20);
+}
+function generateTermComparison() {
+
+  const termTotals = {};
+
+  allLearners.forEach(l => {
+    if (!l.marks) return;
+
+    Object.entries(l.marks).forEach(([term, exam]) => {
+
+      const total =
+        (parseFloat(exam.eng) || 0) +
+        (parseFloat(exam.math) || 0) +
+        (parseFloat(exam.preTech) || 0) +
+        (parseFloat(exam.kiswahili) || 0) +
+        (parseFloat(exam.science) || 0) +
+        (parseFloat(exam.social) || 0) +
+        (parseFloat(exam.agriculture) || 0) +
+        (parseFloat(exam.cre) || 0) +
+        (parseFloat(exam.creativeArt) || 0);
+
+      termTotals[term] = (termTotals[term] || 0) + total;
+    });
+  });
+
+  const ctx = document.getElementById("termChart");
+  if (!ctx) return;
+
+  if (termChart) termChart.destroy();
+
+  termChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: Object.keys(termTotals),
+      datasets: [{
+        label: "Total Performance",
+        data: Object.values(termTotals),
+        borderColor: "#ff9800",
+        backgroundColor: "rgba(255,152,0,0.2)",
+        fill: true
+      }]
+    }
+  });
+}
+function calculateTopStudents() {
+
+  const studentTotals = [];
+
+  allLearners.forEach(l => {
+    if (!l.marks) return;
+
+    let grandTotal = 0;
+    let count = 0;
+
+    Object.values(l.marks).forEach(exam => {
+
+      const total =
+        (parseFloat(exam.eng) || 0) +
+        (parseFloat(exam.math) || 0) +
+        (parseFloat(exam.preTech) || 0) +
+        (parseFloat(exam.kiswahili) || 0) +
+        (parseFloat(exam.science) || 0) +
+        (parseFloat(exam.social) || 0) +
+        (parseFloat(exam.agriculture) || 0) +
+        (parseFloat(exam.cre) || 0) +
+        (parseFloat(exam.creativeArt) || 0);
+
+      grandTotal += total;
+      count++;
+    });
+
+    if (count > 0) {
+      studentTotals.push({
+        name: l.name,
+        grade: l.grade,
+        average: grandTotal / count
+      });
+    }
+  });
+
+  studentTotals.sort((a, b) => b.average - a.average);
+
+  const top5 = studentTotals.slice(0, 5);
+
+  const container = document.getElementById("topStudentsList");
+  if (!container) return;
+
+  container.innerHTML = top5.length
+    ? top5.map((s, i) =>
+        `${i + 1}. ${s.name} (${s.grade}) - ${s.average.toFixed(1)}`
+      ).join("<br>")
+    : "No Exam Data Available";
+}
+function calculateTopGrade() {
+
+  const gradeTotals = {};
+  const gradeCounts = {};
+
+  allLearners.forEach(l => {
+    if (!l.marks) return;
+
+    Object.values(l.marks).forEach(exam => {
+
+      const total =
+        (parseFloat(exam.eng) || 0) +
+        (parseFloat(exam.math) || 0) +
+        (parseFloat(exam.preTech) || 0) +
+        (parseFloat(exam.kiswahili) || 0) +
+        (parseFloat(exam.science) || 0) +
+        (parseFloat(exam.social) || 0) +
+        (parseFloat(exam.agriculture) || 0) +
+        (parseFloat(exam.cre) || 0) +
+        (parseFloat(exam.creativeArt) || 0);
+
+      const grade = l.grade;
+
+      gradeTotals[grade] = (gradeTotals[grade] || 0) + total;
+      gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
+    });
+  });
+
+  let topGrade = "No Data";
+  let highestAvg = 0;
+
+  Object.keys(gradeTotals).forEach(g => {
+    const avg = gradeTotals[g] / gradeCounts[g];
+    if (avg > highestAvg) {
+      highestAvg = avg;
+      topGrade = g;
+    }
+  });
+
+  document.getElementById("topGrade").innerText =
+    highestAvg > 0
+      ? `${topGrade} (${highestAvg.toFixed(1)} Avg)`
+      : "No Exam Data";
+}
 function hideLoadingSpinner() {
   if (!spinnerContainer) return;
   spinnerContainer.style.display = "none";
@@ -2423,9 +2944,10 @@ async function loadLearners() {
 
     setupGradeFilter(grades);
 
-    filteredLearners = [...allLearners];
-    resetPagination();
-    hideLoadingSpinner();
+   filteredLearners = [...allLearners];
+resetPagination();
+updateDashboard();   // 👈 ADD THIS LINE
+hideLoadingSpinner();
 
   } catch (err) {
     console.error("Load error:", err);
@@ -2590,6 +3112,7 @@ function attachDelete(row, data) {
         allLearners = allLearners.filter(l => l.key !== data.key);
         filteredLearners = filteredLearners.filter(l => l.key !== data.key);
         resetPagination();
+updateDashboard();   // 👈 add here too
         Swal.fire("Deleted","Learner removed","success");
       } catch {
         Swal.fire("Error","Delete failed","error");
@@ -5612,7 +6135,7 @@ filterGender.addEventListener('change', () => {
   let index = 1; // restart numbering
 
   rows.forEach(row => {
-    const learnerGender = row.cells[3].textContent.trim();
+    const learnerGender = row.cells[4].textContent.trim();
 
     if (selectedGender === "" || learnerGender === selectedGender) {
       row.style.display = "";
@@ -5625,8 +6148,8 @@ filterGender.addEventListener('change', () => {
 
 document.getElementById("printGroupedByGenderButton").addEventListener("click", () => {
   const schoolName = "Your School Name";
-  const year = "2025";
-  const term = "Term 2";
+  const year = "20..";
+  const term = "Term ...";
   const selectedGender = filterGender.value;
 
   const learners = [];
@@ -6372,8 +6895,8 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
       }).then(() => {
         // 🎄 Holiday popup after user clicks "Continue"
         Swal.fire({
-          title: "🎉 Happy December Holidays!",
-          text: "RASM wishes you joy, peace, and success this festive season!",
+          title: "🎉 We appreciate you using RASM School Management System – Managing Schools, Empowering Minds!",
+          text: " Where Education Meets Innovation.!",
           icon: "info",
           background: "#fffbe6",
           color: "#333",
@@ -7906,21 +8429,75 @@ document.getElementById("bulkDeleteButton").addEventListener("click", async () =
   });
 });
 
-// Show modal when Class List Generator button is clicked
-document.getElementById("toggleClassListSectionBtn").addEventListener("click", () => {
-  document.getElementById("classListModal").style.display = "block";
-});
+function generateInsight() {
 
-// Close modal
-document.getElementById("closeClassListModal").addEventListener("click", () => {
-  document.getElementById("classListModal").style.display = "none";
-});
+  const totalStudents = allLearners.length;
 
-// Optional: close modal when clicking outside content
-document.querySelector("#classListModal .modal-overlay").addEventListener("click", () => {
-  document.getElementById("classListModal").style.display = "none";
-});
+  let totalMarks = 0;
+  let examCount = 0;
+
+  allLearners.forEach(l => {
+    if (!l.marks) return;
+
+    Object.values(l.marks).forEach(exam => {
+
+      totalMarks +=
+        (parseFloat(exam.eng) || 0) +
+        (parseFloat(exam.math) || 0) +
+        (parseFloat(exam.preTech) || 0) +
+        (parseFloat(exam.kiswahili) || 0) +
+        (parseFloat(exam.science) || 0) +
+        (parseFloat(exam.social) || 0) +
+        (parseFloat(exam.agriculture) || 0) +
+        (parseFloat(exam.cre) || 0) +
+        (parseFloat(exam.creativeArt) || 0);
+
+      examCount++;
+    });
+  });
+
+  const avg = examCount > 0 ? totalMarks / examCount : 0;
+
+  let message = "No exam data available.";
+
+  if (avg >= 600) message = "🔥 Excellent overall performance.";
+  else if (avg >= 450) message = "👍 Good performance with room for improvement.";
+  else if (avg >= 300) message = "⚠ Moderate performance. Academic support recommended.";
+  else if (avg > 0) message = "🚨 Performance is low. Immediate intervention required.";
+
+  document.getElementById("performanceInsight").innerText = message;
+}
+
+
+// Function to update day, date, and time every second
+function updateDashboardTime() {
+    const now = new Date();
+
+    // Format components
+    const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const dayName = weekdays[now.getDay()];
+    const day = String(now.getDate()).padStart(2,'0');
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const month = monthNames[now.getMonth()];
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2,'0');
+    const minutes = String(now.getMinutes()).padStart(2,'0');
+    const seconds = String(now.getSeconds()).padStart(2,'0');
+
+    // Combine into a single string
+    const formatted = `${dayName}, ${day} ${month} ${year} | ${hours}:${minutes}:${seconds}`;
+
+    // Update the dashboard element
+    document.getElementById('currentDateTime').textContent = formatted;
+}
+
+// Initial call to show immediately
+updateDashboardTime();
+
+// Update every second
+setInterval(updateDashboardTime, 1000);
 </script>
+
 
 
 </body>

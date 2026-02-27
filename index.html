@@ -6438,13 +6438,12 @@ onValue(learnersRef, (snapshot) => {
 async function generateClassList(selectedGrade) {
     try {
         const snapshot = await get(learnersRef);
-
         const boys = [];
         const girls = [];
+        const currentYear = new Date().getFullYear();
 
         snapshot.forEach(childSnapshot => {
             const learner = childSnapshot.val();
-
             if (learner.grade === selectedGrade) {
                 const studentData = {
                     name: learner.name || "",
@@ -6453,8 +6452,7 @@ async function generateClassList(selectedGrade) {
 
                 if (learner.gender?.toLowerCase() === "male") {
                     boys.push(studentData);
-                } 
-                else if (learner.gender?.toLowerCase() === "female") {
+                } else if (learner.gender?.toLowerCase() === "female") {
                     girls.push(studentData);
                 }
             }
@@ -6464,14 +6462,25 @@ async function generateClassList(selectedGrade) {
         boys.sort((a, b) => a.name.localeCompare(b.name));
         girls.sort((a, b) => a.name.localeCompare(b.name));
 
-        const logoUrl = "https://i.imgur.com/UW65hfv.png"; // Your school logo
+        const logoUrl = "https://i.imgur.com/VSAh48K.jpeg"; // replace with your logo path or URL
+
+        // Header HTML
+        const headerHtml = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="${logoUrl}" alt="School Logo" style="height: 80px; margin-bottom: 10px;"><br>
+            <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR SCHOOL</strong><br>
+            <strong style="font-size: 20px;">CLASS LIST REGISTER</strong><br>
+            <div style="margin-top: 5px; font-size: 14px;">
+                ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
+                Phone: +254-700-123456<br>
+                School Motto: <em>"MY TALENT MY PASSION"</em><br>
+                Year: ${currentYear} / GRADE: <strong>${selectedGrade}</strong>
+            </div>
+        </div>
+        `;
 
         let html = `
-        <h3 style="text-align:center; font-size: 28px; font-weight: bold; margin-bottom: 15px;">
-            <img src="${logoUrl}" alt="School Logo" style="height:80px; display:block; margin: 0 auto 10px;">
-            Class List - ${selectedGrade}
-        </h3>
-
+        ${headerHtml}
         <button class="print-button" onclick="printClassList()">Print Class List</button>
 
         <div style="display: flex; gap: 30px; margin-top: 20px;">
@@ -6534,12 +6543,11 @@ async function generateClassList(selectedGrade) {
     }
 }
 window.printClassList = function () {
-
     const selectedGrade = document.getElementById("classListGradeSelect").value;
-    const year = new Date().getFullYear();
+    const currentYear = new Date().getFullYear();
     const today = new Date();
     const printDate = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
-    const logoUrl = "https://i.imgur.com/UW65hfv.png";
+    const logoUrl = "https://i.imgur.com/VSAh48K.jpeg"; // replace with your logo path or URL
 
     const tables = document.querySelectorAll("#classListOutput table");
 
@@ -6553,44 +6561,41 @@ window.printClassList = function () {
 
     const printWindow = window.open('', '_blank');
 
+    // Function to create the header HTML
+    const createHeader = (sectionTitle) => `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="${logoUrl}" alt="School Logo" style="height: 80px; margin-bottom: 10px;"><br>
+            <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR SCHOOL</strong><br>
+            <strong style="font-size: 20px;">${sectionTitle}</strong><br>
+            <div style="margin-top: 5px; font-size: 14px;">
+                ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
+                Phone: +254-700-123456<br>
+                School Motto: <em>"MY TALENT MY PASSION"</em><br>
+                Year: ${currentYear} / GRADE: <strong>${selectedGrade}</strong>
+            </div>
+        </div>
+    `;
+
     printWindow.document.write(`
         <html>
         <head>
             <title>Class List - ${selectedGrade}</title>
             <style>
-                body { font-family: Arial; margin: 30px; }
+                body { font-family: Arial; margin: 30px; color: #000; }
                 table { width:100%; border-collapse:collapse; margin-top:15px; }
-                th, td { 
-    border:1px solid black; 
-    padding:8px; 
-    height:30px;
-}
-
-td:last-child, th:last-child {
-    width: 180px; /* Wider space for signature */
-}
+                th, td { border:1px solid black; padding:8px; height:30px; text-align:left; }
+                td:last-child, th:last-child { width: 180px; } /* Signature column */
                 th { background:#f2f2f2; }
-
-                .header { text-align:center; margin-bottom:20px; }
-                .header img { height:80px; }
-
                 .page-break { page-break-after: always; }
-
                 .signature-lines { margin-top:40px; }
                 .signature-lines div { margin-top:25px; }
             </style>
         </head>
         <body>
 
-            <div class="header">
-                <img src="${logoUrl}">
-                <h2>NACHU JUNIOR SCHOOL</h2>
-                <h3>BOYS CLASS LIST</h3>
-                <h4>${selectedGrade} - ${year}</h4>
-            </div>
-
+            <!-- BOYS PAGE -->
+            ${createHeader("BOYS CLASS LIST")}
             ${boysTable}
-
             <div class="signature-lines">
                 <div>Class Teacher Signature: ____________________________</div>
                 <div>Headteacher Signature: _______________________________</div>
@@ -6598,15 +6603,9 @@ td:last-child, th:last-child {
 
             <div class="page-break"></div>
 
-            <div class="header">
-                <img src="${logoUrl}">
-                <h2>NACHU JUNIOR SCHOOL</h2>
-                <h3>GIRLS CLASS LIST</h3>
-                <h4>${selectedGrade} - ${year}</h4>
-            </div>
-
+            <!-- GIRLS PAGE -->
+            ${createHeader("GIRLS CLASS LIST")}
             ${girlsTable}
-
             <div class="signature-lines">
                 <div>Class Teacher Signature: ____________________________</div>
                 <div>Headteacher Signature: _______________________________</div>
@@ -6619,7 +6618,6 @@ td:last-child, th:last-child {
     printWindow.document.close();
     printWindow.print();
 };
-
 // Button click event listener
 document.getElementById("generateClassListBtn").addEventListener("click", () => {
   const selectedGrade = document.getElementById("classListGradeSelect").value;

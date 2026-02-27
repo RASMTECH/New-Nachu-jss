@@ -962,87 +962,7 @@ button[onclick^="show"] {
   font-size: 0.95rem;
 }
 
-.green-btn { background-color: #4CAF50; }
-.blue-btn { background-color: #2196F3; }
-.orange-btn { background-color: #FF9800; }
-.purple-btn { background-color: #9C27B0; }
-.red-btn { background-color: #FF5722; }
-.gray-btn { background-color: #607D8B; }
-#classListModal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  z-index: 1000;
-  font-family: Arial, sans-serif;
-}
 
-.modal-overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-}
-
-.modal-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #f9f9f9;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  width: 400px;
-  max-width: 90%;
-}
-
-.modal-content h2 {
-  background-color: #ffff00;
-  padding: 8px 16px;
-  border-radius: 6px;
-  display: inline-block;
-}
-
-.filter-bar {
-  margin: 15px 0;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.modal-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #f9f9f9;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  width: 400px;
-  max-width: 90%;
-}
-
-.close-modal {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #607D8B;
-  color: white;
-  border: none;
-  font-size: 18px;
-  font-weight: bold;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 .dash-card {
   background: linear-gradient(135deg,#4CAF50,#2196F3);
   color: white;
@@ -1224,6 +1144,49 @@ button[onclick^="show"] {
   font-weight: bold;
   margin-bottom: 10px;
   color: #6a1b9a;
+}
+.action-box {
+  border: 2px solid #ccc;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.action-btn {
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.green-btn { background-color: #4CAF50; }
+.blue-btn { background-color: #2196F3; }
+.orange-btn { background-color: #FF9800; }
+.purple-btn { background-color: #9C27B0; }
+.red-btn { background-color: #FF5722; }
+.gray-btn { background-color: #607D8B; }
+#classListModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
 }
 </style>
 
@@ -2265,7 +2228,7 @@ Accuracy and Efficiency in Every Click.</span>
   <div id="termComparisonContent" style="display:flex; gap:15px;"></div>
 </div>
 
-<div id="subjectAveragesContainer" class="subject-averages"></div>
+
 
 <div id="loadingOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:999; align-items:center; justify-content:center; font-size:24px; font-weight:bold; color:#673AB7;">
   Loading...
@@ -2635,56 +2598,94 @@ Rasm Does It All – One Click and You’re Done!.</span>
 
 <!-- Teacher Modal -->
 <div id="teacherModal" class="modal">
-  <div class="modal-content" style="background-image: url('https://i.imgur.com/WKwJ73A.jpeg'); background-size: cover; background-position: center; border-radius: 10px; padding: 20px; color: #fff;">
-    <span class="close-btn" onclick="closeTeacherModal()" style="color: #fff; font-size: 1.5rem; cursor: pointer; font-weight: bold;">&times;</span>
+  <div class="modal-content" 
+       style="background-image: url('https://i.imgur.com/WKwJ73A.jpeg'); 
+              background-size: cover; 
+              background-position: center; 
+              border-radius: 12px; 
+              padding: 25px; 
+              color: #fff; 
+              max-width: 750px; 
+              margin: auto; 
+              box-shadow: 0 8px 25px rgba(0,0,0,0.6);">
     
-    <h3 class="modal-title" style="font-size: 24px; font-weight: 600; margin-bottom: 20px;">
-      Enter Term and Subject Teacher Details
+    <!-- Close Button -->
+    <span class="close-btn" onclick="closeTeacherModal()" 
+          style="color: #fff; font-size: 1.7rem; cursor: pointer; font-weight: bold; float: right;">&times;</span>
+
+    <!-- Modal Title -->
+    <h3 class="modal-title" 
+        style="font-size: 26px; font-weight: 700; margin-bottom: 25px; text-align: center; text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
+      Enter Term & Subject Teacher Details
     </h3>
 
-    <form id="teacherForm" style="display: flex; flex-direction: column; gap: 15px;">
-      <!-- Dynamic Inputs -->
-      <div id="teacherInputs" class="dynamic-inputs" style="display: flex; flex-direction: column; gap: 10px;">
-        <!-- Dynamic fields will be injected here -->
+    <form id="teacherForm" style="display: flex; flex-direction: column; gap: 20px;">
+      
+      <!-- Subjects & Teachers Grid -->
+      <div id="teacherInputs" 
+           style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 10px;">
+        <!-- Dynamic subject-teacher pairs will appear here -->
+      </div>
+      
+
+      <!-- Term Details Section -->
+      <div class="form-section" 
+           style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
+                  background-color: rgba(0,0,0,0.6); padding: 20px; border-radius: 12px;">
+        <div class="form-group">
+          <label for="year" style="font-size: 1rem; font-weight: 600;">Year</label>
+          <input type="number" id="year" required 
+                 style="width: 100%; padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
+        </div>
+        <div class="form-group">
+          <label for="term" style="font-size: 1rem; font-weight: 600;">Term</label>
+          <input type="text" id="term" required 
+                 style="width: 100%; padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
+        </div>
+        <div class="form-group">
+          <label for="openingDate" style="font-size: 1rem; font-weight: 600;">Opening Date</label>
+          <input type="date" id="openingDate" required 
+                 style="width: 100%; padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
+        </div>
+        <div class="form-group">
+          <label for="closingDate" style="font-size: 1rem; font-weight: 600;">Closing Date</label>
+          <input type="date" id="closingDate" required 
+                 style="width: 100%; padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
+        </div>
       </div>
 
-      <!-- Static Fields -->
-      <div class="form-section" style="display: flex; flex-direction: column; gap: 15px; background-color: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 10px;">
+      <!-- Signatures Section -->
+      <div class="form-section" 
+           style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
+                  background-color: rgba(0,0,0,0.6); padding: 20px; border-radius: 12px;">
         <div class="form-group">
-          <label for="year" style="font-size: 1rem; font-weight: 500;">Year</label>
-          <input type="number" id="year" required style="padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
+          <label for="classTeacherSignature" style="font-size: 1rem; font-weight: 600;">Class Teacher Signature</label>
+          <input type="text" id="classTeacherSignature" placeholder="Type your name or signature" required 
+                 style="width: 100%; padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
         </div>
         <div class="form-group">
-          <label for="term" style="font-size: 1rem; font-weight: 500;">Term</label>
-          <input type="text" id="term" required style="padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
-        </div>
-        <div class="form-group">
-          <label for="closingDate" style="font-size: 1rem; font-weight: 500;">Closing Date</label>
-          <input type="date" id="closingDate" required style="padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
-        </div>
-        <div class="form-group">
-          <label for="openingDate" style="font-size: 1rem; font-weight: 500;">Opening Date</label>
-          <input type="date" id="openingDate" required style="padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
-        </div>
-        <div class="form-group">
-          <label for="classTeacherSignature" style="font-size: 1rem; font-weight: 500;">Class Teacher Signature</label>
-          <input type="text" id="classTeacherSignature" placeholder="Type your name or signature" required style="padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
-        </div>
-        <div class="form-group">
-          <label for="principalSignature" style="font-size: 1rem; font-weight: 500;">Principal Signature</label>
-          <input type="text" id="principalSignature" placeholder="Type your name or signature" required style="padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
+          <label for="principalSignature" style="font-size: 1rem; font-weight: 600;">Principal Signature</label>
+          <input type="text" id="principalSignature" placeholder="Type your name or signature" required 
+                 style="width: 100%; padding: 10px; border-radius: 6px; border: none; font-size: 1rem;">
         </div>
       </div>
 
       <!-- Submit Button -->
-      <div class="form-actions" style="display: flex; justify-content: flex-end; margin-top: 20px;">
-        <button type="submit" class="print-button" style="padding: 12px 25px; background-color: #f39c12; color: #fff; border: none; border-radius: 5px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.3s;">
+      <div class="form-actions" style="display: flex; justify-content: center; margin-top: 15px;">
+        <button type="submit" class="print-button" 
+                style="padding: 14px 30px; background-color: #f39c12; color: #fff; 
+                       border: none; border-radius: 6px; font-size: 1.15rem; font-weight: 700; 
+                       cursor: pointer; transition: background-color 0.3s; width: 50%;">
           <i class="fas fa-arrow-right"></i> Continue to Reports
         </button>
       </div>
+
     </form>
   </div>
 </div>
+
+
+
 
 <div id="marksStatusSummary" style="margin-top: 20px; padding: 10px; background: #eef; border-radius: 6px;"></div>
 
@@ -3312,14 +3313,14 @@ printButton.addEventListener('click', () => {
         const grade = row.getAttribute('data-grade');
         if (selectedGrade === "" || grade === selectedGrade) {
             const learner = {
-                name: row.cells[2].textContent,
-                gender: row.cells[3].textContent,
-                grade: row.cells[4].textContent,
-                age: row.cells[5].textContent,
-                parentName: row.cells[6].textContent,
-                phone: row.cells[7].textContent,
-                birthCertificateNo: row.cells[8].textContent,
-                admissionNumber: row.cells[9].textContent,
+                name: row.cells[3].textContent,
+                gender: row.cells[4].textContent,
+                grade: row.cells[5].textContent,
+                age: row.cells[6].textContent,
+                parentName: row.cells[7].textContent,
+                phone: row.cells[8].textContent,
+                birthCertificateNo: row.cells[9].textContent,
+                admissionNumber: row.cells[10].textContent,
                 photo: "placeholder.jpg" // Placeholder image path
             };
             learners.push(learner);
@@ -3500,14 +3501,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const row = e.target.closest('tr');
       const learnerData = {
         name: row.cells[2].textContent,
-        gender: row.cells[3].textContent,
-        grade: row.cells[4].textContent,
-        age: row.cells[5].textContent,
-        parentName: row.cells[6].textContent,
-        parentPhone: row.cells[7].textContent,
-        birthCert: row.cells[8].textContent,
-        admissionNo: row.cells[9].textContent,
-        photo: row.cells[1].querySelector("img").src
+        gender: row.cells[4].textContent,
+        grade: row.cells[5].textContent,
+        age: row.cells[6].textContent,
+        parentName: row.cells[7].textContent,
+        parentPhone: row.cells[8].textContent,
+        birthCert: row.cells[9].textContent,
+        admissionNo: row.cells[10].textContent,
+        photo: row.cells[11].querySelector("img").src
       };
       openModal(learnerData);
     }
@@ -5273,9 +5274,9 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
   const learners = Array.from(learnersTableBody.querySelectorAll("tr")).map(row => {
     const cells = row.querySelectorAll("td");
     return {
-      name: cells[2]?.textContent.trim(),
-      gender: cells[3]?.textContent.trim().toLowerCase(),
-      grade: cells[2]?.textContent.trim() // Capture the grade for each learner
+      name: cells[3]?.textContent.trim(),
+      gender: cells[4]?.textContent.trim().toLowerCase(),
+      grade: cells[5]?.textContent.trim() // Capture the grade for each learner
     };
   });
 
@@ -5920,10 +5921,6 @@ document.getElementById("teacherForm").addEventListener("submit", function (e) {
     // Generate reports with both teacher and term details
     generateLearnerAssessmentReports(termDetails);
 });
-
-function closeTeacherModal() {
-    document.getElementById("teacherModal").style.display = "none";
-}
 
 
 function getInitials(name) {
@@ -6766,17 +6763,17 @@ function generatePathwayGrouping(selectedGrade, selectedExamPeriod) {
                 <th style="border:1px solid #000; padding:6px;">KISW</th>
                 <th style="border:1px solid #000; padding:6px;">SCIE</th>
                 <th style="border:1px solid #000; padding:6px;">AGRIC</th>
-                <th style="border:1px solid #000; padding:6px; background:#fff8c6;">STEM Avg</th>
+                <th style="border:1px solid #000; padding:6px; <th style="background:#fff8c6; color:#C62828;">STEM Avg</th>
                 <th style="border:1px solid #000; padding:6px;">KISWA</th>
                 <th style="border:1px solid #000; padding:6px;">ENG</th>
                 <th style="border:1px solid #000; padding:6px;">SST</th>
                 <th style="border:1px solid #000; padding:6px;">CRE</th>
-                <th style="border:1px solid #000; padding:6px; background:#fff8c6;">Social Avg</th>
+                <th style="border:1px solid #000; padding:6px; <th style="background:#fff8c6; color:#C62828;">Social Avg</th>
                 <th style="border:1px solid #000; padding:6px;">KISWA</th>
                 <th style="border:1px solid #000; padding:6px;">ENG</th>
                 <th style="border:1px solid #000; padding:6px;">C/A</th>
-                <th style="border:1px solid #000; padding:6px; background:#fff8c6;">Sports Avg</th>
-                <th style="border:1px solid #000; padding:6px; background:#fff8c6;">Best Pathway</th>
+                <th style="border:1px solid #000; padding:6px; <th style="background:#fff8c6; color:#C62828;">Sports Avg</th>
+                <th style="border:1px solid #000; padding:6px; <th style="background:#fff8c6; color:#C62828;">Best Pathway </th>
             </tr>
         </thead><tbody>`;
 
@@ -8916,7 +8913,25 @@ function renderTermComparison(term1Averages, term2Averages){
   }
 }
 
+  const teacherModal = document.getElementById("teacherModal");
+
+  function closeTeacherModal() {
+      teacherModal.style.display = "none";
+  }
+
+  function openTeacherModal() {
+      teacherModal.style.display = "block";
+  }
+
+  // Close when clicking outside modal
+  window.addEventListener("click", function(event) {
+      if (event.target === teacherModal) {
+          closeTeacherModal();
+      }
+  });
 </script>
+  
+
 
 
 

@@ -1101,7 +1101,130 @@ button[onclick^="show"] {
   box-shadow:0 6px 20px rgba(0,0,0,0.1);
 }
 
+.stat-card {
+  background:#fff;
+  border-radius:12px;
+  padding:15px 20px;
+  text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  flex:1;
+  font-family: Arial, sans-serif;
+}
 
+.stat-value {
+  font-size:28px;
+  font-weight:bold;
+  margin-top:5px;
+  color:#673AB7;
+}
+
+.term-comparison {
+  margin-bottom:25px;
+}
+
+.term-comparison .term-card {
+  background:#f5f5f5;
+  border-radius:10px;
+  padding:10px;
+  width:120px;
+  text-align:center;
+  font-family: Arial, sans-serif;
+}
+
+.term-card .term-value {
+  font-size:22px;
+  font-weight:bold;
+  margin-top:3px;
+}
+
+.subject-averages {
+  display:flex;
+  flex-wrap:wrap;
+  gap:18px;
+  margin-bottom:25px;
+}
+
+.average-card {
+  width:130px;
+  text-align:center;
+  font-family: Arial, sans-serif;
+  position:relative;
+}
+
+.progress-ring {
+  position:relative;
+  width:120px;
+  height:120px;
+}
+
+.progress-ring svg {
+  transform:rotate(-90deg);
+}
+
+.progress-ring circle {
+  fill:none;
+  stroke-width:10;
+  stroke-linecap:round;
+}
+
+.progress-ring .bg { stroke:#eee; }
+
+.progress-ring .progress {
+  stroke:#4CAF50;
+  transition: stroke 0.4s ease;
+}
+
+.progress-value {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-size:22px;
+  font-weight:bold;
+}
+
+.subject-name {
+  margin-top:8px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.best-subject {
+  border:3px solid gold;
+  border-radius:15px;
+  padding:5px;
+}
+
+.trend-up { color:green; font-weight:bold; }
+.trend-down { color:red; font-weight:bold; }
+
+#loadingOverlay {
+  display:flex;
+}
+
+.rank-badge{
+  position:absolute;
+  top:5px;
+  right:8px;
+  background:#6a1b9a;
+  color:white;
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+.auto-comment{
+  font-size:12px;
+  margin-top:6px;
+  opacity:0.8;
+}
+.class-title{
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #6a1b9a;
+}
 </style>
 
 </head>
@@ -2126,7 +2249,30 @@ Fast, Secure, and Reliable.</span>
       <span style="color: #e74c3c;">Rasm: Redefining Exam Management Through ICT!
 Accuracy and Efficiency in Every Click.</span>
     </h2>
+<div id="dashboardTop" style="display:flex; gap:20px; align-items:center; margin-bottom:25px;">
+  <div id="classMeanCard" class="stat-card">
+    <h4>Class Mean</h4>
+    <div class="stat-value" id="classMeanValue">0</div>
+  </div>
+  <div id="totalLearnersCard" class="stat-card">
+    <h4>Total Learners</h4>
+    <div class="stat-value" id="totalLearnersValue">0</div>
+  </div>
+</div>
 
+<div id="termComparisonContainer" class="term-comparison">
+  <h4>Term Comparison</h4>
+  <div id="termComparisonContent" style="display:flex; gap:15px;"></div>
+</div>
+
+<div id="subjectAveragesContainer" class="subject-averages"></div>
+
+<div id="loadingOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:999; align-items:center; justify-content:center; font-size:24px; font-weight:bold; color:#673AB7;">
+  Loading...
+</div>
+<h2 id="selectedClassTitle" class="class-title"></h2>
+<div id="subjectAveragesContainer" class="subject-averages"></div>
+<canvas id="subjectBarChart" height="120"></canvas>
   <!-- Marks Table -->
   <table class="marks-table" style="margin-top: 20px;">
     <thead>
@@ -3824,7 +3970,7 @@ function loadMarksFromFirebase() {
 
     populateGradeSelectors(grades);
     updateTotalsAndAverages(sums, learnersArray.length);
-
+renderSubjectAverages(sums, learnersArray.length);
     // Check if no marks found
     if (noMarksFound) {
       Swal.fire({
@@ -3982,6 +4128,7 @@ filterMarksGrade.addEventListener("change", () => {
 
   // Update totals and averages with the filtered data
   updateTotalsAndAverages(sums, filteredCount);
+renderSubjectAverages(sums, filteredCount);
 });
 
 
@@ -8496,6 +8643,279 @@ updateDashboardTime();
 
 // Update every second
 setInterval(updateDashboardTime, 1000);
+// Show loading overlay
+function showLoading(show=true){
+  document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
+}
+
+// ===============================
+// ANIMATE VALUE
+// ===============================
+function animateValue(id, target, suffix=""){
+  const el = document.getElementById(id);
+  if(!el) return;
+
+  let current = 0;
+  const increment = target / 30;
+
+  const update = () => {
+    if(current < target){
+      current += increment;
+      el.textContent = current.toFixed(2) + suffix;
+      requestAnimationFrame(update);
+    } else {
+      el.textContent = target.toFixed(2) + suffix;
+    }
+  };
+  update();
+}
+
+// ===============================
+// GRADE + COLOR + COMMENT
+// ===============================
+function getGradeDetails(avg){
+
+  if(avg >= 90) return { grade:"EE1", color:"#2E7D32", comment:"Excellent mastery" };
+  if(avg >= 75) return { grade:"EE2", color:"#4CAF50", comment:"Very good understanding" };
+  if(avg >= 58) return { grade:"ME1", color:"#FFC107", comment:"Meets expectations" };
+  if(avg >= 41) return { grade:"ME2", color:"#FF9800", comment:"Approaching expectation" };
+  if(avg >= 31) return { grade:"AE1", color:"#F44336", comment:"Basic understanding" };
+  if(avg >= 21) return { grade:"AE2", color:"#E91E63", comment:"Below expectation" };
+  if(avg >= 11) return { grade:"BE1", color:"#9C27B0", comment:"Needs improvement" };
+
+  return { grade:"BE2", color:"#673AB7", comment:"Significant support required" };
+}
+
+// ===============================
+// RENDER SUBJECT AVERAGES
+// Added selectedClass parameter
+// ===============================
+function renderSubjectAverages(sums, count, previousSums=null, selectedClass="") {
+
+  showLoading(true);
+
+  setTimeout(()=>{
+
+    const container = document.getElementById("subjectAveragesContainer");
+    container.innerHTML = "";
+
+    // ===============================
+    // DISPLAY SELECTED CLASS
+    // ===============================
+    const classTitle = document.getElementById("selectedClassTitle");
+    if(classTitle){
+      classTitle.textContent = selectedClass
+        ? "Performance Summary — " + selectedClass
+        : "";
+    }
+
+    const divisor = count>0 ? count : 1;
+
+    const subjects = {
+      English: sums.eng,
+      Math: sums.math,
+      PreTech: sums.preTech,
+      Kiswahili: sums.kiswahili,
+      Science: sums.science,
+      Social: sums.social,
+      Agriculture: sums.agriculture,
+      CRE: sums.cre,
+      CreativeArt: sums.creativeArt
+    };
+
+    // Calculate averages
+    let averages = {};
+    Object.entries(subjects).forEach(([subject,total])=>{
+      averages[subject] = total/divisor;
+    });
+
+    // ===============================
+    // CLASS MEAN WITH GRADE
+    // ===============================
+    const classMean = Object.values(averages)
+      .reduce((a,b)=>a+b,0)/Object.values(averages).length;
+
+    const meanDetails = getGradeDetails(classMean);
+
+    animateValue("classMeanValue", classMean, " " + meanDetails.grade);
+
+    const meanEl = document.getElementById("classMeanValue");
+    if(meanEl) meanEl.style.color = meanDetails.color;
+
+    // ===============================
+    // SORT FOR RANKING
+    // ===============================
+    const sortedSubjects = Object.entries(averages)
+      .sort((a,b)=>b[1]-a[1]);
+
+    sortedSubjects.forEach(([subject, avg], index)=>{
+
+      const { grade, color, comment } = getGradeDetails(avg);
+
+      const position = index+1;
+      const suffix = position===1?"st":
+                     position===2?"nd":
+                     position===3?"rd":"th";
+
+      // Trend arrow
+      let trend="";
+      if(previousSums && previousSums[subject]!==undefined){
+        const prevAvg = previousSums[subject]/divisor;
+        if(avg > prevAvg) trend='<span class="trend-up">↑</span>';
+        else if(avg < prevAvg) trend='<span class="trend-down">↓</span>';
+      }
+
+      const radius = 50;
+      const circumference = 2*Math.PI*radius;
+      const offset = circumference - (avg/100)*circumference;
+
+      const card = document.createElement("div");
+      card.className = "average-card";
+
+      card.innerHTML = `
+        <div class="rank-badge">${position}${suffix}</div>
+
+        <div class="progress-ring">
+          <svg width="120" height="120">
+            <circle class="bg" cx="60" cy="60" r="${radius}" />
+            <circle class="progress"
+              cx="60"
+              cy="60"
+              r="${radius}"
+              stroke="${color}"
+              stroke-dasharray="${circumference}"
+              stroke-dashoffset="${offset}"
+            />
+          </svg>
+
+          <div class="progress-value"
+               data-value="${avg.toFixed(2)}"
+               data-grade="${grade}"
+               style="color:${color}">
+               0
+          </div>
+        </div>
+
+        <div class="subject-name">
+          ${subject} ${trend}
+        </div>
+
+        <div class="auto-comment">${comment}</div>
+      `;
+
+      container.appendChild(card);
+    });
+
+    animateNumbers();
+
+    // Total learners
+    animateValue("totalLearnersValue", count);
+
+    // Bar chart
+    renderBarChart(averages);
+
+    showLoading(false);
+
+  },600);
+}
+
+// ===============================
+// ANIMATE CIRCLE VALUES WITH GRADE
+// ===============================
+function animateNumbers(){
+  const values = document.querySelectorAll(".progress-value");
+
+  values.forEach(el=>{
+    const target=parseFloat(el.dataset.value);
+    const grade=el.dataset.grade;
+
+    let current=0;
+    const increment=target/30;
+
+    const update=()=>{
+      if(current<target){
+        current+=increment;
+        el.textContent=current.toFixed(2)+" "+grade;
+        requestAnimationFrame(update);
+      } else {
+        el.textContent=target.toFixed(2)+" "+grade;
+      }
+    };
+    update();
+  });
+}
+
+// ===============================
+// BAR CHART (Chart.js required)
+// ===============================
+let chartInstance=null;
+
+function renderBarChart(averages){
+
+  const ctx = document.getElementById("subjectBarChart");
+  if(!ctx) return;
+
+  if(chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:Object.keys(averages),
+      datasets:[{
+        label:'Subject Average',
+        data:Object.values(averages),
+        borderWidth:1
+      }]
+    },
+    options:{
+      responsive:true,
+      scales:{
+        y:{
+          beginAtZero:true,
+          max:100
+        }
+      }
+    }
+  });
+}
+
+// ===============================
+// TERM COMPARISON
+// ===============================
+function renderTermComparison(term1Averages, term2Averages){
+
+  const container = document.getElementById("termComparisonContent");
+  container.innerHTML="";
+
+  for(const subject in term1Averages){
+
+    const t1 = term1Averages[subject];
+    const t2 = term2Averages[subject];
+    const diff = (t2-t1).toFixed(1);
+
+    const trend = diff>0
+      ? '<span class="trend-up">↑</span>'
+      : diff<0
+      ? '<span class="trend-down">↓</span>'
+      : '→';
+
+    const { grade, color } = getGradeDetails(t2);
+
+    const card=document.createElement("div");
+    card.className="term-card";
+
+    card.innerHTML=`
+      <div>${subject}</div>
+      <div style="color:${color}">
+        ${t1.toFixed(1)} → ${t2.toFixed(1)} ${trend}
+        (${grade})
+      </div>
+    `;
+
+    container.appendChild(card);
+  }
+}
+
 </script>
 
 

@@ -1305,46 +1305,6 @@ button[onclick^="show"] {
 </h3>
 <canvas id="genderChart" height="100"></canvas>
 
-<h3 style="
-  margin-top:30px;
-  background-color: #FFEB3B;   /* bright yellow */
-  color: #333;                 /* dark text for contrast */
-  padding: 10px 15px;
-  border-radius: 6px;
-  display: inline-block;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-">
-  🏆 Performance Insight
-</h3>
-<div id="topGradeBox" class="dash-card" style="margin-top:10px;background:linear-gradient(135deg,#ff9800,#f44336);">
-<h3 style="
-  background-color: #FFEB3B;   /* bright yellow */
-  color: #333;                 /* dark text for contrast */
-  padding: 10px 15px;
-  border-radius: 6px;
-  display: inline-block;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  margin-top: 20px;
-">
-  Top Performing Grade
-</h3>
-  <p id="topGrade">Loading...</p>
-</div>
-<h3 style="
-  margin-top:30px;
-  background-color: #FFEB3B;   /* bright yellow */
-  color: #333;                 /* dark text for contrast */
-  padding: 10px 15px;
-  border-radius: 6px;
-  display: inline-block;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-">
-  🏆 Top 5 Students Overall
-</h3>
-<div id="topStudentsList" class="dash-card" style="background:linear-gradient(135deg,#673ab7,#3f51b5);margin-top:10px;"></div>
-
-<h3 style="margin-top:30px;">📈 Term Comparison</h3>
-<canvas id="termChart" height="100"></canvas>
 
  <!-- ================= LEARNERS & REPORTS CONTROLS SECTION ================= -->
 <div style="display:flex; flex-direction:column; gap:20px; max-width:600px;">
@@ -2233,9 +2193,49 @@ Accuracy and Efficiency in Every Click.</span>
 <div id="loadingOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:999; align-items:center; justify-content:center; font-size:24px; font-weight:bold; color:#673AB7;">
   Loading...
 </div>
-<h2 id="selectedClassTitle" class="class-title"></h2>
+
 <div id="subjectAveragesContainer" class="subject-averages"></div>
 <canvas id="subjectBarChart" height="120"></canvas>
+<h3 style="
+  margin-top:30px;
+  background-color: #FFEB3B;   /* bright yellow */
+  color: #333;                 /* dark text for contrast */
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+">
+  🏆 Performance Insight
+</h3>
+<div id="topGradeBox" class="dash-card" style="margin-top:10px;background:linear-gradient(135deg,#ff9800,#f44336);">
+<h3 style="
+  background-color: #FFEB3B;   /* bright yellow */
+  color: #333;                 /* dark text for contrast */
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  margin-top: 20px;
+">
+  Top Performing Grade
+</h3>
+  <p id="topGrade">Loading...</p>
+</div>
+<h3 style="
+  margin-top:30px;
+  background-color: #FFEB3B;   /* bright yellow */
+  color: #333;                 /* dark text for contrast */
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+">
+  🏆 Top 5 Students Overall
+</h3>
+<div id="topStudentsList" class="dash-card" style="background:linear-gradient(135deg,#673ab7,#3f51b5);margin-top:10px;"></div>
+
+<h3 style="margin-top:30px;">📈 Term Comparison</h3>
+<canvas id="termChart" height="100"></canvas>
   <!-- Marks Table -->
   <table class="marks-table" style="margin-top: 20px;">
     <thead>
@@ -6435,115 +6435,187 @@ onValue(learnersRef, (snapshot) => {
     });
 });
 
-// Function to generate class list tables with print button
-function generateClassList(selectedGrade) {
-    onValue(learnersRef, (snapshot) => {
+async function generateClassList(selectedGrade) {
+    try {
+        const snapshot = await get(learnersRef);
+
         const boys = [];
         const girls = [];
 
         snapshot.forEach(childSnapshot => {
             const learner = childSnapshot.val();
+
             if (learner.grade === selectedGrade) {
-                if (learner.gender.toLowerCase() === "male") {
-                    boys.push(learner.name);
-                } else if (learner.gender.toLowerCase() === "female") {
-                    girls.push(learner.name);
+                const studentData = {
+                    name: learner.name || "",
+                    age: learner.age || ""
+                };
+
+                if (learner.gender?.toLowerCase() === "male") {
+                    boys.push(studentData);
+                } 
+                else if (learner.gender?.toLowerCase() === "female") {
+                    girls.push(studentData);
                 }
             }
         });
 
+        // Sort alphabetically
+        boys.sort((a, b) => a.name.localeCompare(b.name));
+        girls.sort((a, b) => a.name.localeCompare(b.name));
+
+        const logoUrl = "https://i.imgur.com/UW65hfv.png"; // Your school logo
+
         let html = `
-        <h3 style="text-align:center;">Class List - ${selectedGrade}</h3>
+        <h3 style="text-align:center; font-size: 28px; font-weight: bold; margin-bottom: 15px;">
+            <img src="${logoUrl}" alt="School Logo" style="height:80px; display:block; margin: 0 auto 10px;">
+            Class List - ${selectedGrade}
+        </h3>
+
         <button class="print-button" onclick="printClassList()">Print Class List</button>
+
         <div style="display: flex; gap: 30px; margin-top: 20px;">
+
             <div style="flex:1;">
-                <h4>Boys</h4>
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead><tr><th style="border: 1px solid black; padding: 8px;">No.</th><th style="border: 1px solid black; padding: 8px;">Name</th></tr></thead>
+                <h4 style="font-size:20px; font-weight:bold;">Boys (${boys.length})</h4>
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid black;padding:8px;">No.</th>
+                            <th style="border:1px solid black;padding:8px;">Name</th>
+                            <th style="border:1px solid black;padding:8px;">Age</th>
+                            <th style="border:1px solid black;padding:8px;">Signature</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        ${boys.map((name, index) => `<tr><td style="border: 1px solid black; padding: 8px;">${index + 1}</td><td style="border: 1px solid black; padding: 8px;">${name}</td></tr>`).join('')}
+                        ${boys.map((student, index) => `
+                            <tr>
+                                <td style="border:1px solid black;padding:8px;">${index + 1}</td>
+                                <td style="border:1px solid black;padding:8px;">${student.name}</td>
+                                <td style="border:1px solid black;padding:8px;">${student.age}</td>
+                                <td style="border:1px solid black;padding:8px;"></td>
+                            </tr>
+                        `).join("")}
                     </tbody>
                 </table>
             </div>
+
             <div style="flex:1;">
-                <h4>Girls</h4>
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead><tr><th style="border: 1px solid black; padding: 8px;">No.</th><th style="border: 1px solid black; padding: 8px;">Name</th></tr></thead>
+                <h4 style="font-size:20px; font-weight:bold;">Girls (${girls.length})</h4>
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid black;padding:8px;">No.</th>
+                            <th style="border:1px solid black;padding:8px;">Name</th>
+                            <th style="border:1px solid black;padding:8px;">Age</th>
+                            <th style="border:1px solid black;padding:8px;">Signature</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        ${girls.map((name, index) => `<tr><td style="border: 1px solid black; padding: 8px;">${index + 1}</td><td style="border: 1px solid black; padding: 8px;">${name}</td></tr>`).join('')}
+                        ${girls.map((student, index) => `
+                            <tr>
+                                <td style="border:1px solid black;padding:8px;">${index + 1}</td>
+                                <td style="border:1px solid black;padding:8px;">${student.name}</td>
+                                <td style="border:1px solid black;padding:8px;">${student.age}</td>
+                                <td style="border:1px solid black;padding:8px;"></td>
+                            </tr>
+                        `).join("")}
                     </tbody>
                 </table>
             </div>
-        </div>`;
+
+        </div>
+        `;
 
         document.getElementById("classListOutput").innerHTML = html;
-    });
-}
 
-window.printClassList = function() {
-    const content = document.getElementById("classListOutput").innerHTML;
+    } catch (error) {
+        console.error("Error fetching learners:", error);
+    }
+}
+window.printClassList = function () {
+
     const selectedGrade = document.getElementById("classListGradeSelect").value;
     const year = new Date().getFullYear();
     const today = new Date();
     const printDate = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
     const logoUrl = "https://i.imgur.com/UW65hfv.png";
 
+    const tables = document.querySelectorAll("#classListOutput table");
+
+    if (tables.length < 2) {
+        alert("No data to print.");
+        return;
+    }
+
+    const boysTable = tables[0].outerHTML;
+    const girlsTable = tables[1].outerHTML;
+
     const printWindow = window.open('', '_blank');
+
     printWindow.document.write(`
         <html>
-            <head>
-                <title>Class List - ${selectedGrade}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; margin: 20px; color: #000; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                    th, td { border: 1px solid black; padding: 8px; text-align: left; }
-                    h3, h4 { text-align: center; margin: 5px 0; }
-                    button { display: none; }
-                    .header { text-align: center; margin-bottom: 20px; }
-                    .header img { height: 80px; margin-bottom: 5px; }
-                    .header h2, .header p { margin: 2px 0; }
+        <head>
+            <title>Class List - ${selectedGrade}</title>
+            <style>
+                body { font-family: Arial; margin: 30px; }
+                table { width:100%; border-collapse:collapse; margin-top:15px; }
+                th, td { 
+    border:1px solid black; 
+    padding:8px; 
+    height:30px;
+}
 
-                    .stamp {
-                        border: 2px solid blue;
-                        color: blue;
-                        width: 250px;
-                        padding: 12px;
-                        text-align: center;
-                        margin: 40px auto 0;
-                        font-weight: bold;
-                        line-height: 1.4;
-                        font-size: 14px;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                    }
+td:last-child, th:last-child {
+    width: 180px; /* Wider space for signature */
+}
+                th { background:#f2f2f2; }
 
-                    .stamp span {
-                        display: block;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <img src="${logoUrl}" alt="School Logo">
-                    <h2>NACHU JUNIOR SCHOOL</h2>
-                    <p>PO BOX 561-00902 KIKUYU</p>
-                    <h3>Learner List</h3>
-                    <h4>${selectedGrade} - ${year}</h4>
-                </div>
+                .header { text-align:center; margin-bottom:20px; }
+                .header img { height:80px; }
 
-                ${content}
+                .page-break { page-break-after: always; }
 
-                <div class="stamp">
-                    <span>NACHU JUNIOR SCHOOL</span>
-                    <span>P.O. Box 561-00902, Kikuyu</span>
-                    <span>ICT Department</span>
-                    <span>Date: ${printDate}</span>
-                </div>
-            </body>
+                .signature-lines { margin-top:40px; }
+                .signature-lines div { margin-top:25px; }
+            </style>
+        </head>
+        <body>
+
+            <div class="header">
+                <img src="${logoUrl}">
+                <h2>NACHU JUNIOR SCHOOL</h2>
+                <h3>BOYS CLASS LIST</h3>
+                <h4>${selectedGrade} - ${year}</h4>
+            </div>
+
+            ${boysTable}
+
+            <div class="signature-lines">
+                <div>Class Teacher Signature: ____________________________</div>
+                <div>Headteacher Signature: _______________________________</div>
+            </div>
+
+            <div class="page-break"></div>
+
+            <div class="header">
+                <img src="${logoUrl}">
+                <h2>NACHU JUNIOR SCHOOL</h2>
+                <h3>GIRLS CLASS LIST</h3>
+                <h4>${selectedGrade} - ${year}</h4>
+            </div>
+
+            ${girlsTable}
+
+            <div class="signature-lines">
+                <div>Class Teacher Signature: ____________________________</div>
+                <div>Headteacher Signature: _______________________________</div>
+            </div>
+
+        </body>
         </html>
     `);
+
     printWindow.document.close();
     printWindow.print();
 };

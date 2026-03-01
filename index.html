@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nachu Junior school</title>
+    <title>Nachu Junior </title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1188,15 +1188,114 @@ button[onclick^="show"] {
   z-index: 1000;
   font-family: Arial, sans-serif;
 }
-</style>
+  .learner-btn {
+    height: 60px;              /* Increased height */
+    padding: 0 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    min-width: 200px;
+    transition: all 0.3s ease;
+  }
 
+  .learner-btn i {
+    font-size: 1.2em;
+  }
+
+  .blue-btn {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+  }
+
+  .green-btn {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    color: white;
+  }
+
+  .learner-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  }
+
+
+/* ================= DASHBOARD GRID ================= */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+/* ================= DASH CARD ================= */
+.dash-card {
+  position: relative;
+  background-image: url('https://i.imgur.com/WKwJ73A.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 12px;
+  padding: 20px;
+  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dash-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* Dark overlay */
+.dash-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  border-radius: 12px;
+}
+
+/* Card Content */
+.dash-card-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.dash-card h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dash-number {
+  font-size: 30px;
+  font-weight: bold;
+  color: #FFD700;
+  margin: 0;
+}
+
+/* Section Titles */
+.section-title {
+  margin-top: 35px;
+  font-weight: bold;
+  color: #d32f2f;
+  font-size: 18px;
+}
+</style>
 </head>
 <body>
 <!-- LOGIN SECTION -->
 <div id="loginSection" style="display: block; text-align: center; margin-top: 50px; background-image: url('https://i.imgur.com/LJG5Eca.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 40px; border-radius: 8px;">
  
   <h1 style="color: white;">RASM SCHOOL MANAGEMENT SYSTEM</h1>
-  <p style="color: red; font-weight: bold; color: white;">NACHU JUNIOR SCHOOL</p>
+  <p style="color: red; font-weight: bold; color: white;">NACHU JUNIOR </p>
 
   <form id="loginForm">
     <input type="text" id="username" placeholder="Username" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.7); border: none; border-radius: 4px;"><br><br>
@@ -1234,7 +1333,7 @@ button[onclick^="show"] {
   
   <!-- School Name -->
   <h1 style="font-size:24px; color:#673AB7; margin:0; font-weight:bold;">
-    NACHU JUNIOR SCHOOL ...PO BOX 561-00902 KIKUYU KENYA
+    NACHU JUNIOR  ...PO BOX 561-00902 KIKUYU KENYA
   </h1>
   
   <!-- Logo and Date/Time -->
@@ -1248,17 +1347,22 @@ button[onclick^="show"] {
 <div
   id="announcement"
   style="
-    padding:14px 18px;
+    padding:16px 20px;
     background-color:#f8d7da;       /* light red background */
     border:1px solid #f5c6cb;      /* red border */
     color:#721c24;                  /* dark red text */
     border-radius:8px;
     font-size:1rem;
     font-weight:600;
-    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
     display:flex;
     align-items:center;
-    gap:8px;">
+    gap:12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  "
+  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.15)';"
+  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';"
+>
   📢 <strong>Note:</strong> All new learners must be registered before entering marks.
 </div>
 
@@ -1267,48 +1371,59 @@ button[onclick^="show"] {
     📊 School Dashboard
   </h2>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-top:15px;">
+<!-- ================= DASHBOARD CARDS ================= -->
+<div class="dashboard-grid">
 
-<div class="dash-card">
-  <h3>Current Day & Time</h3>
-  <p id="currentDateTime" style="font-weight:bold; font-size:16px; color:#673AB7;">Loading...</p>
+  <div class="dash-card">
+    <div class="dash-card-content">
+      <h3>Current Day & Time</h3>
+      <p id="currentDateTime" class="dash-number" style="font-size:18px;">
+        Loading...
+      </p>
+    </div>
+  </div>
+
+  <div class="dash-card">
+    <div class="dash-card-content">
+      <h3>Total Classes</h3>
+      <p id="totalClasses" class="dash-number">0</p>
+    </div>
+  </div>
+
+  <div class="dash-card">
+    <div class="dash-card-content">
+      <h3>Total Subjects</h3>
+      <p id="totalSubjects" class="dash-number">0</p>
+    </div>
+  </div>
+
+  <div class="dash-card">
+    <div class="dash-card-content">
+      <h3>Total Students</h3>
+      <p id="totalStudents" class="dash-number">0</p>
+    </div>
+  </div>
+
 </div>
 
-<div class="dash-card">
-  <h3>Total Classes</h3>
-  <p id="totalClasses">0</p>
-</div>
 
-<div class="dash-card">
-  <h3>Total Subjects</h3>
-  <p id="totalSubjects">0</p>
-</div>
-
-<div class="dash-card">
-  <h3>Total Students</h3>
-  <p id="totalStudents">0</p>
-</div>
-</div>
- <h3 style="margin-top:25px; color:#d32f2f; font-weight:bold;">
-  Students Per Grade
-</h3>
+<!-- ================= STUDENTS PER GRADE ================= -->
+<h3 class="section-title">Students Per Grade</h3>
 <div id="gradeStats" 
-     style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px;">
+     style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-top:12px;">
 </div>
-<h3 style="margin-top:30px; color:#d32f2f; font-weight:bold;">
-  📊 Students Per Grade Chart
-</h3>
+
+
+<h3 class="section-title">📊 Students Per Grade Chart</h3>
 <canvas id="gradeChart" height="100"></canvas>
 
-<h3 style="margin-top:30px; color:#d32f2f; font-weight:bold;">
-  👦👧 Gender Distribution
-</h3>
+
+<h3 class="section-title">👦👧 Gender Distribution</h3>
 <canvas id="genderChart" height="100"></canvas>
 
 
- <!-- ================= LEARNERS & REPORTS CONTROLS SECTION ================= -->
-<div style="display:flex; flex-direction:column; gap:20px; max-width:600px;">
-
+<!-- ================= LEARNERS & REPORTS CONTROLS ================= -->
+<div style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin-top:30px;">
 <!-- ================= LEARNERS DATABASE ================= --> 
 <div style="max-width:500px; display:flex; flex-direction:column; gap:18px; align-items:center;">
 
@@ -1370,31 +1485,153 @@ button[onclick^="show"] {
 
 </div>
 </div>
+<!-- Toggle Button -->
+<div style="margin-bottom:15px; text-align:center;">
+  <button id="toggleParentLookupBtn" style="
+    padding:10px 20px;
+    background:#673AB7;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:16px;
+  ">
+    👀 Show Parent Lookup
+  </button>
+</div>
+
+<!-- Parent Lookup Modal -->
+<div id="parentLookup" style="
+      display:none;
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%, -50%) scale(0.8);
+      width:90%;
+      max-width:800px;
+      background-image: url('https://i.imgur.com/XzNrYBT.jpeg');
+      background-size: cover;
+      background-position: center;
+      color:#fff;
+      border-radius:10px;
+      padding:20px;
+      z-index:1000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      opacity:0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+">
+
+  <!-- Overlay for readability -->
+  <div style="
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background: rgba(0,0,0,0.5);
+        border-radius:10px;
+        z-index:0;
+  "></div>
+
+  <!-- Content -->
+  <div style="position:relative; z-index:1;">
+    <span id="closeParentLookupBtn" style="
+          float:right;
+          cursor:pointer;
+          font-size:22px;
+          font-weight:bold;
+        ">✖</span>
+
+    <h3 style="
+    margin-top:0; 
+    background-color:red; 
+    color:white; 
+    padding:8px 12px; 
+    border-radius:6px;
+    text-align:center;
+">
+  Class Teacher & Parent: View Learner Results slips here
+</h3>
+
+    <!-- Selection Row -->
+    <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:flex-end; margin-bottom:15px;">
+      <div style="flex:1; min-width:150px;">
+        <label for="parentGradeSelect"><strong>Grade</strong></label>
+        <select id="parentGradeSelect" style="width:100%; padding:6px; border-radius:4px; border:1px solid #ccc; color:#000;">
+          <option value="">Select Grade</option>
+        </select>
+      </div>
+      <div style="flex:2; min-width:200px;">
+        <label for="parentLearnerSelect"><strong>Learner</strong></label>
+        <select id="parentLearnerSelect" style="width:100%; padding:6px; border-radius:4px; border:1px solid #ccc; color:#000;">
+          <option value="">Select Learner</option>
+        </select>
+      </div>
+      <div style="flex:2; min-width:200px;">
+        <label for="parentExamPeriodSelect"><strong>Select Exam Period</strong></label>
+        <select id="parentExamPeriodSelect" style="width:100%; padding:6px; margin:6px 0; background-color:#fff8c6; border:1px solid #ccc; border-radius:4px; font-size:1rem; color:#000;">
+          <option value="">-- Select Period --</option>
+        </select>
+      </div>
+      <div>
+        <button id="fetchParentResults" style="padding:8px 16px; background:#28a745; color:#fff; border:none; border-radius:4px; cursor:pointer;">
+          ✅ Fetch Results
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Results Popup -->
+  <div id="parentResultsPopup" style="
+        display:none;
+        position:fixed;
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%);
+        background:#fff;
+        border-radius:8px;
+        box-shadow:0 4px 20px rgba(0,0,0,0.3);
+        width:90%;
+        max-width:700px;
+        z-index:1000;
+        padding:20px;
+        overflow:auto;
+        max-height:90%;
+        font-family: Arial, sans-serif;
+      ">
+    <span id="closeResultsPopup" style="float:right; cursor:pointer; font-size:20px; font-weight:bold; color:#333;">✖</span>
+    <div id="parentResultsContent"></div>
+    <div style="text-align:center; margin-top:15px;">
+      <button id="printReportBtn" style="padding:8px 16px; background:#007bff; color:#fff; border:none; border-radius:4px; cursor:pointer;">🖨 Print Report</button>
+    </div>
+  </div>
+</div>
 
 
+<!-- ================= EXAM & MARKS CONTROLS ================= -->
+<div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
 
+  <!-- Master Reports Button -->
+  <button
+    type="button"
+    id="masterReportsBtn"
+    style="
+      background-color:#9C27B0;
+      color:white;
+      height:48px;
+      padding:0 18px;
+      border:none;
+      border-radius:6px;
+      font-size:1rem;
+      display:inline-flex;
+      align-items:center;
+      white-space:nowrap;
+      cursor:pointer;">
+    <i class="fas fa-chart-bar" style="margin-right:8px;"></i>
+    <span class="btn-label">Exam & Marks Controls</span>
+  </button>
 
-  <!-- ================= EXAM & MARKS CONTROLS ================= -->
-  <div style="display:flex; flex-direction:column; gap:10px;">
-
-    <!-- Master Reports Button -->
-    <button
-      type="button"
-      id="masterReportsBtn"
-      style="
-        background-color:#9C27B0;
-        color:white;
-        height:48px;
-        padding:0 20px;
-        border:none;
-        border-radius:6px;
-        font-size:1rem;
-        display:inline-flex;
-        align-items:center;
-        cursor:pointer;">
-      <i class="fas fa-chart-bar" style="margin-right:8px;"></i>
-      <span class="btn-label">Exam & Marks Controls</span>
-    </button>
+</div>
 
     <!-- Reports Sub Controls -->
     <div
@@ -1920,7 +2157,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
 
 <!-- Action Box for Marks Display -->
 <div id="marksSection" style="display: none; margin-top: 20px;">
-  <div class="action-box" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-image: url('https://i.imgur.com/ywYQdxE.jpeg'); background-size: cover; background-position: center; border-radius: 8px; color: white;">
+  <div class="action-box" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-color: #3498db; border-radius: 8px; color: white;">
     <h2 style="background-color: rgba(255, 255, 255, 0.7); padding: 8px 16px; border-radius: 6px; display: inline-block; color: #2c3e50;">
       <span style="color: #e74c3c;">Power Up Your Exams with Rasm!
 Fast, Secure, and Reliable.</span>
@@ -2183,12 +2420,10 @@ Accuracy and Efficiency in Every Click.</span>
   </div>
 </div>
 
-<div id="termComparisonContainer" class="term-comparison">
-  <h4>Term Comparison</h4>
-  <div id="termComparisonContent" style="display:flex; gap:15px;"></div>
+<div class="dashboard-card">
+<h3 style="color: red; font-weight: bold; font-size: 1.5em;">📊 Grade Termly Live Performance </h3>
+  <div id="gradePerformanceList" class="grade-performance"></div>
 </div>
-
-
 
 <div id="loadingOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:999; align-items:center; justify-content:center; font-size:24px; font-weight:bold; color:#673AB7;">
   Loading...
@@ -2196,17 +2431,7 @@ Accuracy and Efficiency in Every Click.</span>
 
 <div id="subjectAveragesContainer" class="subject-averages"></div>
 <canvas id="subjectBarChart" height="120"></canvas>
-<h3 style="
-  margin-top:30px;
-  background-color: #FFEB3B;   /* bright yellow */
-  color: #333;                 /* dark text for contrast */
-  padding: 10px 15px;
-  border-radius: 6px;
-  display: inline-block;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-">
-  🏆 Performance Insight
-</h3>
+
 <div id="topGradeBox" class="dash-card" style="margin-top:10px;background:linear-gradient(135deg,#ff9800,#f44336);">
 <h3 style="
   background-color: #FFEB3B;   /* bright yellow */
@@ -2234,35 +2459,36 @@ Accuracy and Efficiency in Every Click.</span>
 </h3>
 <div id="topStudentsList" class="dash-card" style="background:linear-gradient(135deg,#673ab7,#3f51b5);margin-top:10px;"></div>
 
-<h3 style="margin-top:30px;">📈 Term Comparison</h3>
-<canvas id="termChart" height="100"></canvas>
-  <!-- Marks Table -->
-  <table class="marks-table" style="margin-top: 20px;">
-    <thead>
-      <tr>
-        <th>No.</th>
-        <th>Name</th>
-        <th>Grade</th>
-        <th>Eng</th><th>Lev</th>
-        <th>Math</th><th>Lev</th>
-        <th>Pre-Tech</th><th>Lev</th>
-        <th>Kiswa</th><th>Lev</th>
-        <th>Scie</th><th>Lev</th>
-        <th>Sst</th><th>Lev</th>
-        <th>Agric</th><th>Lev</th>
-        <th>Cre</th><th>Lev</th>
-        <th>C/A</th><th>Lev</th>
-        <th>Total Marks</th>
-         <th>Points</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="marksList"></tbody>
-    <tfoot>
-      <tr id="totalsRow"></tr>
-      <tr id="averagesRow"></tr>
-    </tfoot>
-  </table>
+  <!-- Marks Table Title -->
+<h3 style="color: red; font-weight: bold; margin-top: 20px;">MERIT LIST</h3>
+
+<!-- Marks Table -->
+<table class="marks-table" style="margin-top: 10px;">
+  <thead>
+    <tr>
+      <th>No.</th>
+      <th>Name</th>
+      <th>Grade</th>
+      <th>Eng</th><th>Lev</th>
+      <th>Math</th><th>Lev</th>
+      <th>Pre-Tech</th><th>Lev</th>
+      <th>Kiswa</th><th>Lev</th>
+      <th>Scie</th><th>Lev</th>
+      <th>Sst</th><th>Lev</th>
+      <th>Agric</th><th>Lev</th>
+      <th>Cre</th><th>Lev</th>
+      <th>C/A</th><th>Lev</th>
+      <th>Total Marks</th>
+      <th>Points</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="marksList"></tbody>
+  <tfoot>
+    <tr id="totalsRow"></tr>
+    <tr id="averagesRow"></tr>
+  </tfoot>
+</table>
 </div>
 
 
@@ -2881,10 +3107,11 @@ function updateDashboard() {
   });
 
   // ================= TOP PERFORMING GRADE =================
-  calculateTopGrade();
+calculateTopGrade();
 calculateTopStudents();
 generateInsight();
 generateTermComparison();
+generateGradePerformance();
 }
 let filteredLearners = [];
 let currentIndex = 0;
@@ -2925,6 +3152,8 @@ function animateCounter(id, target) {
     }
   }, 20);
 }
+
+
 function generateTermComparison() {
 
   const termTotals = {};
@@ -2969,97 +3198,239 @@ function generateTermComparison() {
   });
 }
 function calculateTopStudents() {
+  const selectedExam = document.getElementById("marksExamPeriodSelect")?.value;
+  const container = document.getElementById("topStudentsList");
+  if (!container) return;
+
+  if (!selectedExam) {
+    container.innerHTML = "<em>Select Exam Period</em>";
+    return;
+  }
+
+  const performanceLevels = [
+    { level: "EE1", desc: "Exceeds Expectations 1 (Top)", min: 810, max: 900 },
+    { level: "EE2", desc: "Exceeds Expectations 2", min: 720, max: 809 },
+    { level: "ME1", desc: "Meets Expectations 3", min: 630, max: 719 },
+    { level: "ME2", desc: "Meets Expectations 1", min: 540, max: 629 },
+    { level: "AE1", desc: "Approaching Expectations 2", min: 450, max: 539 },
+    { level: "AE2", desc: "Approaching Expectations 1", min: 360, max: 449 },
+    { level: "BE1", desc: "Below Expectations 2", min: 270, max: 359 },
+    { level: "BE2", desc: "Below Expectations 0", min: 0, max: 269 },
+  ];
 
   const studentTotals = [];
 
   allLearners.forEach(l => {
-    if (!l.marks) return;
+    if (!l.marks || !l.marks[selectedExam]) return;
 
-    let grandTotal = 0;
-    let count = 0;
+    const exam = l.marks[selectedExam];
+    const total =
+      (parseFloat(exam.eng) || 0) +
+      (parseFloat(exam.math) || 0) +
+      (parseFloat(exam.preTech) || 0) +
+      (parseFloat(exam.kiswahili) || 0) +
+      (parseFloat(exam.science) || 0) +
+      (parseFloat(exam.social) || 0) +
+      (parseFloat(exam.agriculture) || 0) +
+      (parseFloat(exam.cre) || 0) +
+      (parseFloat(exam.creativeArt) || 0);
 
-    Object.values(l.marks).forEach(exam => {
+    const perf = performanceLevels.find(p => total >= p.min && total <= p.max);
 
-      const total =
-        (parseFloat(exam.eng) || 0) +
-        (parseFloat(exam.math) || 0) +
-        (parseFloat(exam.preTech) || 0) +
-        (parseFloat(exam.kiswahili) || 0) +
-        (parseFloat(exam.science) || 0) +
-        (parseFloat(exam.social) || 0) +
-        (parseFloat(exam.agriculture) || 0) +
-        (parseFloat(exam.cre) || 0) +
-        (parseFloat(exam.creativeArt) || 0);
-
-      grandTotal += total;
-      count++;
+    studentTotals.push({
+      name: l.name,
+      grade: l.grade,
+      total: total,
+      level: perf ? perf.level : "-",
+      description: perf ? perf.desc : "-"
     });
-
-    if (count > 0) {
-      studentTotals.push({
-        name: l.name,
-        grade: l.grade,
-        average: grandTotal / count
-      });
-    }
   });
 
-  studentTotals.sort((a, b) => b.average - a.average);
-
+  studentTotals.sort((a, b) => b.total - a.total);
   const top5 = studentTotals.slice(0, 5);
 
-  const container = document.getElementById("topStudentsList");
-  if (!container) return;
+  if (!top5.length) {
+    container.innerHTML = "<em>No Exam Data</em>";
+    return;
+  }
 
-  container.innerHTML = top5.length
-    ? top5.map((s, i) =>
-        `${i + 1}. ${s.name} (${s.grade}) - ${s.average.toFixed(1)}`
-      ).join("<br>")
-    : "No Exam Data Available";
+  const maxTotal = top5[0].total;
+
+  container.innerHTML = top5.map((s, index) => {
+    let badgeColor = "#bbb";
+    if (index === 0) badgeColor = "#FFD700"; // Gold
+    else if (index === 1) badgeColor = "#C0C0C0"; // Silver
+    else if (index === 2) badgeColor = "#CD7F32"; // Bronze
+
+    const progressWidth = ((s.total / maxTotal) * 100).toFixed(1);
+
+    return `
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:10px 15px;
+        margin-bottom:8px;
+        border-radius:8px;
+        background-color: ${index % 2 === 0 ? "#f9f9f9" : "#f0f4f8"};
+        color: #333;
+        box-shadow:0 1px 3px rgba(0,0,0,0.05);
+      ">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="
+            width:24px;
+            height:24px;
+            border-radius:50%;
+            background-color:${badgeColor};
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:bold;
+            color:#fff;
+          ">${index + 1}</div>
+          <div>
+            <strong>${s.name}</strong> (${s.grade}) - ${s.total}<br>
+            <small style="color:#555;">${s.level} - ${s.description}</small>
+          </div>
+        </div>
+        <div style="
+          flex:1;
+          height:10px;
+          background:#e0e0e0;
+          border-radius:5px;
+          margin-left:15px;
+          margin-right:10px;
+        ">
+          <div style="
+            width:${progressWidth}%;
+            height:100%;
+            background:${badgeColor};
+            border-radius:5px;
+          "></div>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 function calculateTopGrade() {
+  const selectedExam = document.getElementById("marksExamPeriodSelect")?.value;
+  const container = document.getElementById("topGrade");
+  if (!container) return;
+
+  if (!selectedExam) {
+    container.innerHTML = "<em>Select Exam Period</em>";
+    return;
+  }
+
+  const performanceLevels = [
+    { level: "EE1", desc: "Exceeds Expectations 1 (Top)", min: 810, max: 900 },
+    { level: "EE2", desc: "Exceeds Expectations 2", min: 720, max: 809 },
+    { level: "ME1", desc: "Meets Expectations 3", min: 630, max: 719 },
+    { level: "ME2", desc: "Meets Expectations 1", min: 540, max: 629 },
+    { level: "AE1", desc: "Approaching Expectations 2", min: 450, max: 539 },
+    { level: "AE2", desc: "Approaching Expectations 1", min: 360, max: 449 },
+    { level: "BE1", desc: "Below Expectations 2", min: 270, max: 359 },
+    { level: "BE2", desc: "Below Expectations 0", min: 0, max: 269 },
+  ];
 
   const gradeTotals = {};
   const gradeCounts = {};
 
   allLearners.forEach(l => {
-    if (!l.marks) return;
+    if (!l.marks || !l.marks[selectedExam]) return;
+    const exam = l.marks[selectedExam];
+    const total =
+      (parseFloat(exam.eng) || 0) +
+      (parseFloat(exam.math) || 0) +
+      (parseFloat(exam.preTech) || 0) +
+      (parseFloat(exam.kiswahili) || 0) +
+      (parseFloat(exam.science) || 0) +
+      (parseFloat(exam.social) || 0) +
+      (parseFloat(exam.agriculture) || 0) +
+      (parseFloat(exam.cre) || 0) +
+      (parseFloat(exam.creativeArt) || 0);
 
-    Object.values(l.marks).forEach(exam => {
-
-      const total =
-        (parseFloat(exam.eng) || 0) +
-        (parseFloat(exam.math) || 0) +
-        (parseFloat(exam.preTech) || 0) +
-        (parseFloat(exam.kiswahili) || 0) +
-        (parseFloat(exam.science) || 0) +
-        (parseFloat(exam.social) || 0) +
-        (parseFloat(exam.agriculture) || 0) +
-        (parseFloat(exam.cre) || 0) +
-        (parseFloat(exam.creativeArt) || 0);
-
-      const grade = l.grade;
-
-      gradeTotals[grade] = (gradeTotals[grade] || 0) + total;
-      gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
-    });
+    const grade = l.grade;
+    gradeTotals[grade] = (gradeTotals[grade] || 0) + total;
+    gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
   });
 
-  let topGrade = "No Data";
-  let highestAvg = 0;
-
-  Object.keys(gradeTotals).forEach(g => {
+  const gradeAverages = Object.keys(gradeTotals).map(g => {
     const avg = gradeTotals[g] / gradeCounts[g];
-    if (avg > highestAvg) {
-      highestAvg = avg;
-      topGrade = g;
-    }
+    const perf = performanceLevels.find(p => avg >= p.min && avg <= p.max);
+
+    return {
+      grade: g,
+      average: avg,
+      level: perf ? perf.level : "-",
+      description: perf ? perf.desc : "-"
+    };
   });
 
-  document.getElementById("topGrade").innerText =
-    highestAvg > 0
-      ? `${topGrade} (${highestAvg.toFixed(1)} Avg)`
-      : "No Exam Data";
+  gradeAverages.sort((a, b) => b.average - a.average);
+
+  if (!gradeAverages.length) {
+    container.innerHTML = "<em>No Exam Data</em>";
+    return;
+  }
+
+  const maxAvg = gradeAverages[0].average;
+
+  container.innerHTML = gradeAverages.map((g, index) => {
+    let badgeColor = "#bbb";
+    if (index === 0) badgeColor = "#FFD700"; // Gold
+    else if (index === 1) badgeColor = "#C0C0C0"; // Silver
+    else if (index === 2) badgeColor = "#CD7F32"; // Bronze
+
+    const progressWidth = ((g.average / maxAvg) * 100).toFixed(1);
+
+    return `
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:10px 15px;
+        margin-bottom:8px;
+        border-radius:8px;
+        background-color: ${index % 2 === 0 ? "#f9f9f9" : "#f0f4f8"};
+        color: #333;
+        box-shadow:0 1px 3px rgba(0,0,0,0.05);
+      ">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="
+            width:24px;
+            height:24px;
+            border-radius:50%;
+            background-color:${badgeColor};
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:bold;
+            color:#fff;
+          ">${index + 1}</div>
+          <div>
+            <strong>${g.grade}</strong> - ${g.average.toFixed(1)} Avg<br>
+            <small style="color:#555;">${g.level} - ${g.description}</small>
+          </div>
+        </div>
+        <div style="
+          flex:1;
+          height:10px;
+          background:#e0e0e0;
+          border-radius:5px;
+          margin-left:15px;
+          margin-right:10px;
+        ">
+          <div style="
+            width:${progressWidth}%;
+            height:100%;
+            background:${badgeColor};
+            border-radius:5px;
+          "></div>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 function hideLoadingSpinner() {
   if (!spinnerContainer) return;
@@ -3298,7 +3669,14 @@ if (searchInput) {
 // ================= INIT =================
 loadLearners();
 
+// ================= DASHBOARD EXAM FILTER LISTENER =================
+const dashboardExamSelect = document.getElementById("marksExamPeriodSelect");
 
+if (dashboardExamSelect) {
+  dashboardExamSelect.addEventListener("change", () => {
+    updateDashboard();
+  });
+}
 printButton.addEventListener('click', () => {
     const schoolName = "NACHU JUNIOR SCHOOL ";
     const year = "202...";
@@ -8999,6 +9377,236 @@ function renderTermComparison(term1Averages, term2Averages){
           closeTeacherModal();
       }
   });
+// ================= DOM References =================
+const parentGradeSelect = document.getElementById("parentGradeSelect");
+const parentLearnerSelect = document.getElementById("parentLearnerSelect");
+const parentExamSelect = document.getElementById("parentExamPeriodSelect");
+const resultsPopup = document.getElementById("parentResultsPopup");
+const resultsContent = document.getElementById("parentResultsContent");
+const closePopupBtn = document.getElementById("closeResultsPopup");
+const printReportBtn = document.getElementById("printReportBtn");
+
+// ================= Populate Grades =================
+onValue(learnersRef, snapshot => {
+  const grades = new Set();
+  snapshot.forEach(child => {
+    const data = child.val();
+    if (data.grade) grades.add(data.grade);
+  });
+  parentGradeSelect.innerHTML = `<option value="">Select Grade</option>`;
+  grades.forEach(g => {
+    const opt = document.createElement("option");
+    opt.value = g;
+    opt.textContent = g;
+    parentGradeSelect.appendChild(opt);
+  });
+});
+
+// ================= Update Learners Dropdown =================
+parentGradeSelect.addEventListener("change", () => {
+  const selectedGrade = parentGradeSelect.value;
+  parentLearnerSelect.innerHTML = `<option value="">Select Learner</option>`;
+  if (!selectedGrade) return;
+
+  onValue(learnersRef, snapshot => {
+    snapshot.forEach(child => {
+      const data = child.val();
+      if (data.grade === selectedGrade) {
+        const opt = document.createElement("option");
+        opt.value = child.key;
+        opt.textContent = `${data.name} (${data.admissionNo || ""})`;
+        parentLearnerSelect.appendChild(opt);
+      }
+    });
+  });
+});
+
+// ================= Populate Exam Periods =================
+function populateExamPeriods() {
+  const startYear = 2024, endYear = 2040;
+  const terms = ["Term 1", "Term 2", "Term 3"];
+  const exams = ["Opener Exam", "Midterm Exam", "End Term Exam"];
+  parentExamSelect.innerHTML = `<option value="">-- Select Period --</option>`;
+  for (let year = startYear; year <= endYear; year++) {
+    for (let term of terms) {
+      for (let exam of exams) {
+        const valueText = `${year}, ${term}, ${exam}`;
+        const option = document.createElement("option");
+        option.value = valueText;
+        option.textContent = valueText;
+        parentExamSelect.appendChild(option);
+      }
+    }
+  }
+}
+populateExamPeriods();
+
+// ================= Fetch and Display Results =================
+document.getElementById("fetchParentResults").addEventListener("click", () => {
+  const learnerKey = parentLearnerSelect.value;
+  const examPeriod = parentExamSelect.value;
+
+  if (!learnerKey || !examPeriod) {
+    Swal.fire({
+      icon: "warning",
+      title: "Missing Selection",
+      text: "Please select both learner and exam period",
+      confirmButtonColor: "#d33"
+    });
+    return;
+  }
+
+  onValue(learnersRef, snapshot => {
+    const allLearners = [];
+    snapshot.forEach(child => {
+      const data = child.val();
+      const marks = data.marks?.[examPeriod];
+      if (marks) {
+        let total = 0;
+        Object.keys(marks).forEach(s => {
+          if (s.endsWith("Lev")) total += parseFloat(marks[s]) || 0;
+        });
+        allLearners.push({ key: child.key, total });
+      }
+    });
+
+    allLearners.sort((a,b) => b.total - a.total);
+    const position = allLearners.findIndex(l => l.key === learnerKey) + 1;
+
+    onValue(ref(database, `learners/${learnerKey}/marks/${examPeriod}`), snap => {
+      if (!snap.exists()) {
+        Swal.fire({
+          icon: "info",
+          title: "No Results",
+          text: `No results found for ${examPeriod}`,
+          confirmButtonColor: "#d33"
+        });
+        return;
+      }
+
+      const marks = snap.val();
+      let totalMarks = 0, totalPoints = 0;
+      let tableRows = "";
+
+      Object.keys(marks).forEach(subject => {
+        if (!subject.endsWith("Lev")) {
+          const mark = marks[subject] || 0;
+          const level = parseFloat(marks[subject + "Lev"]) || 0;
+          totalMarks += parseFloat(mark);
+          totalPoints += level;
+          tableRows += `<tr>
+                          <td style="padding:6px; border:1px solid #ccc;">${subject.toUpperCase()}</td>
+                          <td style="padding:6px; border:1px solid #ccc;">${mark}</td>
+                          <td style="padding:6px; border:1px solid #ccc;">${level}</td>
+                        </tr>`;
+        }
+      });
+
+      const learnerName = parentLearnerSelect.options[parentLearnerSelect.selectedIndex].text;
+      const subjectCount = Object.keys(marks).filter(s => !s.endsWith("Lev")).length;
+
+      // Display results with logos
+      resultsContent.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <img src="https://i.imgur.com/91hfOYL.png" alt="Government Logo" style="height:60px;">
+          <div style="text-align:center;">
+            <h2 style="margin:0;">Nachu Junior School</h2>
+            <h4 style="margin:2px 0; font-weight:normal;">${examPeriod}</h4>
+            <h3 style="margin:5px 0;">${learnerName}</h3>
+          </div>
+          <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="height:60px;">
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold;">
+          <div>Position: ${position}</div>
+          <div>Total Marks: ${totalMarks}</div>
+          <div>Total Points: ${totalPoints}</div>
+        </div>
+
+        <table style="border-collapse:collapse; width:100%; margin-bottom:15px;">
+          <thead>
+            <tr style="background:#f0f0f0;">
+              <th style="padding:8px; border:1px solid #ccc;">Subject</th>
+              <th style="padding:8px; border:1px solid #ccc;">Mark</th>
+              <th style="padding:8px; border:1px solid #ccc;">Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+            <tr style="font-weight:bold; background:#f9f9f9;">
+              <td>Total / Average</td>
+              <td>${totalMarks}</td>
+              <td>${totalPoints}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="text-align:center; margin-top:20px; font-size:12px; color:#555;">
+          Generated by Nachu Junior School Academic Portal
+        </div>
+      `;
+
+      resultsPopup.style.display = "block";
+    });
+  });
+});
+
+// ================= Close Popup =================
+closePopupBtn.addEventListener("click", () => resultsPopup.style.display = "none");
+window.addEventListener("click", e => {
+  if (e.target === resultsPopup) resultsPopup.style.display = "none";
+});
+
+// ================= Print Report Button =================
+printReportBtn.addEventListener("click", () => {
+  const printWindow = window.open("", "PRINT", "height=800,width=900");
+  printWindow.document.write(`<html><head><title>Report Card</title>`);
+  printWindow.document.write(`<style>
+    body { font-family: Arial, sans-serif; padding:20px; }
+    table { border-collapse: collapse; width:100%; }
+    th, td { padding:8px; border:1px solid #ccc; text-align:left; }
+    th { background:#f0f0f0; }
+    </style>`);
+  printWindow.document.write(`</head><body>`);
+  printWindow.document.write(resultsContent.innerHTML);
+  printWindow.document.write(`</body></html>`);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("toggleParentLookupBtn");
+  const parentModal = document.getElementById("parentLookup");
+  const closeBtn = document.getElementById("closeParentLookupBtn");
+
+  function openModal() {
+    parentModal.style.display = "block";
+    setTimeout(() => {
+      parentModal.style.opacity = "1";
+      parentModal.style.transform = "translate(-50%, -50%) scale(1)";
+    }, 10); // slight delay to trigger transition
+  }
+
+  function closeModal() {
+    parentModal.style.opacity = "0";
+    parentModal.style.transform = "translate(-50%, -50%) scale(0.8)";
+    setTimeout(() => {
+      parentModal.style.display = "none";
+    }, 300); // match transition duration
+  }
+
+  toggleBtn.addEventListener("click", openModal);
+  closeBtn.addEventListener("click", closeModal);
+
+  // Close modal if user clicks outside content
+  window.addEventListener("click", (e) => {
+    if (e.target === parentModal) {
+      closeModal();
+    }
+  });
+});
+
 </script>
   
 

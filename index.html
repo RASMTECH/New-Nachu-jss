@@ -7460,46 +7460,154 @@ setupToggle(
   'Exam & Marks Controls',
   'Hide Exam & Marks Controls'
 );
-// Default login values
-let validUsername = "Nachu";
-let validPassword = "1";
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("toggleParentLookupBtn");
+  const parentModal = document.getElementById("parentLookup"); // modal div
+  const closeBtn = document.getElementById("closeParentLookupBtn");
+  const fetchResultsBtn = document.getElementById("fetchParentResults");
 
-document.getElementById("loginForm").addEventListener("submit", function (e) {
-  e.preventDefault();
+  // --- Tooltip for Fetch Results button ---
+  const fetchTooltip = document.createElement("span");
+  fetchTooltip.textContent = "Click here after selecting your child to view results.";
+  fetchTooltip.style.cssText = `
+    visibility: hidden;
+    width: 220px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 13px;
+  `;
+  fetchResultsBtn.style.position = "relative";
+  fetchResultsBtn.appendChild(fetchTooltip);
 
-  const user = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value.trim();
+  fetchResultsBtn.addEventListener("mouseenter", () => {
+    fetchTooltip.style.visibility = "visible";
+    fetchTooltip.style.opacity = "1";
+  });
 
-  if (user === validUsername && pass === validPassword) {
-    document.getElementById("loginSection").style.display = "none";
-    document.getElementById("mainContent").style.display = "block";
-    
-    // ✅ Clear the error if shown
-    document.getElementById("loginError").style.display = "none";
+  fetchResultsBtn.addEventListener("mouseleave", () => {
+    fetchTooltip.style.opacity = "0";
+    setTimeout(() => {
+      fetchTooltip.style.visibility = "hidden";
+    }, 300);
+  });
 
-    // ✅ Success message
-    if (typeof Swal !== "undefined") {
-      Swal.fire({
-        title: "Login Successful",
-        text: "Welcome, Nachu!",
-        icon: "success",
-        confirmButtonText: "Continue"
-      }).then(() => {
-        // 🎄 Holiday popup after user clicks "Continue"
-        Swal.fire({
-          title: "🎉 We appreciate you using RASM School Management System – Managing Schools, Empowering Minds!",
-          text: " Where Education Meets Innovation.!",
-          icon: "info",
-          background: "#fffbe6",
-          color: "#333",
-          confirmButtonText: "Thank You!",
-          confirmButtonColor: "#3085d6"
-        });
-      });
-    }
-  } else {
-    document.getElementById("loginError").style.display = "block";
+  // --- Open modal with animation ---
+  function openModal() {
+    parentModal.style.display = "block";
+    setTimeout(() => {
+      parentModal.style.opacity = "1";
+      parentModal.style.transform = "translate(-50%, -50%) scale(1)";
+    }, 10);
+    fetchResultsBtn.style.display = "inline-block";
+    toggleBtn.textContent = "👁 Parent Lookup Visible";
   }
+
+  // --- Close modal with animation ---
+  function closeModal() {
+    parentModal.style.opacity = "0";
+    parentModal.style.transform = "translate(-50%, -50%) scale(0.8)";
+    setTimeout(() => {
+      parentModal.style.display = "none";
+    }, 200);
+    fetchResultsBtn.style.display = "none";
+    toggleBtn.textContent = "👀 Show Parent Lookup";
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    if (parentModal.style.display === "block") {
+      closeModal();
+    } else {
+      openModal();
+    }
+  });
+
+  closeBtn.addEventListener("click", closeModal);
+
+  // --- User database ---
+  const users = [
+    { username: "Nachu", password: "1", role: "parent" },
+    { username: "Teacher1", password: "123", role: "teacher" },
+    { username: "Admin1", password: "admin", role: "admin" }
+  ];
+
+  // --- Login form logic ---
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const userInput = document.getElementById("username").value.trim();
+    const passInput = document.getElementById("password").value.trim();
+
+    const currentUser = users.find(u => u.username === userInput && u.password === passInput);
+
+    if (currentUser) {
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("mainContent").style.display = "block";
+
+      const allButtons = document.querySelectorAll("#mainContent button");
+
+      allButtons.forEach(btn => {
+        if (currentUser.role === "parent") {
+          if (btn.id === "toggleParentLookupBtn" || btn.id === "fetchParentResults") {
+            btn.style.display = "inline-block";
+          } else {
+            btn.style.display = "none";
+          }
+        } else {
+          btn.style.display = "inline-block";
+        }
+      });
+
+      // Automatically open modal for parent
+      if (currentUser.role === "parent") {
+        openModal();
+
+        // ✅ Single popup for parent: combines login success + guidance
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            title: `Welcome, ${currentUser.username}!`,
+            html: `
+              <p>🎉 Login Successful!</p>
+              <p>Here's how to fetch your child's results:</p>
+              <ol style="text-align:left;">
+                <li>Use the <strong>Parent Lookup</strong> modal to find your child's record.</li>
+                <li>Once you see the correct student, click <strong>✅ Fetch Results</strong>.</li>
+                <li>The results will appear below the lookup section.</li>
+              </ol>
+            `,
+            icon: "success",
+            confirmButtonText: "Got it!",
+            background: "#fffbe6",
+            color: "#333",
+            confirmButtonColor: "#3085d6"
+          });
+        }
+      } else {
+        // Teacher/Admin sees normal welcome popup
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            title: "Login Successful",
+            text: `Welcome, ${currentUser.username}!`,
+            icon: "success",
+            confirmButtonText: "Continue"
+          });
+        }
+      }
+
+      document.getElementById("loginError").style.display = "none";
+    } else {
+      document.getElementById("loginError").style.display = "block";
+    }
+  });
 });
 document.getElementById("printFilteredMarksBtn").addEventListener("click", () => {
   const visibleRows = Array.from(document.querySelectorAll("#marksList tr"))
@@ -9575,37 +9683,7 @@ printReportBtn.addEventListener("click", () => {
   printWindow.print();
   printWindow.close();
 });
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("toggleParentLookupBtn");
-  const parentModal = document.getElementById("parentLookup");
-  const closeBtn = document.getElementById("closeParentLookupBtn");
 
-  function openModal() {
-    parentModal.style.display = "block";
-    setTimeout(() => {
-      parentModal.style.opacity = "1";
-      parentModal.style.transform = "translate(-50%, -50%) scale(1)";
-    }, 10); // slight delay to trigger transition
-  }
-
-  function closeModal() {
-    parentModal.style.opacity = "0";
-    parentModal.style.transform = "translate(-50%, -50%) scale(0.8)";
-    setTimeout(() => {
-      parentModal.style.display = "none";
-    }, 300); // match transition duration
-  }
-
-  toggleBtn.addEventListener("click", openModal);
-  closeBtn.addEventListener("click", closeModal);
-
-  // Close modal if user clicks outside content
-  window.addEventListener("click", (e) => {
-    if (e.target === parentModal) {
-      closeModal();
-    }
-  });
-});
 
 </script>
   

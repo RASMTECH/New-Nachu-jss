@@ -7047,90 +7047,122 @@ document.getElementById("generateClassListBtn").addEventListener("click", () => 
 
   generateClassList(selectedGrade);
 });
-
 document.getElementById("generateParentsListBtn").addEventListener("click", () => {
-    const selectedGrade = document.getElementById("filterGrade").value;
-    if (!selectedGrade) {
-        showToast("Please select a grade from the dropdown to generate the parents list.", "error");
-        return;
-    }
 
+  // 1️⃣ Collect all grades dynamically from the table
+  const grades = new Set();
+  document.querySelectorAll("#learnersList tr").forEach(row => {
+    const grade = row.cells[5]?.textContent.trim();
+    if (grade) grades.add(grade);
+  });
 
+  if (grades.size === 0) {
+    showToast("No grades found in the learners list.", "error");
+    return;
+  }
+
+  const gradeOptions = {};
+  [...grades].sort().forEach(g => gradeOptions[g] = g);
+
+  // 2️⃣ Ask user to select grade via SweetAlert
+  Swal.fire({
+    title: "Select Grade",
+    input: "select",
+    inputOptions: gradeOptions,
+    inputPlaceholder: "Choose a grade",
+    showCancelButton: true
+  }).then(result => {
+
+    if (!result.isConfirmed) return;
+
+    const selectedGrade = result.value;
     const currentYear = new Date().getFullYear();
 
-    // Collect learners data from the table for the selected grade
-    const parents = [];
+    // 3️⃣ Collect all learners for the selected grade (include all, even if parent info missing)
+    const learnersList = [];
     document.querySelectorAll("#learnersList tr").forEach(row => {
-        if (row.getAttribute("data-grade") === selectedGrade) {
-            const learnerName = row.cells[2].textContent;
-            const parentName = row.cells[6].textContent;
-            const phone = row.cells[7].textContent;
-            parents.push({ parentName, learnerName, phone });
-        }
+      const grade = row.cells[5]?.textContent.trim();
+      if (grade === selectedGrade) {
+        const learnerName = row.cells[3]?.textContent.trim() || "";
+        const parentName = row.cells[7]?.textContent.trim() || "";
+        const phone = row.cells[8]?.textContent.trim() || "";
+
+        learnersList.push({ learnerName, parentName, phone });
+      }
     });
 
-    // Build printable table
+    if (learnersList.length === 0) {
+      showToast(`No learners found for ${selectedGrade}.`, "error");
+      return;
+    }
+
+    // 4️⃣ Build printable table
     const tableHtml = `
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-            <thead>
-                <tr>
-                    <th style="border: 1px solid black; padding: 8px;">No.</th>
-                    <th style="border: 1px solid black; padding: 8px;">Parent Name</th>
-                    <th style="border: 1px solid black; padding: 8px;">Learner Name</th>
-                    <th style="border: 1px solid black; padding: 8px;">Phone Number</th>
-                    <th style="border: 1px solid black; padding: 8px;">Signature</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${parents.map((p, i) => `
-                    <tr>
-                        <td style="border: 1px solid black; padding: 8px;">${i + 1}</td>
-                        <td style="border: 1px solid black; padding: 8px;">${p.parentName}</td>
-                        <td style="border: 1px solid black; padding: 8px;">${p.learnerName}</td>
-                        <td style="border: 1px solid black; padding: 8px;">${p.phone}</td>
-                        <td style="border: 1px solid black; padding: 8px;">&nbsp;</td>
-                    </tr>
-                `).join("")}
-            </tbody>
-        </table>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+          <tr>
+            <th style="border: 1px solid black; padding: 8px;">No.</th>
+            <th style="border: 1px solid black; padding: 8px;">Parent Name</th>
+            <th style="border: 1px solid black; padding: 8px;">Learner Name</th>
+            <th style="border: 1px solid black; padding: 8px;">Phone Number</th>
+            <th style="border: 1px solid black; padding: 8px;">Signature</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${learnersList.map((p, i) => `
+            <tr>
+              <td style="border: 1px solid black; padding: 8px;">${i + 1}</td>
+              <td style="border: 1px solid black; padding: 8px;">${p.parentName}</td>
+              <td style="border: 1px solid black; padding: 8px;">${p.learnerName}</td>
+              <td style="border: 1px solid black; padding: 8px;">${p.phone}</td>
+              <td style="border: 1px solid black; padding: 8px;">&nbsp;</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
     `;
 
-    // Build printable header
+    // 5️⃣ Build printable header
     const headerHtml = `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img src="school-logo.png" alt="School Logo" style="height: 80px; margin-bottom: 10px;"><br>
-            <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR  SCHOOL</strong><br>
-            <strong style="font-size: 20px;">PARENTS ATTENDANCE REGISTER</strong><br>
-            <div style="margin-top: 5px; font-size: 14px;">
-                ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
-                Phone: +254-700-123456<br>
-                School Motto: <em>"MY TALENT MY PASSION"</em><br>
-                Year: ${currentYear} / GRADE: <strong>${selectedGrade}</strong>
-            </div>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <img src="school-logo.png" alt="School Logo" style="height: 80px; margin-bottom: 10px;"><br>
+        <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR SCHOOL</strong><br>
+        <strong style="font-size: 20px;">PARENTS ATTENDANCE REGISTER</strong><br>
+        <div style="margin-top: 5px; font-size: 14px;">
+          ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
+          Phone: +254-700-123456<br>
+          School Motto: <em>"MY TALENT MY PASSION"</em><br>
+          Year: ${currentYear} / GRADE: <strong>${selectedGrade}</strong>
         </div>
+      </div>
     `;
 
-    // Open print window
+    // 6️⃣ Open print window
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
-        <html>
-        <head>
-            <title>Parents List - ${selectedGrade}</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 20px; }
-                table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-                th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-                th { background-color: #f2f2f2; }
-            </style>
-        </head>
-        <body>
-            ${headerHtml}
-            ${tableHtml}
-        </body>
-        </html>
+      <html>
+      <head>
+        <title>Parents List - ${selectedGrade}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+          th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+        </style>
+      </head>
+      <body>
+        ${headerHtml}
+        ${tableHtml}
+      </body>
+      </html>
     `);
     printWindow.document.close();
     printWindow.print();
+
+    showToast(`Parents list for ${selectedGrade} generated successfully.`, "success");
+
+  });
+
 });
 
 document.getElementById("groupByPathwaysBtn").addEventListener("click", () => {

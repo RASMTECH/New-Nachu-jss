@@ -2971,8 +2971,10 @@ Rasm Does It All – One Click and You’re Done!.</span>
 </div>
 
 <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+import { 
+    getDatabase, ref, push, set, onValue, remove, get, update 
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
   const firebaseConfig = {
     apiKey: "AIzaSyDhTehL7VIaGG-bC2n1AFILZeJJ-drmSC0",
     authDomain: "rasm-school-management.firebaseapp.com",
@@ -3650,13 +3652,18 @@ function attachDelete(row, data) {
     if (!isAdminLoggedIn) return Swal.fire("Access Denied","Admins only","error");
 
     Swal.fire({
-      title: "Confirm Deletion",
-      text: "This learner will be permanently removed",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33"
-    }).then(async result => {
-      if (!result.isConfirmed) return;
+  title: `<span style="color:red;">Dangerous Action</span>`,
+  html: `
+    <h3>Confirm Deletion</h3>
+    <p>This learner will be permanently removed</p>
+  `,
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#d33",
+  confirmButtonText: "Delete",
+  cancelButtonText: "Cancel"
+}).then(async result => {
+  if (!result.isConfirmed) return;
 
       try {
         await remove(ref(database, `learners/${data.key}`));
@@ -9003,137 +9010,195 @@ function enableMarksEditing() {
   });
 }
 
-import { get, update } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+// 🔁 Helper: get unique grades from learners
+async function getAvailableGrades() {
+  const snapshot = await get(learnersRef);
+  if (!snapshot.exists()) return [];
 
-// 🔁 Promote learners in the "learners" node (admin-only)
+  const learners = snapshot.val();
+  const gradesSet = new Set();
+
+  for (const key in learners) {
+    const grade = learners[key].grade;
+    if (grade) gradesSet.add(grade.toUpperCase());
+  }
+
+  return Array.from(gradesSet).sort(); // sorted for nicer dropdown
+}
+
+// 🔁 Promote learners (admin-only)
 window.promoteLearners = async function () {
+
   if (!isAdminLoggedIn) {
     Swal.fire({
       icon: "error",
       title: "Access Denied",
-      text: "Only admins can promote learners.",
-      timer: 2000,
-      showConfirmButton: false
+      text: "Only admins can promote learners."
     });
     return;
   }
 
+  const availableGrades = await getAvailableGrades();
+  if (availableGrades.length === 0) {
+    Swal.fire("No grades available for promotion.");
+    return;
+  }
+
+  const { value: selectedGrade } = await Swal.fire({
+    title: "Select grade to promote",
+    input: "select",
+    inputOptions: availableGrades.reduce((acc, g) => ({ ...acc, [g]: g }), {}),
+    inputPlaceholder: "Select grade",
+    showCancelButton: true
+  });
+
+  if (!selectedGrade) return;
+
   try {
     const snapshot = await get(learnersRef);
-
-    if (!snapshot.exists()) {
-      Swal.fire("No learners found to promote.");
-      return;
-    }
-
     const learners = snapshot.val();
     const updates = {};
     const summary = [];
 
     for (const key in learners) {
       const learner = learners[key];
-      const currentGrade = learner.grade;
-      const nextGrade = getNextGrade(currentGrade);
+      if (learner.grade.toUpperCase() === selectedGrade.toUpperCase()) {
+        const nextGrade = getNextGrade(learner.grade);
+        if (!nextGrade) continue;
 
-      if (nextGrade) {
+        updates[`learners/${key}/previousGrade`] = learner.grade;
         updates[`learners/${key}/grade`] = nextGrade;
-        summary.push(`${learner.name}: ${currentGrade} → ${nextGrade}`);
+        summary.push(`${learner.name}: ${learner.grade} → ${nextGrade}`);
       }
     }
 
-    if (Object.keys(updates).length === 0) {
-      Swal.fire("No valid grades found for promotion.");
+    if (summary.length === 0) {
+      Swal.fire("No learners found in the selected grade.");
       return;
     }
+
+    const confirm = await Swal.fire({
+  title: `<span style="color:red;">Dangerous Action</span>`,
+  html: `
+    <h3>Confirm Promotion for ${selectedGrade}</h3>
+    <pre style="text-align:left">${summary.join("\n")}</pre>
+  `,
+  icon: "question",
+  showCancelButton: true,
+  confirmButtonText: "Promote",
+  cancelButtonText: "Cancel"
+});
+
+    if (!confirm.isConfirmed) return;
 
     await update(ref(database), updates);
 
     Swal.fire({
-      title: "🎉 Promotion Complete",
+      title: "Promotion Complete",
       html: `<pre style="text-align:left">${summary.join("\n")}</pre>`,
       icon: "success"
     });
 
   } catch (error) {
-    console.error("Error promoting learners:", error);
-    Swal.fire("Error", "Something went wrong while promoting.", "error");
+    console.error(error);
+    Swal.fire("Error promoting learners");
   }
 };
 
+// 🔁 Undo promotion (per selected grade)
 window.undoPromotion = async function () {
+
   if (!isAdminLoggedIn) {
     Swal.fire({
       icon: "error",
       title: "Access Denied",
-      text: "Only admins can undo promotions.",
-      timer: 2000,
-      showConfirmButton: false
+      text: "Only admins can undo promotions."
     });
     return;
   }
 
+  const availableGrades = await getAvailableGrades();
+  if (availableGrades.length === 0) {
+    Swal.fire("No grades available to undo.");
+    return;
+  }
+
+  const { value: selectedGrade } = await Swal.fire({
+    title: "Select grade to undo promotion",
+    input: "select",
+    inputOptions: availableGrades.reduce((acc, g) => ({ ...acc, [g]: g }), {}),
+    inputPlaceholder: "Select grade",
+    showCancelButton: true
+  });
+
+  if (!selectedGrade) return;
+
   try {
     const snapshot = await get(learnersRef);
-
-    if (!snapshot.exists()) {
-      Swal.fire("No learners found to undo promotion.");
-      return;
-    }
-
     const learners = snapshot.val();
     const updates = {};
     const summary = [];
 
     for (const key in learners) {
       const learner = learners[key];
-      const currentGrade = learner.grade;
-      const prevGrade = getPreviousGrade(currentGrade);
-
-      if (prevGrade) {
-        updates[`learners/${key}/grade`] = prevGrade;
-        summary.push(`${learner.name}: ${currentGrade} → ${prevGrade}`);
+      if (learner.grade.toUpperCase() === selectedGrade.toUpperCase() && learner.previousGrade) {
+        updates[`learners/${key}/grade`] = learner.previousGrade;
+        updates[`learners/${key}/previousGrade`] = null;
+        summary.push(`${learner.name}: ${learner.grade} → ${learner.previousGrade}`);
       }
     }
 
-    if (Object.keys(updates).length === 0) {
-      Swal.fire("No valid grades to undo.");
+    if (summary.length === 0) {
+      Swal.fire("No learners found to undo for the selected grade.");
       return;
     }
+
+   const confirm = await Swal.fire({
+  title: `<span style="color:red;">Dangerous Action</span>`,
+  html: `
+    <h3>Confirm Undo for ${selectedGrade}</h3>
+    <pre style="text-align:left">${summary.join("\n")}</pre>
+  `,
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonText: "Undo",
+  cancelButtonText: "Cancel"
+});
+    if (!confirm.isConfirmed) return;
 
     await update(ref(database), updates);
 
     Swal.fire({
-      title: "🔁 Undo Complete",
+      title: "Undo Complete",
       html: `<pre style="text-align:left">${summary.join("\n")}</pre>`,
       icon: "info"
     });
 
   } catch (error) {
-    console.error("Undo error:", error);
-    Swal.fire("Error", "Something went wrong during undo.", "error");
+    console.error(error);
+    Swal.fire("Undo failed");
   }
 };
+function getNextGrade(currentGrade) {
+  const match = currentGrade.match(/(\d+)\s*([A-Z]?)/i);
+  if (!match) return null;
+
+  const number = parseInt(match[1]);
+  const letter = match[2] ? match[2].toUpperCase() : "";
+
+  if (number >= 12) return null; // STOP at Grade 12
+  return `${number + 1}${letter ? " " + letter : ""}`; // merge number + stream
+}
 
 function getPreviousGrade(currentGrade) {
-  const match = currentGrade.match(/(\d+)([A-Z]?)/i);
+  const match = currentGrade.match(/(\d+)\s*([A-Z]?)/i);
   if (!match) return null;
 
   const number = parseInt(match[1]);
-  if (number <= 1) return null; // Avoid going below Grade 1
+  const letter = match[2] ? match[2].toUpperCase() : "";
 
-  const letter = match[2] || "";
-  return `Grade ${number - 1}${letter.toUpperCase()}`;
-}
-function getNextGrade(currentGrade) {
-  if (!currentGrade || typeof currentGrade !== "string") return null;
-
-  const match = currentGrade.trim().match(/(\d+)([A-Z]?)/i);
-  if (!match) return null;
-
-  const number = parseInt(match[1]);
-  const letter = match[2]?.toUpperCase() || "";
-
-  return `Grade ${number + 1}${letter}`;
+  if (number <= 1) return null; // STOP at Grade 1
+  return `${number - 1}${letter ? " " + letter : ""}`; // merge number + stream
 }
 document.getElementById('searchMarksInput').addEventListener('input', function () {
   const searchValue = this.value.toLowerCase();

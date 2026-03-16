@@ -1452,29 +1452,7 @@ button[onclick^="show"] {
 <!-- ================= LEARNERS DATABASE ================= --> 
 <div style="max-width:500px; display:flex; flex-direction:column; gap:18px; align-items:center;">
 
-  <!-- Master Toggle Button -->
-  <button
-    type="button"
-    id="masterToggleBtn"
-    style="
-      width:50%;
-      background:linear-gradient(135deg,#673AB7,#5E35B1);
-      color:white;
-      height:52px;
-      padding:0 20px;
-      border:none;
-      border-radius:8px;
-      font-size:1rem;
-      font-weight:500;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      cursor:pointer;
-      transition:all 0.3s ease;">
-    <i class="fas fa-database" style="font-size:1.2em;"></i>
-    Learners Database
-  </button>
+
 
 <!-- Sub Buttons Container (hidden initially) -->
 <div
@@ -1512,17 +1490,7 @@ button[onclick^="show"] {
 </div>
 <!-- Toggle Button -->
 <div style="margin-bottom:15px; text-align:center;">
-  <button id="toggleParentLookupBtn" style="
-    padding:10px 20px;
-    background:#673AB7;
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    font-size:16px;
-  ">
-    👀 Show Parent Lookup
-  </button>
+ 
 </div>
 
 <!-- Parent Lookup Modal -->
@@ -1634,27 +1602,79 @@ button[onclick^="show"] {
 
 
 <!-- ================= EXAM & MARKS CONTROLS ================= -->
-<div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+<div style="
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  align-items:center;
+  justify-content:flex-start;
+  margin-bottom:15px;
+">
 
-  <!-- Master Reports Button -->
+  <!-- Exam & Marks Controls -->
   <button
     type="button"
     id="masterReportsBtn"
     style="
-      background-color:#9C27B0;
+      background:#9C27B0;
       color:white;
       height:48px;
-      padding:0 18px;
+      padding:0 20px;
       border:none;
-      border-radius:6px;
+      border-radius:8px;
       font-size:1rem;
-      display:inline-flex;
+      display:flex;
       align-items:center;
+      gap:8px;
+      cursor:pointer;
       white-space:nowrap;
-      cursor:pointer;">
-    <i class="fas fa-chart-bar" style="margin-right:8px;"></i>
+    ">
+    <i class="fas fa-chart-bar"></i>
     <span class="btn-label">Exam & Marks Controls</span>
   </button>
+
+  <!-- Learners Database -->
+  <button
+    type="button"
+    id="masterToggleBtn"
+    style="
+      background:linear-gradient(135deg,#673AB7,#5E35B1);
+      color:white;
+      height:48px;
+      padding:0 20px;
+      border:none;
+      border-radius:8px;
+      font-size:1rem;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      white-space:nowrap;
+    ">
+    <i class="fas fa-database"></i>
+    Learners Database
+  </button>
+
+  <!-- Parent Lookup -->
+  <button
+    id="toggleParentLookupBtn"
+    style="
+      background:#673AB7;
+      color:#fff;
+      height:48px;
+      padding:0 20px;
+      border:none;
+      border-radius:8px;
+      font-size:1rem;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      white-space:nowrap;
+    ">
+    👀 Parent Lookup
+  </button>
+
 
 </div>
 
@@ -1792,7 +1812,7 @@ button[onclick^="show"] {
 
   </div>
 <div id="tableContainer" style="display: none; margin-top: 20px;">
-  <h2>Registered Learners</h2>
+ <h2 style="color: red;">Registered Learners</h2>
 
 <!-- Filter Bar Box -->
   <div class="filter-bar" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
@@ -2989,17 +3009,76 @@ import {
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
   const learnersRef = ref(database, "learners");
+// 🔹 Auto-generate age based on grade (random within range)
+function getRandomAgeByGrade(grade) {
+    switch (grade) {
+        case '7': case '7A': case '7B': case '7C':
+            return Math.floor(Math.random() * 2) + 12; // 12-13
+        case '8': case '8A': case '8B': case '8C':
+            return Math.floor(Math.random() * 2) + 13; // 13-14
+        case '9': case '9A': case '9B': case '9C':
+            return Math.floor(Math.random() * 2) + 14; // 14-15
+        default:
+            return '';
+    }
+}
 
+// 🔹 Compute dynamic age based on grade and admission year
+function getAgeByGradeAndAdmissionYear(grade, admissionYear) {
+    const currentYear = new Date().getFullYear();
+    const yearDiff = currentYear - admissionYear;
+    let baseAge;
 
-document.getElementById('registerButton').addEventListener('click', () => {
+    switch (grade) {
+        case '7': case '7A': case '7B': case '7C':
+            baseAge = 12;
+            break;
+        case '8': case '8A': case '8B': case '8C':
+            baseAge = 13;
+            break;
+        case '9': case '9A': case '9B': case '9C':
+            baseAge = 14;
+            break;
+        default:
+            return '';
+    }
+
+    return baseAge + yearDiff;
+}
+
+// 🔹 Generate admission number like 2026/001
+async function generateAdmissionNumber() {
+    const year = new Date().getFullYear();
+    const snapshot = await get(learnersRef);
+
+    let count = 0;
+    if (snapshot.exists()) {
+        snapshot.forEach(child => {
+            const data = child.val();
+            if (data.admissionNo && data.admissionNo.startsWith(year)) {
+                count++;
+            }
+        });
+    }
+
+    const nextNumber = String(count + 1).padStart(3, '0');
+    return `${year}/${nextNumber}`;
+}
+
+// 🔹 Learner registration
+document.getElementById('registerButton').addEventListener('click', async () => {
+
+    const registerBtn = document.getElementById('registerButton');
+    registerBtn.disabled = true; // prevent double click
+
     const name = document.getElementById('name').value.trim();
     const gender = document.getElementById('gender').value;
     const grade = document.getElementById('grade').value;
-    const age = document.getElementById('age').value;
+    let age = document.getElementById('age').value;
     const parentName = document.getElementById('parentName').value.trim();
     const parentPhone = document.getElementById('parentPhone').value.trim();
     const birthCert = document.getElementById('birthCert').value.trim();
-    const admissionNo = document.getElementById('admissionNo').value.trim();
+    let admissionNo = document.getElementById('admissionNo').value.trim();
     const photo = document.getElementById('photo').files[0];
 
     if (!name || !gender || !grade) {
@@ -3009,43 +3088,83 @@ document.getElementById('registerButton').addEventListener('click', () => {
             text: 'Please fill in Name, Gender, and Grade before submitting.',
             confirmButtonColor: '#d33'
         });
+        registerBtn.disabled = false;
         return;
     }
+
+    // 🔹 Auto-generate age if empty
+    if (!age) {
+        age = getRandomAgeByGrade(grade);
+    }
+
+    // 🔹 Auto-generate admission number if empty
+    if (!admissionNo) {
+        admissionNo = await generateAdmissionNumber();
+    }
+
+    const year = new Date().getFullYear();
 
     const learnerData = {
         name,
         gender,
         grade,
-        ...(age && { age }),
+        age,
+        admissionNo,
+        admissionYear: year, // store for dynamic age calculation
         ...(parentName && { parentName }),
         ...(parentPhone && { parentPhone }),
         ...(birthCert && { birthCert }),
-        ...(admissionNo && { admissionNo }),
         ...(photo && { photo: URL.createObjectURL(photo) }),
     };
 
     const newLearnerRef = push(learnersRef);
+
+    // 🔵 Centered spinner
+    Swal.fire({
+        title: 'Registering...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     set(newLearnerRef, learnerData)
         .then(() => {
-    Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Learner registered successfully.',
-        confirmButtonColor: '#28a745'
-    });
-    document.getElementById('learnerForm').reset();
-    loadLearners();   // 👈 ADD THIS
-})
+
+            registerBtn.disabled = false;
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: `Learner registered. Admission No: ${admissionNo}, Age: ${age}`,
+                confirmButtonColor: '#28a745'
+            });
+
+            document.getElementById('learnerForm').reset();
+            loadLearners(); // reload learners
+
+        })
         .catch(err => {
+
+            registerBtn.disabled = false;
+
             console.error("Error adding learner: ", err);
             Swal.fire({
                 icon: 'error',
                 title: 'Registration Failed',
-                text: 'There was an issue saving learner data. Please try again.',
+                text: 'There was an issue saving learner data.',
                 confirmButtonColor: '#d33'
             });
         });
 });
+
+// 🔹 Example: compute age dynamically when displaying
+function displayLearner(learner) {
+    const dynamicAge = getAgeByGradeAndAdmissionYear(learner.grade, learner.admissionYear);
+    console.log(`Name: ${learner.name}, Grade: ${learner.grade}, Age: ${dynamicAge}, AdmissionNo: ${learner.admissionNo}`);
+}
 // ================= ELEMENT REFERENCES =================
 const tableBody = document.getElementById("learnersList");
 const filterGradeSelect = document.getElementById("filterGrade");
@@ -9227,39 +9346,89 @@ document.getElementById("bulkDeleteButton").addEventListener("click", async () =
     return Swal.fire("No Selection", "Please select learners to delete.", "info");
   }
 
+  // Get selected keys and rows
   const keysToDelete = Array.from(selectedCheckboxes).map(cb => cb.closest("tr").dataset.key);
+  const selectedRows = Array.from(selectedCheckboxes).map(cb => cb.closest("tr"));
 
-  Swal.fire({
-    title: `Delete ${keysToDelete.length} learners?`,
-    text: "This action is irreversible!",
+  // Highlight selected rows
+  selectedRows.forEach(row => {
+    row.style.transition = "background-color 0.5s ease, opacity 0.5s ease";
+    row.style.backgroundColor = "#ffe6e6"; // light red
+  });
+
+  // Prepare a summary of learner names for display
+  const summary = allLearners
+    .filter(l => keysToDelete.includes(l.key))
+    .map(l => `${l.name} (${l.grade})`);
+
+  // Show styled Dangerous Action confirmation
+  const confirm = await Swal.fire({
+    title: `<span style="color:red;">Dangerous Action</span>`,
+    html: `
+      <h3>Delete ${keysToDelete.length} learners?</h3>
+      <pre style="text-align:left">${summary.join("\n")}</pre>
+      <p style="color:orange;">This action is irreversible!</p>
+    `,
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#d33",
-    confirmButtonText: "Yes, delete"
-  }).then(async result => {
-    if (!result.isConfirmed) return;
-
-    try {
-      // Delete each learner from Firebase
-      const deletePromises = keysToDelete.map(key => remove(ref(database, `learners/${key}`)));
-      await Promise.all(deletePromises);
-
-      // Remove from local arrays
-      allLearners = allLearners.filter(l => !keysToDelete.includes(l.key));
-      filteredLearners = filteredLearners.filter(l => !keysToDelete.includes(l.key));
-
-      // Refresh table
-      resetPagination();
-
-      Swal.fire("Deleted!", "Selected learners have been removed.", "success");
-    } catch (err) {
-      console.error("Bulk delete error:", err);
-      Swal.fire("Error", "Failed to delete learners. Try again.", "error");
-    }
+    confirmButtonText: "Yes, delete",
+    cancelButtonText: "Cancel",
+    focusConfirm: false
   });
-});
 
-function generateInsight() {
+  // Remove row highlight if cancelled
+  if (!confirm.isConfirmed) {
+    selectedRows.forEach(row => row.style.backgroundColor = "");
+    return; // user canceled
+  }
+
+  try {
+    // Show spinner while deleting
+    Swal.fire({
+      title: 'Deleting learners...',
+      text: 'Please wait',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    // Delete all selected learners from Firebase
+    const deletePromises = keysToDelete.map(key => remove(ref(database, `learners/${key}`)));
+    await Promise.all(deletePromises);
+
+    // Update local arrays
+    allLearners = allLearners.filter(l => !keysToDelete.includes(l.key));
+    filteredLearners = filteredLearners.filter(l => !keysToDelete.includes(l.key));
+
+    // Animate row fade-out
+    selectedRows.forEach(row => {
+      row.style.opacity = "0";
+      setTimeout(() => row.remove(), 500); // remove row from DOM after fade
+    });
+
+    // Refresh table (optional, if you have pagination)
+    resetPagination();
+
+    Swal.fire({
+      icon: "success",
+      title: "Deleted!",
+      text: "Selected learners have been removed.",
+      confirmButtonColor: "#28a745"
+    });
+
+  } catch (err) {
+    console.error("Bulk delete error:", err);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to delete learners. Try again.",
+      confirmButtonColor: "#d33"
+    });
+  } finally {
+    // Remove any lingering highlights
+    selectedRows.forEach(row => row.style.backgroundColor = "");
+  }
+});function generateInsight() {
 
   const totalStudents = allLearners.length;
 

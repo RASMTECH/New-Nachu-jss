@@ -1288,6 +1288,165 @@ button[onclick^="show"] {
   color: #d32f2f;
   font-size: 18px;
 }
+
+/* Overlay */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  z-index: 999;
+}
+
+/* Modal */
+#classListSection {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+
+  /* 🔥 ADD THIS (scroll inside modal) */
+  max-height: 80vh;
+  overflow-y: auto;
+  
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Active state */
+#overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+#classListSection.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Close button */
+#closeModalBtn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+}
+
+/* Prevent background scroll */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Overlay */
+#formOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  z-index: 999;
+}
+
+/* Modal */
+#registrationContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+
+  width: 90%;
+  max-width: 450px;
+  padding: 20px;
+  border-radius: 10px;
+
+  background-image: url('https://i.imgur.com/05oiYXz.jpeg');
+  background-size: cover;
+  background-position: center;
+
+  max-height: 85vh;
+  overflow-y: auto;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Active states */
+#formOverlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+#registrationContainer.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Close button */
+#closeFormBtn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 26px;
+  color: red;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Inputs */
+#registrationContainer input,
+#registrationContainer select {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 4px;
+}
+
+/* Button */
+#registerButton {
+  padding: 10px;
+  background: #3F51B5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+/* Lock background */
+body.modal-open {
+  overflow: hidden;
+}
 </style>
 </head>
 <body>
@@ -1502,7 +1661,7 @@ button[onclick^="show"] {
       transform:translate(-50%, -50%) scale(0.8);
       width:90%;
       max-width:800px;
-      background-image: url('https://i.imgur.com/JfXy1UD.jpeg');
+      background-image: url('https://i.imgur.com/Ix65TDw.jpeg');
       background-size: cover;
       background-position: center;
       color:#fff;
@@ -1678,50 +1837,71 @@ button[onclick^="show"] {
 
 </div>
 
-    <!-- Reports Sub Controls -->
-    <div
-      id="reportsControls"
-      style="
-        display:none;
-        flex-direction:column;
-        gap:10px;
-        width:50%;">
+   
+   <!-- Reports Sub Controls -->
+<div
+  id="reportsControls"
+  style="
+    display:none;
+    flex-direction:column;
+    gap:10px;
+    width:50%;">
 
-      <button
-        class="print-button"
-        id="togglePerformanceReportsBtn"
-        style="
-          background-color:#03A9F4;
-          color:white;
-          height:44px;
-          padding:0 16px;
-          border:none;
-          border-radius:6px;
-          font-size:1rem;
-          display:inline-flex;
-          align-items:center;
-          cursor:pointer;">
-        <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
-        Exam Reports
-      </button>
+  <button
+    class="print-button"
+    id="togglePerformanceReportsBtn"
+    style="
+      background-color:#03A9F4;
+      color:white;
+      height:44px;
+      padding:0 16px;
+      border:none;
+      border-radius:6px;
+      font-size:1rem;
+      display:inline-flex;
+      align-items:center;
+      cursor:pointer;">
+    <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
+    Exam Reports
+  </button>
 
-      <button
-        class="print-button"
-        id="toggleMarksSectionBtn"
-        style="
-          background-color:#03A9F4;
-          color:white;
-          height:44px;
-          padding:0 16px;
-          border:none;
-          border-radius:6px;
-          font-size:1rem;
-          display:inline-flex;
-          align-items:center;
-          cursor:pointer;">
-        <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
-        Marks Section
-      </button>
+  <button
+    class="print-button"
+    id="toggleMarksSectionBtn"
+    style="
+      background-color:#03A9F4;
+      color:white;
+      height:44px;
+      padding:0 16px;
+      border:none;
+      border-radius:6px;
+      font-size:1rem;
+      display:inline-flex;
+      align-items:center;
+      cursor:pointer;">
+    <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
+    Marks Section
+  </button>
+
+  <!-- 🔹 New Button for Record Marks Section -->
+  <button
+    class="print-button"
+    id="toggleRecordMarksBtn"
+    style="
+      background-color:#4CAF50;
+      color:white;
+      height:44px;
+      padding:0 16px;
+      border:none;
+      border-radius:6px;
+      font-size:1rem;
+      display:inline-flex;
+      align-items:center;
+      cursor:pointer;">
+    <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
+    Record Marks
+  </button>
+
 
     </div>
   </div>
@@ -1764,52 +1944,56 @@ button[onclick^="show"] {
 
 </div>
 
-<!-- Wrapped form, hidden by default -->
-<div id="registrationContainer" style="display: none; margin-top: 20px; max-width: 450px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-image: url('https://i.imgur.com/jixmLF9.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<!-- Overlay -->
+<div id="formOverlay"></div>
+
+<!-- Modal Form -->
+<div id="registrationContainer">
+
+  <!-- Close Button -->
+  <span id="closeFormBtn">&times;</span>
+
   <h2 style="color: white; background-color: rgba(255, 215, 0, 0.8); padding: 10px 12px; border-radius: 4px; text-align: center;">
     Register Learner
   </h2>
 
   <form id="learnerForm">
     <label style="color: white;">Name:</label>
-    <input type="text" id="name" placeholder="Enter name" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+    <input type="text" id="name" placeholder="Enter name" required><br>
 
     <label style="color: white;">Gender:</label>
-    <select id="gender" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;">
+    <select id="gender" required>
       <option value="">Select Gender</option>
       <option value="Male">Male</option>
       <option value="Female">Female</option>
     </select><br>
 
     <label style="color: white;">Grade:</label>
-    <input type="text" id="grade" placeholder="Enter grade e.g. Grade 9A" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+    <input type="text" id="grade" placeholder="Enter grade e.g. Grade 9A" required><br>
 
     <label style="color: white;">Age:</label>
-    <input type="number" id="age" placeholder="Enter age" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+    <input type="number" id="age" placeholder="Enter age"><br>
 
     <label style="color: white;">Parent Name:</label>
-    <input type="text" id="parentName" placeholder="Enter parent name" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+    <input type="text" id="parentName" placeholder="Enter parent name"><br>
 
     <label style="color: white;">Parent Phone:</label>
-    <input type="tel" id="parentPhone" placeholder="Enter phone number" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+    <input type="tel" id="parentPhone" placeholder="Enter phone number"><br>
 
     <label style="color: white;">Birth Certificate No:</label>
-    <input type="text" id="birthCert" placeholder="Enter birth certificate no" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+    <input type="text" id="birthCert" placeholder="Enter birth certificate no"><br>
 
     <label style="color: white;">Admission Number:</label>
-    <input type="text" id="admissionNo" placeholder="Enter admission number" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+    <input type="text" id="admissionNo" placeholder="Enter admission number"><br>
 
     <label style="color: white;">Learner Photo:</label>
-    <input type="file" id="photo" accept="image/*" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+    <input type="file" id="photo" accept="image/*"><br>
 
-    <button type="button" id="registerButton"
-      style="padding: 10px 14px; background: #3F51B5; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 12px; width: 100%;">
-      <i class="fas fa-user-plus" style="margin-right: 6px;"></i> Register Learner
+    <button type="button" id="registerButton">
+      <i class="fas fa-user-plus"></i> Register Learner
     </button>
   </form>
 </div>
-
-
   </div>
 <div id="tableContainer" style="display: none; margin-top: 20px;">
  <h2 style="color: red;">Registered Learners</h2>
@@ -1858,9 +2042,11 @@ button[onclick^="show"] {
       <i class="fas fa-users"></i> Generate Parents List
     </button>
 
-    <button class="action-btn purple-btn" id="toggleClassListSectionBtn">
-      <i class="fas fa-chevron-down"></i> Class List Generator
-    </button>
+<!-- Button -->
+<button class="action-btn purple-btn" id="toggleClassListSectionBtn">
+  <i class="fas fa-chevron-down"></i> Class List Generator
+</button>
+
 
     <button class="action-btn red-btn" onclick="promoteLearners()">
       <i class="fas fa-level-up-alt"></i> Promote Learners
@@ -1910,21 +2096,33 @@ Rasm Does It All – Just Click and See It Done!.</span>
 </div>
 
 
-  <!-- Class List Generator Section -->
-  <div id="classListSection" class="table-container" style="display: none; margin-top: 20px;">
-    <h2 style="background-color: #ffff00; padding: 8px 16px; border-radius: 6px; display: inline-block;">Generate Class List per Grade</h2>
 
-    <div class="filter-bar" style="margin: 15px 0;">
-      <select id="classListGradeSelect">
-        <option value="">Select Grade</option>
-      </select>
-      <button class="print-button" id="generateClassListBtn">
-        <i class="fas fa-list"></i> Generate Class List
-      </button>
-    </div>
 
-    <div id="classListOutput"></div>
+<!-- Overlay -->
+<div id="overlay"></div>
+
+<!-- Modal -->
+<div id="classListSection" class="table-container">
+
+  <!-- Close Button -->
+  <span id="closeModalBtn">&times;</span>
+
+  <h2 style="background-color: #ffff00; padding: 8px 16px; border-radius: 6px; display: inline-block;">
+    Generate Class List per Grade
+  </h2>
+
+  <div class="filter-bar" style="margin: 15px 0;">
+    <select id="classListGradeSelect">
+      <option value="">Select Grade</option>
+    </select>
+
+    <button class="print-button" id="generateClassListBtn">
+      <i class="fas fa-list"></i> Generate Class List
+    </button>
   </div>
+
+  <div id="classListOutput"></div>
+</div>
 </div>
 
 <!-- Modal -->
@@ -2202,7 +2400,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
 
 <!-- Action Box for Marks Display -->
 <div id="marksSection" style="display: none; margin-top: 20px;">
-  <div class="action-box" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-color: #3498db; border-radius: 8px; color: white;">
+  <div class="action-box" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-image: url('https://i.imgur.com/RftOeJE.jpeg'); background-size: cover; background-position: center; border-radius: 8px; color: white;">
     <h2 style="background-color: rgba(255, 255, 255, 0.7); padding: 8px 16px; border-radius: 6px; display: inline-block; color: #2c3e50;">
       <span style="color: #e74c3c;">Power Up Your Exams with Rasm!
 Fast, Secure, and Reliable.</span>
@@ -2239,7 +2437,6 @@ Fast, Secure, and Reliable.</span>
         
   </select>
 </div>
-
  <!-- Filter by Exam Period -->
 
 <div class="form-group" style="flex: 1; min-width: 220px;">
@@ -2504,8 +2701,9 @@ Accuracy and Efficiency in Every Click.</span>
 </h3>
 <div id="topStudentsList" class="dash-card" style="background:linear-gradient(135deg,#673ab7,#3f51b5);margin-top:10px;"></div>
 
-  <!-- Marks Table Title -->
-<h3 style="color: red; font-weight: bold; margin-top: 20px;">MERIT LIST</h3>
+ <h2 style="text-align:center; margin-top:20px; color:red; font-weight:bold;">
+  📊 Marks List
+</h2>
 
 <!-- Marks Table -->
 <table class="marks-table" style="margin-top: 10px;">
@@ -7523,134 +7721,167 @@ html += `<div class="stamp print-only">
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Hide both sections on page load
-  document.getElementById("classListSection").style.display = "none";
-  document.getElementById("recordMarksSection").style.display = "none";
-  document.getElementById("performanceReportsSection").style.display = "none";
 
-  // Toggle Class List Section
-  document.getElementById("toggleClassListSectionBtn").addEventListener("click", () => {
-    const section = document.getElementById("classListSection");
-    section.style.display = section.style.display === "none" ? "block" : "none";
+  // ===============================
+  // 🔹 MAIN SECTIONS (ACCORDION)
+  // ===============================
+  const mainSections = document.querySelectorAll(".main-section"); 
+  const mainButtons = document.querySelectorAll(".main-section-btn"); 
+
+  function closeAllMainSections() {
+    mainSections.forEach(section => section.style.display = "none");
+    mainButtons.forEach(btn => {
+      const icon = btn.querySelector("i");
+      if (icon) { icon.classList.remove("fa-chevron-up"); icon.classList.add("fa-chevron-down"); }
+    });
+  }
+
+  mainButtons.forEach(btn => {
+    const targetId = btn.dataset.target;
+    btn.addEventListener("click", () => {
+      const section = document.getElementById(targetId);
+      const isOpen = section.style.display === "block";
+      closeAllMainSections();
+      if (!isOpen) {
+        section.style.display = "block";
+        const icon = btn.querySelector("i");
+        if (icon) { icon.classList.remove("fa-chevron-down"); icon.classList.add("fa-chevron-up"); }
+      }
+    });
   });
 
-  // Toggle Record Marks Section
-  document.getElementById("toggleMarksSectionBtn").addEventListener("click", () => {
-    const section = document.getElementById("recordMarksSection");
-    section.style.display = section.style.display === "none" ? "block" : "none";
+  // ===============================
+  // 🔹 SUB-ACCORDION (Dynamic Nested)
+  // ===============================
+  const subSections = [
+    // Learners Database sub-buttons
+    { btnId: "toggleFormBtn", sectionId: "registrationContainer" },
+    { btnId: "toggleTableBtn", sectionId: "tableContainer" },
+
+    // Reports sub-buttons
+    { btnId: "togglePerformanceReportsBtn", sectionId: "performanceReportsSection" },
+    { btnId: "toggleMarksSectionBtn", sectionId: "marksSection" },
+    { btnId: "toggleRecordMarksBtn", sectionId: "recordMarksSection" } // <-- Added recordMarksSection
+  ];
+
+  function closeAllSubSections() {
+    subSections.forEach(item => {
+      const section = document.getElementById(item.sectionId);
+      if (section) section.style.display = "none";
+    });
+    // Reset icons
+    subSections.forEach(item => {
+      const btn = document.getElementById(item.btnId);
+      const icon = btn?.querySelector("i");
+      if (icon) {
+        icon.classList.remove("fa-chevron-up");
+        icon.classList.add("fa-chevron-down");
+      }
+    });
+  }
+
+  subSections.forEach(item => {
+    const btn = document.getElementById(item.btnId);
+    const section = document.getElementById(item.sectionId);
+    if (!btn || !section) return;
+
+    btn.addEventListener("click", () => {
+      const isOpen = section.style.display === "block";
+      closeAllSubSections();
+      if (!isOpen) {
+        section.style.display = "block";
+        const icon = btn.querySelector("i");
+        if (icon) {
+          icon.classList.remove("fa-chevron-down");
+          icon.classList.add("fa-chevron-up");
+        }
+      }
+    });
   });
 
-  // Toggle Performance Reports Section
-  document.getElementById("togglePerformanceReportsBtn").addEventListener("click", () => {
-    const section = document.getElementById("performanceReportsSection");
-    const icon = document.querySelector("#togglePerformanceReportsBtn i");
+  // ===============================
+  // 🔹 MARKS SECTION NESTED SUB-SECTIONS
+  // ===============================
+  const marksSubSections = [
+    { btnId: "marksTableBtn", sectionId: "marksList" },
+    { btnId: "performanceInsightBtn", sectionId: "subjectBarChart" },
+    { btnId: "top5StudentsBtn", sectionId: "topStudentsList" },
+    { btnId: "termComparisonBtn", sectionId: "termComparisonContainer" },
+    { btnId: "classMeanBtn", sectionId: "classMeanCard" },
+    { btnId: "totalLearnersBtn", sectionId: "totalLearnersCard" },
+    { btnId: "liveTermlyPerformanceBtn", sectionId: "subjectAveragesContainer" }
+  ];
 
-    const isHidden = section.style.display === "none";
-    section.style.display = isHidden ? "block" : "none";
+  marksSubSections.forEach(item => {
+    const btn = document.getElementById(item.btnId);
+    const section = document.getElementById(item.sectionId);
+    if (!btn || !section) return;
 
-    // Toggle icon between down and up chevron
-    icon.className = isHidden ? "fas fa-chevron-up" : "fas fa-chevron-down";
+    btn.addEventListener("click", () => {
+      const isOpen = section.style.display === "block";
+      marksSubSections.forEach(i => {
+        const s = document.getElementById(i.sectionId);
+        if (s) s.style.display = "none";
+      });
+      if (!isOpen) section.style.display = "block";
+    });
   });
-  
-  // Marks Section Toggle with icon update
-  const toggleMarksBtn = document.getElementById("toggleMarksSectionBtn");
-  const marksSection = document.getElementById("marksSection");
-  const icon = toggleMarksBtn.querySelector("i");
 
-  toggleMarksBtn.addEventListener("click", () => {
-    const isHidden = marksSection.style.display === "none";
-    
-    // Toggle display style
-    marksSection.style.display = isHidden ? "block" : "none";
-    
-    // Toggle icon between down and up chevron
-    icon.classList.toggle("fa-chevron-down", !isHidden);
-    icon.classList.toggle("fa-chevron-up", isHidden);
-  });
-});
-const toggleBtn = document.getElementById('toggleFormBtn');
-  const formContainer = document.getElementById('registrationContainer');
+  // ===============================
+  // 🔹 MASTER BUTTONS
+  // ===============================
+  const masterBtn = document.getElementById('masterToggleBtn');
+  const learnersWrapper = document.getElementById('learnersButtons');
+  const reportsWrapper = document.getElementById('reportsControls');
+  const reportsBtn = document.getElementById('masterReportsBtn');
 
-  toggleBtn.addEventListener('click', () => {
-    const isHidden = formContainer.style.display === 'none';
-    // toggle visibility
-    formContainer.style.display = isHidden ? 'block' : 'none';
-    // update button text
-    toggleBtn.textContent = isHidden ? ' Registration ' : ' Registration';
-  });
-const toggleTableBtn = document.getElementById('toggleTableBtn');
-  const tableContainer  = document.getElementById('tableContainer');
+  masterBtn?.addEventListener('click', () => {
+    const hidden = learnersWrapper.style.display === 'none';
+    learnersWrapper.style.display = hidden ? 'flex' : 'none';
+    masterBtn.innerHTML = `<i class="fas fa-database" style="margin-right: 8px;"></i> Learners Database`;
 
-  toggleTableBtn.addEventListener('click', () => {
-    const hidden = tableContainer.style.display === 'none';
-    tableContainer.style.display = hidden ? 'block' : 'none';
-    toggleTableBtn.textContent = hidden
-      ? ' Registered Learners'
-      : 'Registered Learners';
-  });
-const masterBtn = document.getElementById('masterToggleBtn');
-const wrapper = document.getElementById('learnersButtons');
-const otherWrapper = document.getElementById('reportsControls');
-const otherBtn = document.getElementById('masterReportsBtn');
+    if (!hidden) closeAllSubSections(); // close sub-sections when collapsing
 
-// Toggle for Learners Database
-masterBtn.addEventListener('click', () => {
-  const hidden = wrapper.style.display === 'none';
-
-  // Toggle this one
-  wrapper.style.display = hidden ? 'block' : 'none';
-  masterBtn.textContent = hidden ? ' Learners Database' : 'Learners Database';
-  masterBtn.insertAdjacentHTML(
-    'afterbegin',
-    '<i class="fas fa-database" style="margin-right: 8px; font-size: 1.2em;"></i>'
-  );
-
-  // Hide the other one
-  otherWrapper.style.display = 'none';
-  const otherLabel = otherBtn.querySelector('.btn-label');
-  if (otherLabel) otherLabel.textContent = 'Exam & Marks Controls';
-});
-
-/**
- * Sets up a show/hide toggle.
- * @param {string} masterBtnId   ID of the toggle button
- * @param {string} wrapperId   ID of the element to show/hide
- * @param {string} showText   Text to show when collapsed
- * @param {string} hideText   Text to show when expanded
- */
-function setupToggle(masterBtnId, wrapperId, showText, hideText) {
-  const btn = document.getElementById(masterBtnId);
-  const wrapper = document.getElementById(wrapperId);
-  const label = btn.querySelector('.btn-label');
-
-  // Ensure wrapper starts hidden
-  wrapper.style.display = wrapper.style.display || 'none';
-
-  btn.addEventListener('click', () => {
-    const isHidden = wrapper.style.display === 'none';
-    // Toggle visibility
-    wrapper.style.display = isHidden ? 'block' : 'none';
-    label.textContent = isHidden ? hideText : showText;
-
-    // Also hide the other section if open
-    if (wrapperId === 'reportsControls') {
-      document.getElementById('learnersButtons').style.display = 'none';
-      document.getElementById('masterToggleBtn').textContent = ' Learners Database';
-      document.getElementById('masterToggleBtn').insertAdjacentHTML(
-        'afterbegin',
-        '<i class="fas fa-database" style="margin-right: 8px; font-size: 1.2em;"></i>'
-      );
+    // Hide reports if open
+    if (reportsWrapper) reportsWrapper.style.display = 'none';
+    if (reportsBtn?.querySelector('.btn-label')) {
+      reportsBtn.querySelector('.btn-label').textContent = 'Exam & Marks Controls';
     }
   });
-}
 
-// Wire up your Reports controls
-setupToggle(
-  'masterReportsBtn',
-  'reportsControls',
-  'Exam & Marks Controls',
-  'Hide Exam & Marks Controls'
-);
+  setupToggle(
+    'masterReportsBtn',
+    'reportsControls',
+    'Exam & Marks Controls',
+    'Hide Exam & Marks Controls'
+  );
+
+  // ===============================
+  // 🔹 GENERIC TOGGLE FUNCTION FOR REPORTS
+  // ===============================
+  function setupToggle(masterBtnId, wrapperId, showText, hideText) {
+    const btn = document.getElementById(masterBtnId);
+    const wrapper = document.getElementById(wrapperId);
+    const label = btn?.querySelector('.btn-label');
+    if (!btn || !wrapper) return;
+
+    wrapper.style.display = wrapper.style.display || 'none';
+
+    btn.addEventListener('click', () => {
+      const isHidden = wrapper.style.display === 'none';
+      wrapper.style.display = isHidden ? 'block' : 'none';
+      if (label) label.textContent = isHidden ? hideText : showText;
+
+      // Close Learners Database if reports open
+      if (wrapperId === 'reportsControls') {
+        if (learnersWrapper) learnersWrapper.style.display = 'none';
+        if (masterBtn) masterBtn.innerHTML = `<i class="fas fa-database" style="margin-right: 8px;"></i> Learners Database`;
+        closeAllSubSections();
+      }
+    });
+  }
+
+});
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggleParentLookupBtn");
   const parentModal = document.getElementById("parentLookup"); // modal div
@@ -9984,12 +10215,65 @@ printReportBtn.addEventListener("click", () => {
 });
 
 
+const openBtn = document.getElementById("toggleClassListSectionBtn");
+const modal = document.getElementById("classListSection");
+const overlay = document.getElementById("overlay");
+const closeBtn = document.getElementById("closeModalBtn");
+
+// Open modal
+openBtn.addEventListener("click", () => {
+  modal.classList.add("active");
+  overlay.classList.add("active");
+  document.body.classList.add("modal-open");
+});
+
+// Close modal function
+function closeModal() {
+  modal.classList.remove("active");
+  overlay.classList.remove("active");
+  document.body.classList.remove("modal-open");
+}
+
+// Close button
+closeBtn.addEventListener("click", closeModal);
+
+// Click outside
+overlay.addEventListener("click", closeModal);
+
+// ESC key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});
+
+const openBtn = document.getElementById("toggleFormBtn");
+const modal = document.getElementById("registrationContainer");
+const overlay = document.getElementById("formOverlay");
+const closeBtn = document.getElementById("closeFormBtn");
+
+// OPEN FORM
+openBtn.addEventListener("click", () => {
+  modal.classList.add("active");
+  overlay.classList.add("active");
+  document.body.classList.add("modal-open");
+});
+
+// CLOSE FUNCTION
+function closeForm() {
+  modal.classList.remove("active");
+  overlay.classList.remove("active");
+  document.body.classList.remove("modal-open");
+}
+
+// CLOSE EVENTS
+closeBtn.addEventListener("click", closeForm);
+overlay.addEventListener("click", closeForm);
+
+// ESC KEY
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeForm();
+});
 </script>
-  
-
-
-
-
 </body>
 </html>
+
   

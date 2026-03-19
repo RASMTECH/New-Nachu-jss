@@ -1355,99 +1355,8 @@ button[onclick^="show"] {
 body.modal-open {
   overflow: hidden;
 }
-
-/* Overlay */
-#formOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  opacity: 0;
-  visibility: hidden;
-  transition: 0.3s;
-  z-index: 999;
-}
-
-/* Modal */
-#registrationContainer {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-
-  width: 90%;
-  max-width: 450px;
-  padding: 20px;
-  border-radius: 10px;
-
-  background-image: url('https://i.imgur.com/05oiYXz.jpeg');
-  background-size: cover;
-  background-position: center;
-
-  max-height: 85vh;
-  overflow-y: auto;
-
-  opacity: 0;
-  visibility: hidden;
-  transition: 0.3s;
-
-  z-index: 1000;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-/* Active states */
-#formOverlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-#registrationContainer.active {
-  opacity: 1;
-  visibility: visible;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-/* Close button */
-#closeFormBtn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 26px;
-  color: red;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-/* Inputs */
-#registrationContainer input,
-#registrationContainer select {
-  width: 100%;
-  padding: 8px;
-  margin: 6px 0;
-  background-color: rgba(255, 255, 255, 0.85);
-  border: none;
-  border-radius: 4px;
-}
-
-/* Button */
-#registerButton {
-  padding: 10px;
-  background: #3F51B5;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  width: 100%;
-  margin-top: 12px;
-  cursor: pointer;
-}
-
-/* Lock background */
-body.modal-open {
-  overflow: hidden;
-}
 </style>
+
 </head>
 <body>
 <!-- LOGIN SECTION -->
@@ -1944,56 +1853,52 @@ body.modal-open {
 
 </div>
 
-<!-- Overlay -->
-<div id="formOverlay"></div>
-
-<!-- Modal Form -->
-<div id="registrationContainer">
-
-  <!-- Close Button -->
-  <span id="closeFormBtn">&times;</span>
-
+<!-- Wrapped form, hidden by default -->
+<div id="registrationContainer" style="display: none; margin-top: 20px; max-width: 450px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-image: url('https://i.imgur.com/05oiYXz.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
   <h2 style="color: white; background-color: rgba(255, 215, 0, 0.8); padding: 10px 12px; border-radius: 4px; text-align: center;">
     Register Learner
   </h2>
 
   <form id="learnerForm">
     <label style="color: white;">Name:</label>
-    <input type="text" id="name" placeholder="Enter name" required><br>
+    <input type="text" id="name" placeholder="Enter name" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
 
     <label style="color: white;">Gender:</label>
-    <select id="gender" required>
+    <select id="gender" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;">
       <option value="">Select Gender</option>
       <option value="Male">Male</option>
       <option value="Female">Female</option>
     </select><br>
 
     <label style="color: white;">Grade:</label>
-    <input type="text" id="grade" placeholder="Enter grade e.g. Grade 9A" required><br>
+    <input type="text" id="grade" placeholder="Enter grade e.g. Grade 9A" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
 
     <label style="color: white;">Age:</label>
-    <input type="number" id="age" placeholder="Enter age"><br>
+    <input type="number" id="age" placeholder="Enter age" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
 
     <label style="color: white;">Parent Name:</label>
-    <input type="text" id="parentName" placeholder="Enter parent name"><br>
+    <input type="text" id="parentName" placeholder="Enter parent name" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
 
     <label style="color: white;">Parent Phone:</label>
-    <input type="tel" id="parentPhone" placeholder="Enter phone number"><br>
+    <input type="tel" id="parentPhone" placeholder="Enter phone number" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
 
     <label style="color: white;">Birth Certificate No:</label>
-    <input type="text" id="birthCert" placeholder="Enter birth certificate no"><br>
+    <input type="text" id="birthCert" placeholder="Enter birth certificate no" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
 
     <label style="color: white;">Admission Number:</label>
-    <input type="text" id="admissionNo" placeholder="Enter admission number"><br>
+    <input type="text" id="admissionNo" placeholder="Enter admission number" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
 
     <label style="color: white;">Learner Photo:</label>
-    <input type="file" id="photo" accept="image/*"><br>
+    <input type="file" id="photo" accept="image/*" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
 
-    <button type="button" id="registerButton">
-      <i class="fas fa-user-plus"></i> Register Learner
+    <button type="button" id="registerButton"
+      style="padding: 10px 14px; background: #3F51B5; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 12px; width: 100%;">
+      <i class="fas fa-user-plus" style="margin-right: 6px;"></i> Register Learner
     </button>
   </form>
 </div>
+
+
   </div>
 <div id="tableContainer" style="display: none; margin-top: 20px;">
  <h2 style="color: red;">Registered Learners</h2>
@@ -10243,34 +10148,6 @@ overlay.addEventListener("click", closeModal);
 // ESC key
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeModal();
-});
-
-const openBtn = document.getElementById("toggleFormBtn");
-const modal = document.getElementById("registrationContainer");
-const overlay = document.getElementById("formOverlay");
-const closeBtn = document.getElementById("closeFormBtn");
-
-// OPEN FORM
-openBtn.addEventListener("click", () => {
-  modal.classList.add("active");
-  overlay.classList.add("active");
-  document.body.classList.add("modal-open");
-});
-
-// CLOSE FUNCTION
-function closeForm() {
-  modal.classList.remove("active");
-  overlay.classList.remove("active");
-  document.body.classList.remove("modal-open");
-}
-
-// CLOSE EVENTS
-closeBtn.addEventListener("click", closeForm);
-overlay.addEventListener("click", closeForm);
-
-// ESC KEY
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeForm();
 });
 </script>
 </body>

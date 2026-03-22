@@ -1586,7 +1586,7 @@ button[onclick^="show"] {
 <div id="loginSection" style="display: block; text-align: center; margin-top: 50px; background-image: url('https://i.imgur.com/LJG5Eca.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 40px; border-radius: 8px;">
  
   <h1 style="color: white;">RASM SCHOOL MANAGEMENT SYSTEM</h1>
-  <p style="color: red; font-weight: bold; color: white;">NACHU JUNIOR </p>
+  <p style="color: red; font-weight: bold; color: white;">NACHU JUNIOR SCHOOL  </p>
 
   <form id="loginForm">
     <input type="text" id="username" placeholder="Username" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.7); border: none; border-radius: 4px;"><br><br>
@@ -1624,7 +1624,7 @@ button[onclick^="show"] {
   
   <!-- School Name -->
   <h1 style="font-size:24px; color:#673AB7; margin:0; font-weight:bold;">
-    NACHU JUNIOR  ...PO BOX 561-00902 KIKUYU KENYA
+    NACHU JUNIOR SCHOOL 
   </h1>
   
   <!-- Logo and Date/Time -->
@@ -1679,7 +1679,7 @@ button[onclick^="show"] {
   <div class="dashboard-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:20px;">
 
     <div class="dash-card" 
-         style="background-image:linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/LJG5Eca.jpeg');
+         style="background-image:linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/6bElgBt.jpeg');
                 background-size:cover;
                 background-position:center;
                 color:white;">
@@ -1740,7 +1740,7 @@ button[onclick^="show"] {
 
 <!-- ================= STUDENTS PER GRADE ================= -->
 <div style="
-  background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/fnJ1XnS.jpeg');
+  background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/v9bRrjG.jpeg');
   background-size: cover;
   background-position: center;
   padding:20px;
@@ -2199,79 +2199,64 @@ button[onclick^="show"] {
 
 </div>
 
-   
-<!-- Reports Sub Controls -->
-<div
-  id="reportsControls"
-  style="
-    display:none;
-    flex-direction:column;
-    gap:10px;
-    align-items:flex-start; /* 🔑 prevents stretching */
-  ">
+   <!-- ================= REPORTS DATABASE ================= -->
+<div style="max-width:500px; display:flex; flex-direction:column; gap:18px; align-items:center; width:100%;">
 
-  <button
-    class="print-button"
-    id="togglePerformanceReportsBtn"
+  <!-- Sub Buttons Container -->
+  <div
+    id="reportsControls"
     style="
-      background-color:#03A9F4;
-      color:white;
-      height:44px;
-      padding:0 16px;
-      border:none;
-      border-radius:6px;
-      font-size:1rem;
-      display:inline-flex;
-      align-items:center;
-      cursor:pointer;
-      width:auto; /* 🔑 fit content */
-    ">
-    <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
-    Exam Reports
-  </button>
+      display:none;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:15px;
+      width:100%;
+      padding:20px;
 
-  <button
-    class="print-button"
-    id="toggleMarksSectionBtn"
-    style="
-      background-color:#03A9F4;
-      color:white;
-      height:44px;
-      padding:0 16px;
-      border:none;
-      border-radius:6px;
-      font-size:1rem;
-      display:inline-flex;
-      align-items:center;
-      cursor:pointer;
-      width:auto;
-    ">
-    <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
-    Marks Section
-  </button>
+      /* clearer background image */
+      background:
+     
+        url('https://i.imgur.com/paq3Bzz.jpeg');
 
-  <button
-    class="print-button"
-    id="toggleRecordMarksBtn"
-    style="
-      background-color:#4CAF50;
-      color:white;
-      height:44px;
-      padding:0 16px;
-      border:none;
-      border-radius:6px;
-      font-size:1rem;
-      display:inline-flex;
-      align-items:center;
-      cursor:pointer;
-      width:auto;
+      background-size:cover;
+      background-position:center;
+
+      border-radius:14px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.08);
     ">
-    <i class="fas fa-chevron-down" style="margin-right:6px;"></i>
-    Record Marks
-  </button>
+
+    <!-- Exam Reports -->
+    <button
+      class="print-button blue-btn"
+      id="togglePerformanceReportsBtn"
+      style="min-width:180px; text-align:center;">
+      <i class="fas fa-file-alt"></i>
+      Exam Reports
+    </button>
+
+    <!-- Marks Section -->
+    <button
+      class="print-button blue-btn"
+      id="toggleMarksSectionBtn"
+      style="min-width:180px; text-align:center;">
+      <i class="fas fa-list"></i>
+      Marks Section
+    </button>
+
+    <!-- Record Marks -->
+    <button
+      class="print-button green-btn"
+      id="toggleRecordMarksBtn"
+      style="min-width:180px; text-align:center;">
+      <i class="fas fa-pen"></i>
+      Record Marks
+    </button>
+
+  </div>
 
 </div>
-  </div>
+
+
 <!-- ================= ONLINE SAFETY NOTE ================= -->
 <div
   id="onlineSafetyNote"
@@ -2501,7 +2486,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
 
 <!-- Record Marks Section -->
 <div id="recordMarksSection" style="max-width: 400px; margin: auto; display: none; background-color: #8BC34A; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-  background-image: url('https://i.imgur.com/z2Id4hq.jpeg'), url('https://i.imgur.com/L38mwvO.jpeg'); 
+  background-image: url('https://i.imgur.com/TZvzLll.jpeg'), url('https://i.imgur.com/L38mwvO.jpeg'); 
   background-size: cover, cover; 
   background-position: center, bottom right; 
   height: auto;">
@@ -2803,7 +2788,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
     type="text" 
     id="searchMarksInput" 
     placeholder="Enter learner name or admission number"
-    style="width: 100%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
+    style="width: 80%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
     
 </div>
   <!-- Filter by Grade -->
@@ -2815,7 +2800,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
   </label>
 
   <select id="filterMarksGrade" 
-        style="width: 100%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
+        style="width: 50%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
         
         <option value="">-- Select Grade --</option>
         <!-- Add Grade Options Dynamically -->
@@ -3036,31 +3021,87 @@ Rasm Does It All – Just Click and See It Done!.</span>
       <span style="color: #e74c3c;">Rasm: Redefining Exam Management Through ICT!
 Accuracy and Efficiency in Every Click.</span>
     </h2>
-<div id="dashboardTop" style="display:flex; gap:20px; align-items:center; margin-bottom:25px;">
-  <div id="classMeanCard" class="stat-card">
-    <h4>Class Mean</h4>
-    <div class="stat-value" id="classMeanValue">0</div>
+<div id="dashboardTop" style="
+  display:flex;
+  gap:20px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  margin-bottom:25px;
+">
+
+  <!-- Left: Cards -->
+  <div style="display:flex; gap:20px; flex-wrap:wrap; flex:1; min-width:220px;">
+
+    <!-- Class Mean Card -->
+    <div id="classMeanCard" class="stat-card" style="
+      flex:1 1 200px;
+      background:
+        url('https://i.imgur.com/j8oB0qC.jpeg') center/cover no-repeat;
+      border-radius:12px;
+      color:#fff;
+      position:relative;
+      padding:20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    ">
+      <div style="
+        position:absolute;
+        inset:0;
+        background: rgba(0,0,0,0.3);
+        border-radius:12px;
+      "></div>
+      <div style="position:relative; z-index:2; text-align:center;">
+        <h4 style="margin-bottom:10px; font-size:16px; font-weight:600;">Class Mean</h4>
+        <div class="stat-value" id="classMeanValue" style="font-size:28px; font-weight:bold;">0</div>
+      </div>
+    </div>
+
+    <!-- Total Learners Card -->
+    <div id="totalLearnersCard" class="stat-card" style="
+      flex:1 1 200px;
+      background:
+        url('https://i.imgur.com/v9bRrjG.jpeg') center/cover no-repeat;
+      border-radius:12px;
+      color:#fff;
+      position:relative;
+      padding:20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    ">
+      <div style="
+        position:absolute;
+        inset:0;
+        background: rgba(0,0,0,0.3);
+        border-radius:12px;
+      "></div>
+      <div style="position:relative; z-index:2; text-align:center;">
+        <h4 style="margin-bottom:10px; font-size:16px; font-weight:600;">Total Learners</h4>
+        <div class="stat-value" id="totalLearnersValue" style="font-size:28px; font-weight:bold;">0</div>
+      </div>
+    </div>
+
   </div>
-  <div id="totalLearnersCard" class="stat-card">
-    <h4>Total Learners</h4>
-    <div class="stat-value" id="totalLearnersValue">0</div>
+
+  <!-- Right: Buttons Column -->
+  <div style="display:flex; flex-direction:column; gap:15px; flex-shrink:0; min-width:180px;">
+
+    <button class="section-btn btn-performance" data-target="performanceSection" style="width:100%;">
+      🏆 Performance Insight
+    </button>
+
+    <button class="section-btn btn-grade" data-target="topGradeSection" style="width:100%;">
+      🥇 Top Performing Grade
+    </button>
+
+    <button class="section-btn btn-students" data-target="topStudentsSection" style="width:100%;">
+      👨‍🎓 Top 5 Students
+    </button>
+
+    <button class="section-btn btn-term" data-target="termPerformanceSection" style="width:100%;">
+      📊 Termly Performance
+    </button>
+
   </div>
+
 </div>
-<button class="section-btn btn-performance" data-target="performanceSection">
-  🏆 Performance Insight
-</button>
-
-<button class="section-btn btn-grade" data-target="topGradeSection">
-  🥇 Top Performing Grade
-</button>
-
-<button class="section-btn btn-students" data-target="topStudentsSection">
-  👨‍🎓 Top 5 Students
-</button>
-
-<button class="section-btn btn-term" data-target="termPerformanceSection">
-  📊 Termly Performance
-</button>
 
 <!-- 🔽 Sections -->
 
@@ -3069,16 +3110,75 @@ Accuracy and Efficiency in Every Click.</span>
 </div>
 
 <div id="topGradeSection" class="controlled-section" style="display:none;">
-  <div id="topGradeBox" class="dash-card" style="margin-top:10px;background:linear-gradient(135deg,#ff9800,#f44336);">
-    <h3 class="yellow-title">Top Performing Grade</h3>
-    <p id="topGrade">Loading...</p>
+
+  <div 
+    id="topGradeBox"
+    class="dash-card"
+    style="
+      margin-top:10px;
+      background:
+        url('https://i.imgur.com/mCN6Ant.jpeg')
+        center/cover no-repeat;
+      border-left:6px solid #ff9800;
+      position:relative;
+      color:#fff;
+    ">
+
+    <!-- Optional overlay for readability -->
+    <div style="
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,0.25);
+      border-radius:12px;
+    "></div>
+
+    <!-- Card Content -->
+    <div style="position:relative; z-index:2; text-align:center; padding:15px;">
+      <h3 class="yellow-title">Top Performing Grade</h3>
+      <p id="topGrade">Loading...</p>
+    </div>
+
   </div>
+
 </div>
 
+
+
 <div id="topStudentsSection" class="controlled-section" style="display:none;">
+
   <h3 class="yellow-title">🏆 Top 5 Students Overall</h3>
-  <div id="topStudentsList" class="dash-card" style="background:linear-gradient(135deg,#673ab7,#3f51b5);margin-top:10px;"></div>
+
+  <div 
+    id="topStudentsList"
+    class="dash-card"
+    style="
+      margin-top:10px;
+      background:
+        url('https://i.imgur.com/cVewWR4.jpeg')
+        center/cover no-repeat;
+      border-left:6px solid #673ab7;
+      position:relative;
+      color:#fff;
+    ">
+
+    <!-- Optional overlay for readability -->
+    <div style="
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,0.25);
+      border-radius:12px;
+    "></div>
+
+    <!-- Card Content -->
+    <div style="position:relative; z-index:2; padding:15px;">
+      <!-- Top students list content will go here -->
+    </div>
+
+  </div>
+
+
 </div>
+
 
 
 <!-- 📊 NEW TERM PERFORMANCE SECTION -->

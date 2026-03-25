@@ -3830,25 +3830,20 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebas
 import { 
     getDatabase, ref, push, set, onValue, remove, get, update 
 } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyDhTehL7VIaGG-bC2n1AFILZeJJ-drmSC0",
+    authDomain: "rasm-school-management.firebaseapp.com",
+    databaseURL: "https://rasm-school-management-default-rtdb.firebaseio.com",
+    projectId: "rasm-school-management",
+    storageBucket: "rasm-school-management.appspot.com",
+    messagingSenderId: "1015313561987",
+    appId: "1:1015313561987:web:4329664df844c17ae59eb6",
+    measurementId: "G-MHKTNPG712"
+  };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDhTehL7VIaGG-bC2n1AFILZeJJ-drmSC0",
-  authDomain: "rasm-school-management.firebaseapp.com",
-  databaseURL: "https://rasm-school-management-default-rtdb.firebaseio.com",
-  projectId: "rasm-school-management",
-  storageBucket: "rasm-school-management.appspot.com",
-  messagingSenderId: "1015313561987",
-  appId: "1:1015313561987:web:4329664df844c17ae59eb6",
-  measurementId: "G-MHKTNPG712"
-};
-
-const app = initializeApp(firebaseConfig);
-
-// ✅ renamed from database → db
-const db = getDatabase(app);
-
-// learners reference
-const learnersRef = ref(db, "learners");
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+  const learnersRef = ref(database, "learners");
 
 // 🔹 Auto-generate age based on grade (random within range)
 function getRandomAgeByGrade(grade) {

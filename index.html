@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1578,15 +1578,17 @@ button[onclick^="show"] {
   text-align:center;
   font-weight:bold;
 }
+
+
 </style>
 
 </head>
 <body>
 <!-- LOGIN SECTION -->
-<div id="loginSection" style="display: block; text-align: center; margin-top: 50px; background-image: url('https://i.imgur.com/LJG5Eca.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 40px; border-radius: 8px;">
+<div id="loginSection" style="display: block; text-align: center; margin-top: 50px; background-image: url('https://i.imgur.com/mCN6Ant.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 40px; border-radius: 8px;">
  
   <h1 style="color: white;">RASM SCHOOL MANAGEMENT SYSTEM</h1>
-  <p style="color: red; font-weight: bold; color: white;">NACHU JUNIOR SCHOOL  </p>
+  <p style="color: red; font-weight: bold; color: white;">NACHU PRIMARY SCHOOL</p>
 
   <form id="loginForm">
     <input type="text" id="username" placeholder="Username" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.7); border: none; border-radius: 4px;"><br><br>
@@ -1624,7 +1626,7 @@ button[onclick^="show"] {
   
   <!-- School Name -->
   <h1 style="font-size:24px; color:#673AB7; margin:0; font-weight:bold;">
-    NACHU JUNIOR SCHOOL 
+    NACHU PRIMARY SCHOOL ...PO BOX 561-00902 KIKUYU KENYA
   </h1>
   
   <!-- Logo and Date/Time -->
@@ -1656,7 +1658,6 @@ button[onclick^="show"] {
 >
   📢 <strong>Note:</strong> All new learners must be registered before entering marks.
 </div>
-
 <!-- ================= SCHOOL DASHBOARD ================= -->
 <h2 style="
   background:#222;
@@ -1679,7 +1680,7 @@ button[onclick^="show"] {
   <div class="dashboard-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:20px;">
 
     <div class="dash-card" 
-         style="background-image:linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/6bElgBt.jpeg');
+         style="background-image:linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/Mty6GUI.jpeg');
                 background-size:cover;
                 background-position:center;
                 color:white;">
@@ -1724,23 +1725,11 @@ button[onclick^="show"] {
 
   </div>
 </div>
-<!-- Notifications Bell -->
-<div class="dash-card" 
-     style="background-image:url('https://i.imgur.com/cVewWR4.jpeg');
-            background-size:cover;
-            background-position:center;
-            color:white; cursor:pointer;"
-     id="notificationsBell">
-  <div class="dash-card-content">
-    <h3>Notifications</h3>
-    <p class="dash-number" id="unreadCount" style="font-size:24px;">0</p>
-    <i class="fas fa-bell" style="font-size:28px;"></i>
-  </div>
-</div>
+
 
 <!-- ================= STUDENTS PER GRADE ================= -->
 <div style="
-  background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/v9bRrjG.jpeg');
+  background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/paq3Bzz.jpeg');
   background-size: cover;
   background-position: center;
   padding:20px;
@@ -1872,6 +1861,10 @@ button[onclick^="show"] {
       Attendance Register
     </button>
 
+
+<button id="toggleFeesBtn" class="main-btn orange">
+  <i class="fas fa-money-bill-wave"></i> Fee Management
+</button>
   </div>
 
 </div>
@@ -1890,7 +1883,7 @@ button[onclick^="show"] {
       transform:translate(-50%, -50%) scale(0.8);
       width:90%;
       max-width:800px;
-      background-image: url('https://i.imgur.com/Ix65TDw.jpeg');
+      background-image: url('https://i.imgur.com/05oiYXz.jpeg');
       background-size: cover;
       background-position: center;
       color:#fff;
@@ -2024,6 +2017,104 @@ button[onclick^="show"] {
 <div id="attendanceSummary" style="margin-top:15px; font-weight:bold;"></div>
 
 
+<div id="feesSection" style="display:none; margin-top:20px;" class="table-container">
+  <h2>💰 Fee Management</h2>
+<input type="text" id="feeSearch" placeholder="🔍 Search by name or grade..." style="margin-bottom:10px; padding:8px; width:250px;">
+  <div class="filter-bar">
+    <select id="feeGrade">
+      <option value="">Select Grade</option>
+    </select>
+<!-- Year -->
+    <select id="feeYear">
+      <option value="">Select Year</option>
+      <option value="2025">2025</option>
+      <option value="2026">2026</option>
+      <option value="2027">2027</option>
+      <option value="2028">2028</option>
+    </select>
+    <select id="feeStudent">
+      <option value="">Select Student</option>
+    </select>
+   
+  <select id="feeType">
+  <option value="">Select Fee Type</option>
+  <option value="Tuition Fees">Tuition Fees</option>
+  <option value="Admission Registration Fees">Admission Registration Fees</option>
+  <option value="Boarding Fees">Boarding Fees</option>
+  <option value="Lunch">Lunch</option>
+  <option value="Activity Fees">Activity Fees</option>
+  <option value="Examination Fees">Examination Fees</option>
+  <option value="Development Fees">Development Fees</option>
+  <option value="Maintenance Fees">Maintenance Fees</option>
+  <option value="Uniform Fees">Uniform Fees</option>
+  <option value="Transport Fees">Transport Fees</option>
+  <option value="PTA Fees">PTA Fees</option>
+  <option value="Medical Fees">Medical Fees</option>
+  <option value="Computer ICT Fees">Computer ICT Fees</option>
+
+  <!-- Term Exam Fees -->
+  <option value="Term 1 Midterm Exam">Term 1 Midterm Exam</option>
+  <option value="Term 1 End Term Exam">Term 1 End Term Exam</option>
+  <option value="Term 2 Midterm Exam">Term 2 Midterm Exam</option>
+  <option value="Term 2 End Term Exam">Term 2 End Term Exam</option>
+  <option value="Term 3 Midterm Exam">Term 3 Midterm Exam</option>
+  <option value="Term 3 End Term Exam">Term 3 End Term Exam</option>
+
+  <!-- Additional Fees -->
+  <option value="KNEC Project">KNEC Project</option>
+  <option value="Trip">Trip</option>
+  <option value="Others">Others</option>
+
+  <!-- School Support / Operational Fees -->
+  <option value="Security Fees">Security Fees</option>
+  <option value="Boarding Teacher Fees">Boarding Teacher Fees</option>
+  <option value="Cooks Fees">Cooks Fees</option>
+  <option value="Electricity Fees">Electricity Fees</option>
+  <option value="Internet Fees">Internet Fees</option>
+
+  <!-- Activities / Co-curricular -->
+  <option value="Games Fees">Games Fees</option>
+  <option value="Clubs Fees">Clubs Fees</option>
+  <option value="Scouts Fees">Scouts Fees</option>
+</select>
+
+    <input type="number" id="feeAmount" placeholder="Enter Amount">
+
+    <div id="lastPaymentInfo" style="margin-top:10px; font-size:13px; color:#555;"></div>
+    <button id="payFeeBtn">💵 Record Payment</button>
+<input type="text" id="mpesaPhone" placeholder="Parent Phone (e.g. 2547XXXXXXXX)">
+<button onclick="payWithMpesa()">📲 Pay with M-Pesa</button>
+  </div>
+<button onclick="printFilteredFees()" 
+style="background:#6c5ce7; color:white; padding:8px 15px; border:none; border-radius:5px; cursor:pointer;">
+🖨 Print Filtered Statement
+</button>
+
+ <!-- 📊 STATEMENT -->
+  <h3>📊 Fee Statement</h3>
+  <div id="feeStatement" style="background:#f9f9f9; padding:15px; border-radius:8px; min-height:100px;">
+    <!-- Dynamic content -->
+  </div>
+</div>
+
+<!-- 📅 HISTORY MODAL -->
+<div id="historyModal" 
+     style="display:none; position:fixed; top:8%; left:50%; transform:translateX(-50%);
+     background:#fff; padding:25px; border-radius:10px; width:60%; max-height:75%;
+     overflow:auto; z-index:1000; box-shadow:0 4px 20px rgba(0,0,0,0.2);">
+
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h3>📅 Payment History</h3>
+    <button onclick="closeHistoryModal()" 
+            style="background:red; color:white; border:none; padding:6px 10px; border-radius:5px; cursor:pointer;">
+      ❌
+    </button>
+  </div>
+
+  <hr style="margin:10px 0;">
+
+  <div id="historyContent"></div>
+</div>
 <!-- ================= COMMUNICATION CENTER ================= -->
 <div id="communicationCenter"
      class="controlled-section"
@@ -2122,6 +2213,16 @@ button[onclick^="show"] {
 
 </div>
 
+
+
+  <!-- Notifications / Inbox -->
+  <div style="margin-top:20px; padding:15px; background:#fff3e0; border-radius:8px;">
+    <h3 style="margin-top:0; color:#e65100;">Notifications / Inbox</h3>
+    <ul id="notificationsList" style="list-style:none; padding-left:0; max-height:250px; overflow-y:auto;">
+      <!-- Notifications will be appended here -->
+    </ul>
+  </div>
+</div>
 <!-- ================= EXAM & MARKS CONTROLS ================= -->
 <div style="
   display:flex;
@@ -2196,10 +2297,9 @@ button[onclick^="show"] {
     👀 Parent Lookup
   </button>
 
-
 </div>
 
-   <!-- ================= REPORTS DATABASE ================= -->
+<!-- ================= REPORTS DATABASE ================= -->
 <div style="max-width:500px; display:flex; flex-direction:column; gap:18px; align-items:center; width:100%;">
 
   <!-- Sub Buttons Container -->
@@ -2215,7 +2315,7 @@ button[onclick^="show"] {
 
       /* clearer background image */
       background:
-     
+       
         url('https://i.imgur.com/paq3Bzz.jpeg');
 
       background-size:cover;
@@ -2257,6 +2357,9 @@ button[onclick^="show"] {
 </div>
 
 
+
+
+
 <!-- ================= ONLINE SAFETY NOTE ================= -->
 <div
   id="onlineSafetyNote"
@@ -2280,7 +2383,7 @@ button[onclick^="show"] {
   
   🌸 <em>RASM wishes you a productive and wonderful day ahead!</em>
 
-
+</div>
   <span
     onclick="this.parentElement.style.display='none';"
     style="
@@ -2298,7 +2401,7 @@ button[onclick^="show"] {
 </div>
 
 <!-- Wrapped form, hidden by default -->
-<div id="registrationContainer" style="display: none; margin-top: 20px; max-width: 450px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-image: url('https://i.imgur.com/05oiYXz.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<div id="registrationContainer" style="display: none; margin-top: 20px; max-width: 450px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-image: url('https://i.imgur.com/jixmLF9.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
   <h2 style="color: white; background-color: rgba(255, 215, 0, 0.8); padding: 10px 12px; border-radius: 4px; text-align: center;">
     Register Learner
   </h2>
@@ -2345,7 +2448,7 @@ button[onclick^="show"] {
 
   </div>
 <div id="tableContainer" style="display: none; margin-top: 20px;">
- <h2 style="color: red;">Registered Learners</h2>
+  <h2>Registered Learners</h2>
 
 <!-- Filter Bar Box -->
   <div class="filter-bar" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
@@ -2391,11 +2494,10 @@ button[onclick^="show"] {
       <i class="fas fa-users"></i> Generate Parents List
     </button>
 
-<!-- Button -->
+  <!-- Button -->
 <button class="action-btn purple-btn" id="toggleClassListSectionBtn">
   <i class="fas fa-chevron-down"></i> Class List Generator
 </button>
-
 
     <button class="action-btn red-btn" onclick="promoteLearners()">
       <i class="fas fa-level-up-alt"></i> Promote Learners
@@ -2414,10 +2516,22 @@ button[onclick^="show"] {
 
 
   </h2>
-    <h2 style="background-color: rgba(255, 255, 255, 0.7); padding: 8px 16px; border-radius: 6px; display: inline-block; color: #2c3e50;">
-      <span style="color: #e74c3c;">No More Manual School Management  Crunching!
-Rasm Does It All – Just Click and See It Done!.</span>
-    </h2>
+   <h2 style="
+    background-color: rgba(255, 255, 255, 0.8); /* slightly lighter */
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: inline-block;
+    color: #2c3e50;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+">
+    <span style="color: #e74c3c; font-weight:bold;">
+        No More Manual School Management Crunching!<br>
+        RASM Does It All – Just Click and See It Done!
+    </span>
+</h2>
   <!-- Learners Table -->
   <table class="learners-table" style="margin-top: 20px;">
     <thead>
@@ -2445,17 +2559,11 @@ Rasm Does It All – Just Click and See It Done!.</span>
 </div>
 
 
+  <!-- Overlay -->
+<div id="overlay" style="display:none;"></div>
 
-
-<!-- Overlay -->
-<div id="overlay"></div>
-
-<!-- Modal -->
+<!-- Class List Generator Section -->
 <div id="classListSection" class="table-container">
-
-  <!-- Close Button -->
-  <span id="closeModalBtn">&times;</span>
-
   <h2 style="background-color: #ffff00; padding: 8px 16px; border-radius: 6px; display: inline-block;">
     Generate Class List per Grade
   </h2>
@@ -2464,7 +2572,6 @@ Rasm Does It All – Just Click and See It Done!.</span>
     <select id="classListGradeSelect">
       <option value="">Select Grade</option>
     </select>
-
     <button class="print-button" id="generateClassListBtn">
       <i class="fas fa-list"></i> Generate Class List
     </button>
@@ -2472,21 +2579,16 @@ Rasm Does It All – Just Click and See It Done!.</span>
 
   <div id="classListOutput"></div>
 </div>
-</div>
 
-<!-- Modal -->
-<div id="learnerModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <div id="modalDetails"></div>
   </div>
 </div>
+
 
 <div id="idPrintArea" class="id-print-area"></div>
 
 <!-- Record Marks Section -->
 <div id="recordMarksSection" style="max-width: 400px; margin: auto; display: none; background-color: #8BC34A; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-  background-image: url('https://i.imgur.com/TZvzLll.jpeg'), url('https://i.imgur.com/L38mwvO.jpeg'); 
+  background-image: url('https://i.imgur.com/z2Id4hq.jpeg'), url('https://i.imgur.com/L38mwvO.jpeg'); 
   background-size: cover, cover; 
   background-position: center, bottom right; 
   height: auto;">
@@ -2521,16 +2623,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
       <select id="examPeriod" required
         style="width: 100%; padding: 6px; margin: 6px 0; background-color: #fff8c6; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;">
         <option value="">-- Select Period --</option>
-       <option value="2024, Term 1, Opener Exam">2024, Term 1, Opener Exam</option>
-<option value="2024, Term 1, Midterm Exam">2024, Term 1, Midterm Exam</option>
-<option value="2024, Term 1, End Term Exam">2024, Term 1, End Term Exam</option>
-<option value="2024, Term 2, Opener Exam">2024, Term 2, Opener Exam</option>
-<option value="2024, Term 2, Midterm Exam">2024, Term 2, Midterm Exam</option>
-<option value="2024, Term 2, End Term Exam">2024, Term 2, End Term Exam</option>
-<option value="2024, Term 3, Opener Exam">2024, Term 3, Opener Exam</option>
-<option value="2024, Term 3, Midterm Exam">2024, Term 3, Midterm Exam</option>
-<option value="2024, Term 3, End Term Exam">2024, Term 3, End Term Exam</option>
-
+     
 <option value="2025, Term 1, Opener Exam">2025, Term 1, Opener Exam</option>
 <option value="2025, Term 1, Midterm Exam">2025, Term 1, Midterm Exam</option>
 <option value="2025, Term 1, End Term Exam">2025, Term 1, End Term Exam</option>
@@ -2711,9 +2804,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
       <div class="form-group">
         <input type="number" id="math" required placeholder="Math" style="width: 100%; padding: 6px;">
       </div>
-      <div class="form-group">
-        <input type="number" id="preTech" required placeholder="Pre-Tech" style="width: 100%; padding: 6px;">
-      </div>
+     
       <div class="form-group">
         <input type="number" id="kiswahili" required placeholder="Kiswahili" style="width: 100%; padding: 6px;">
       </div>
@@ -2730,7 +2821,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
         <input type="number" id="cre" required placeholder="CRE" style="width: 100%; padding: 6px;">
       </div>
       <div class="form-group">
-        <input type="number" id="creativeArt" required placeholder="Creative Art" style="width: 100%; padding: 6px;">
+        <input type="number" id="creativeArt" required placeholder="Creative Arts & sports " style="width: 100%; padding: 6px;">
       </div>
     </div>
 
@@ -2776,6 +2867,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
       </span>
     </h2>
 
+  
     <!-- Search Input -->
 <div class="form-group" style="flex: 1; min-width: 220px;">
   
@@ -2807,6 +2899,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
         
   </select>
 </div>
+
  <!-- Filter by Exam Period -->
 
 <div class="form-group" style="flex: 1; min-width: 220px;">
@@ -3109,6 +3202,7 @@ Accuracy and Efficiency in Every Click.</span>
   <h3 class="yellow-title">🏆 Performance Insight</h3>
 </div>
 
+
 <div id="topGradeSection" class="controlled-section" style="display:none;">
 
   <div 
@@ -3224,36 +3318,36 @@ Accuracy and Efficiency in Every Click.</span>
 <h2 style="text-align:center; margin-top:20px; color:red; font-weight:bold;">
   📊 Marks List
 </h2>
-<button id="saveMarksBtn" class="green-btn" style="margin:15px 0; display:none;">
-  💾 Save Changes
-</button>
+
 <!-- Marks Table -->
-<table class="marks-table" style="margin-top: 10px;">
-  <thead>
-    <tr>
-      <th>No.</th>
-      <th>Name</th>
-      <th>Grade</th>
-      <th>Eng</th><th>Lev</th>
-      <th>Math</th><th>Lev</th>
-      <th>Pre-Tech</th><th>Lev</th>
-      <th>Kiswa</th><th>Lev</th>
-      <th>Scie</th><th>Lev</th>
-      <th>Sst</th><th>Lev</th>
-      <th>Agric</th><th>Lev</th>
-      <th>Cre</th><th>Lev</th>
-      <th>C/A</th><th>Lev</th>
-      <th>Total Marks</th>
-      <th>Points</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody id="marksList"></tbody>
-  <tfoot>
-    <tr id="totalsRow"></tr>
-    <tr id="averagesRow"></tr>
-  </tfoot>
-</table>
+<table class="marks-table" style="margin-top: 20px;">
+  <!-- Marks Table -->
+  <table class="marks-table" style="margin-top: 20px;">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Name</th>
+        <th>Grade</th>
+        <th>Eng</th><th>Lev</th>
+        <th>Math</th><th>Lev</th>
+     
+        <th>Kiswa</th><th>Lev</th>
+        <th>Scie</th><th>Lev</th>
+        <th>Sst</th><th>Lev</th>
+        <th>Agric</th><th>Lev</th>
+        <th>Cre</th><th>Lev</th>
+        <th>C/A</th><th>Lev</th>
+        <th>Total Marks</th>
+         <th>Points</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="marksList"></tbody>
+    <tfoot>
+      <tr id="totalsRow"></tr>
+      <tr id="averagesRow"></tr>
+    </tfoot>
+  </table>
 </div>
 
 
@@ -3264,7 +3358,7 @@ Accuracy and Efficiency in Every Click.</span>
     Exam Reports
   </h2>
 
- <!-- RASM Reminder -->
+<!-- RASM Reminder -->
 <div style="
   background-color:#ff4d4f;
   color:#fff;
@@ -3291,8 +3385,8 @@ Accuracy and Efficiency in Every Click.</span>
     <strong>RASM Reminder:</strong>
     Please select <strong>grade</strong>, <strong>exam period</strong>, and <strong>subject</strong> before generating any report. Thank you.
   </div>
+  </div>
 
-</div>
 <!-- Action Box Container -->
 <div style="background-image: url('https://i.imgur.com/Ax6XN4u.jpeg'); background-size: cover; background-position: center; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); max-width: 400px; margin: auto;">
 
@@ -3506,15 +3600,15 @@ Accuracy and Efficiency in Every Click.</span>
       <option value="">Select Subject</option>
       <option value="eng">English</option>
       <option value="math">Mathematics</option>
-      <option value="preTech">Pre-Technical Studies</option>
+
       <option value="kiswahili">Kiswahili</option>
-      <option value="science">Integrated Science</option>
+      <option value="science">Science</option>
       <option value="social">Social Studies</option>
       <option value="agriculture">Agriculture</option>
       <option value="cre">Religious Education</option>
-      <option value="creativeArt">Creative Art</option>
+      <option value="creativeArt">Creative Arts & sports </option>
     </select>
-   <div style="font-size: 13px; color: #333; background-color: #fff3cd; padding: 8px 12px; margin-top: 4px; border-radius: 6px;">
+    <div style="font-size: 13px; color: #333; background-color: #fff3cd; padding: 8px 12px; margin-top: 4px; border-radius: 6px;">
   <i class="fas fa-info-circle" style="margin-right: 5px; color: #856404;"></i>
   Select the subject you want to analyze performance for.
 </div>
@@ -3706,7 +3800,13 @@ Rasm Does It All – One Click and You’re Done!.</span>
 </div>
 
 <div id="toast" class="toast"></div>
-
+<!-- Full-screen Loading Spinner -->
+<div id="spinnerOverlay" style="display:none;">
+  <div class="spinnerBox">
+    <div class="spinner"></div>
+    <p>Saving Attendance...</p>
+  </div>
+</div>
 <div id="spinner" style="
   display: none;
   position: fixed;
@@ -3729,29 +3829,36 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebas
 import { 
     getDatabase, ref, push, set, onValue, remove, get, update 
 } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+
   const firebaseConfig = {
-    apiKey: "AIzaSyDhTehL7VIaGG-bC2n1AFILZeJJ-drmSC0",
-    authDomain: "rasm-school-management.firebaseapp.com",
-    databaseURL: "https://rasm-school-management-default-rtdb.firebaseio.com",
-    projectId: "rasm-school-management",
-    storageBucket: "rasm-school-management.appspot.com",
-    messagingSenderId: "1015313561987",
-    appId: "1:1015313561987:web:4329664df844c17ae59eb6",
-    measurementId: "G-MHKTNPG712"
+  apiKey: "AIzaSyCLPVPWffyUuf6uWUw9zF5AcCyDV9w5Xjg",
+  authDomain: "nairobi-yetu.firebaseapp.com",
+  databaseURL: "https://nairobi-yetu-default-rtdb.firebaseio.com",
+  projectId: "nairobi-yetu",
+  storageBucket: "nairobi-yetu.firebasestorage.app",
+  messagingSenderId: "986907903758",
+  appId: "1:986907903758:web:e809b809610d5ef5bcb95f",
+  measurementId: "G-0WS8ECZLF5"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-  const learnersRef = ref(database, "learners");
+const app = initializeApp(firebaseConfig);
+
+// ✅ renamed from database → db
+const db = getDatabase(app);
+
+// learners reference
+const learnersRef = ref(db, "learners");
+
+
 // 🔹 Auto-generate age based on grade (random within range)
 function getRandomAgeByGrade(grade) {
     switch (grade) {
-        case '7': case '7A': case '7B': case '7C':
-            return Math.floor(Math.random() * 2) + 12; // 12-13
-        case '8': case '8A': case '8B': case '8C':
-            return Math.floor(Math.random() * 2) + 13; // 13-14
-        case '9': case '9A': case '9B': case '9C':
-            return Math.floor(Math.random() * 2) + 14; // 14-15
+        case '4': case '4A': case '4B': case '4C':
+            return Math.floor(Math.random() * 2) + 9; // 9-10
+        case '5': case '5A': case '5B': case '5C':
+            return Math.floor(Math.random() * 2) + 10; // 10-11
+        case '6': case '6A': case '6B': case '6C':
+            return Math.floor(Math.random() * 2) + 11; // 11-12
         default:
             return '';
     }
@@ -3764,14 +3871,14 @@ function getAgeByGradeAndAdmissionYear(grade, admissionYear) {
     let baseAge;
 
     switch (grade) {
-        case '7': case '7A': case '7B': case '7C':
-            baseAge = 12;
+        case '4': case '4A': case '4B': case '4C':
+            baseAge = 9;
             break;
-        case '8': case '8A': case '8B': case '8C':
-            baseAge = 13;
+        case '5': case '5A': case '5B': case '5C':
+            baseAge = 10;
             break;
-        case '9': case '9A': case '9B': case '9C':
-            baseAge = 14;
+        case '6': case '6A': case '6B': case '6C':
+            baseAge = 11;
             break;
         default:
             return '';
@@ -3779,7 +3886,6 @@ function getAgeByGradeAndAdmissionYear(grade, admissionYear) {
 
     return baseAge + yearDiff;
 }
-
 // 🔹 Generate admission number like 2026/001
 async function generateAdmissionNumber() {
     const year = new Date().getFullYear();
@@ -3798,6 +3904,23 @@ async function generateAdmissionNumber() {
     const nextNumber = String(count + 1).padStart(3, '0');
     return `${year}/${nextNumber}`;
 }
+
+// 🔹 Remember last selected grade
+const gradeInput = document.getElementById('grade');
+
+// Load saved grade on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const savedGrade = localStorage.getItem('lastGrade');
+    if (savedGrade) {
+        gradeInput.value = savedGrade;
+    }
+});
+
+// Save grade whenever user types/changes
+gradeInput.addEventListener('input', () => {
+    localStorage.setItem('lastGrade', gradeInput.value);
+});
+
 
 // 🔹 Learner registration
 document.getElementById('registerButton').addEventListener('click', async () => {
@@ -3826,6 +3949,9 @@ document.getElementById('registerButton').addEventListener('click', async () => 
         return;
     }
 
+    // 🔹 Save grade so it persists
+    localStorage.setItem('lastGrade', grade);
+
     // 🔹 Auto-generate age if empty
     if (!age) {
         age = getRandomAgeByGrade(grade);
@@ -3844,7 +3970,7 @@ document.getElementById('registerButton').addEventListener('click', async () => 
         grade,
         age,
         admissionNo,
-        admissionYear: year, // store for dynamic age calculation
+        admissionYear: year,
         ...(parentName && { parentName }),
         ...(parentPhone && { parentPhone }),
         ...(birthCert && { birthCert }),
@@ -3853,7 +3979,7 @@ document.getElementById('registerButton').addEventListener('click', async () => 
 
     const newLearnerRef = push(learnersRef);
 
-    // 🔵 Centered spinner
+    // 🔵 Loading spinner
     Swal.fire({
         title: 'Registering...',
         text: 'Please wait',
@@ -3876,7 +4002,14 @@ document.getElementById('registerButton').addEventListener('click', async () => 
                 confirmButtonColor: '#28a745'
             });
 
+            // 🔹 Reset form BUT keep grade
             document.getElementById('learnerForm').reset();
+
+            const savedGrade = localStorage.getItem('lastGrade');
+            if (savedGrade) {
+                document.getElementById('grade').value = savedGrade;
+            }
+
             loadLearners(); // reload learners
 
         })
@@ -3893,7 +4026,6 @@ document.getElementById('registerButton').addEventListener('click', async () => 
             });
         });
 });
-
 // 🔹 Example: compute age dynamically when displaying
 function displayLearner(learner) {
     const dynamicAge = getAgeByGradeAndAdmissionYear(learner.grade, learner.admissionYear);
@@ -3935,7 +4067,7 @@ function updateDashboard() {
     if (gender === "Female") genderCounts.Female++;
   });
 
-  animateCounter("totalStudents", allLearners.length);
+animateCounter("totalStudents", allLearners.length);
   animateCounter("totalClasses", Object.keys(gradeCounts).length);
   animateCounter("totalSubjects", 9);
 
@@ -4015,11 +4147,10 @@ function updateDashboard() {
   });
 
   // ================= TOP PERFORMING GRADE =================
-calculateTopGrade();
+  calculateTopGrade();
 calculateTopStudents();
 generateInsight();
 generateTermComparison();
-generateGradePerformance();
 }
 let filteredLearners = [];
 let currentIndex = 0;
@@ -4060,8 +4191,6 @@ function animateCounter(id, target) {
     }
   }, 20);
 }
-
-
 function generateTermComparison() {
 
   const termTotals = {};
@@ -4074,7 +4203,7 @@ function generateTermComparison() {
       const total =
         (parseFloat(exam.eng) || 0) +
         (parseFloat(exam.math) || 0) +
-        (parseFloat(exam.preTech) || 0) +
+ 
         (parseFloat(exam.kiswahili) || 0) +
         (parseFloat(exam.science) || 0) +
         (parseFloat(exam.social) || 0) +
@@ -4106,239 +4235,97 @@ function generateTermComparison() {
   });
 }
 function calculateTopStudents() {
-  const selectedExam = document.getElementById("marksExamPeriodSelect")?.value;
-  const container = document.getElementById("topStudentsList");
-  if (!container) return;
-
-  if (!selectedExam) {
-    container.innerHTML = "<em>Select Exam Period</em>";
-    return;
-  }
-
-  const performanceLevels = [
-    { level: "EE1", desc: "Exceeds Expectations 1 (Top)", min: 810, max: 900 },
-    { level: "EE2", desc: "Exceeds Expectations 2", min: 720, max: 809 },
-    { level: "ME1", desc: "Meets Expectations 3", min: 630, max: 719 },
-    { level: "ME2", desc: "Meets Expectations 1", min: 540, max: 629 },
-    { level: "AE1", desc: "Approaching Expectations 2", min: 450, max: 539 },
-    { level: "AE2", desc: "Approaching Expectations 1", min: 360, max: 449 },
-    { level: "BE1", desc: "Below Expectations 2", min: 270, max: 359 },
-    { level: "BE2", desc: "Below Expectations 0", min: 0, max: 269 },
-  ];
 
   const studentTotals = [];
 
   allLearners.forEach(l => {
-    if (!l.marks || !l.marks[selectedExam]) return;
+    if (!l.marks) return;
 
-    const exam = l.marks[selectedExam];
-    const total =
-      (parseFloat(exam.eng) || 0) +
-      (parseFloat(exam.math) || 0) +
-      (parseFloat(exam.preTech) || 0) +
-      (parseFloat(exam.kiswahili) || 0) +
-      (parseFloat(exam.science) || 0) +
-      (parseFloat(exam.social) || 0) +
-      (parseFloat(exam.agriculture) || 0) +
-      (parseFloat(exam.cre) || 0) +
-      (parseFloat(exam.creativeArt) || 0);
+    let grandTotal = 0;
+    let count = 0;
 
-    const perf = performanceLevels.find(p => total >= p.min && total <= p.max);
+    Object.values(l.marks).forEach(exam => {
 
-    studentTotals.push({
-      name: l.name,
-      grade: l.grade,
-      total: total,
-      level: perf ? perf.level : "-",
-      description: perf ? perf.desc : "-"
+      const total =
+        (parseFloat(exam.eng) || 0) +
+        (parseFloat(exam.math) || 0) +
+ 
+        (parseFloat(exam.kiswahili) || 0) +
+        (parseFloat(exam.science) || 0) +
+        (parseFloat(exam.social) || 0) +
+        (parseFloat(exam.agriculture) || 0) +
+        (parseFloat(exam.cre) || 0) +
+        (parseFloat(exam.creativeArt) || 0);
+
+      grandTotal += total;
+      count++;
     });
+
+    if (count > 0) {
+      studentTotals.push({
+        name: l.name,
+        grade: l.grade,
+        average: grandTotal / count
+      });
+    }
   });
 
-  studentTotals.sort((a, b) => b.total - a.total);
+  studentTotals.sort((a, b) => b.average - a.average);
+
   const top5 = studentTotals.slice(0, 5);
 
-  if (!top5.length) {
-    container.innerHTML = "<em>No Exam Data</em>";
-    return;
-  }
-
-  const maxTotal = top5[0].total;
-
-  container.innerHTML = top5.map((s, index) => {
-    let badgeColor = "#bbb";
-    if (index === 0) badgeColor = "#FFD700"; // Gold
-    else if (index === 1) badgeColor = "#C0C0C0"; // Silver
-    else if (index === 2) badgeColor = "#CD7F32"; // Bronze
-
-    const progressWidth = ((s.total / maxTotal) * 100).toFixed(1);
-
-    return `
-      <div style="
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        padding:10px 15px;
-        margin-bottom:8px;
-        border-radius:8px;
-        background-color: ${index % 2 === 0 ? "#f9f9f9" : "#f0f4f8"};
-        color: #333;
-        box-shadow:0 1px 3px rgba(0,0,0,0.05);
-      ">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div style="
-            width:24px;
-            height:24px;
-            border-radius:50%;
-            background-color:${badgeColor};
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-weight:bold;
-            color:#fff;
-          ">${index + 1}</div>
-          <div>
-            <strong>${s.name}</strong> (${s.grade}) - ${s.total}<br>
-            <small style="color:#555;">${s.level} - ${s.description}</small>
-          </div>
-        </div>
-        <div style="
-          flex:1;
-          height:10px;
-          background:#e0e0e0;
-          border-radius:5px;
-          margin-left:15px;
-          margin-right:10px;
-        ">
-          <div style="
-            width:${progressWidth}%;
-            height:100%;
-            background:${badgeColor};
-            border-radius:5px;
-          "></div>
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-function calculateTopGrade() {
-  const selectedExam = document.getElementById("marksExamPeriodSelect")?.value;
-  const container = document.getElementById("topGrade");
+  const container = document.getElementById("topStudentsList");
   if (!container) return;
 
-  if (!selectedExam) {
-    container.innerHTML = "<em>Select Exam Period</em>";
-    return;
-  }
-
-  const performanceLevels = [
-    { level: "EE1", desc: "Exceeds Expectations 1 (Top)", min: 810, max: 900 },
-    { level: "EE2", desc: "Exceeds Expectations 2", min: 720, max: 809 },
-    { level: "ME1", desc: "Meets Expectations 3", min: 630, max: 719 },
-    { level: "ME2", desc: "Meets Expectations 1", min: 540, max: 629 },
-    { level: "AE1", desc: "Approaching Expectations 2", min: 450, max: 539 },
-    { level: "AE2", desc: "Approaching Expectations 1", min: 360, max: 449 },
-    { level: "BE1", desc: "Below Expectations 2", min: 270, max: 359 },
-    { level: "BE2", desc: "Below Expectations 0", min: 0, max: 269 },
-  ];
+  container.innerHTML = top5.length
+    ? top5.map((s, i) =>
+        `${i + 1}. ${s.name} (${s.grade}) - ${s.average.toFixed(1)}`
+      ).join("<br>")
+    : "No Exam Data Available";
+}
+function calculateTopGrade() {
 
   const gradeTotals = {};
   const gradeCounts = {};
 
   allLearners.forEach(l => {
-    if (!l.marks || !l.marks[selectedExam]) return;
-    const exam = l.marks[selectedExam];
-    const total =
-      (parseFloat(exam.eng) || 0) +
-      (parseFloat(exam.math) || 0) +
-      (parseFloat(exam.preTech) || 0) +
-      (parseFloat(exam.kiswahili) || 0) +
-      (parseFloat(exam.science) || 0) +
-      (parseFloat(exam.social) || 0) +
-      (parseFloat(exam.agriculture) || 0) +
-      (parseFloat(exam.cre) || 0) +
-      (parseFloat(exam.creativeArt) || 0);
+    if (!l.marks) return;
 
-    const grade = l.grade;
-    gradeTotals[grade] = (gradeTotals[grade] || 0) + total;
-    gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
+    Object.values(l.marks).forEach(exam => {
+
+      const total =
+        (parseFloat(exam.eng) || 0) +
+        (parseFloat(exam.math) || 0) +
+ 
+        (parseFloat(exam.kiswahili) || 0) +
+        (parseFloat(exam.science) || 0) +
+        (parseFloat(exam.social) || 0) +
+        (parseFloat(exam.agriculture) || 0) +
+        (parseFloat(exam.cre) || 0) +
+        (parseFloat(exam.creativeArt) || 0);
+
+      const grade = l.grade;
+
+      gradeTotals[grade] = (gradeTotals[grade] || 0) + total;
+      gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
+    });
   });
 
-  const gradeAverages = Object.keys(gradeTotals).map(g => {
+  let topGrade = "No Data";
+  let highestAvg = 0;
+
+  Object.keys(gradeTotals).forEach(g => {
     const avg = gradeTotals[g] / gradeCounts[g];
-    const perf = performanceLevels.find(p => avg >= p.min && avg <= p.max);
-
-    return {
-      grade: g,
-      average: avg,
-      level: perf ? perf.level : "-",
-      description: perf ? perf.desc : "-"
-    };
+    if (avg > highestAvg) {
+      highestAvg = avg;
+      topGrade = g;
+    }
   });
 
-  gradeAverages.sort((a, b) => b.average - a.average);
-
-  if (!gradeAverages.length) {
-    container.innerHTML = "<em>No Exam Data</em>";
-    return;
-  }
-
-  const maxAvg = gradeAverages[0].average;
-
-  container.innerHTML = gradeAverages.map((g, index) => {
-    let badgeColor = "#bbb";
-    if (index === 0) badgeColor = "#FFD700"; // Gold
-    else if (index === 1) badgeColor = "#C0C0C0"; // Silver
-    else if (index === 2) badgeColor = "#CD7F32"; // Bronze
-
-    const progressWidth = ((g.average / maxAvg) * 100).toFixed(1);
-
-    return `
-      <div style="
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        padding:10px 15px;
-        margin-bottom:8px;
-        border-radius:8px;
-        background-color: ${index % 2 === 0 ? "#f9f9f9" : "#f0f4f8"};
-        color: #333;
-        box-shadow:0 1px 3px rgba(0,0,0,0.05);
-      ">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div style="
-            width:24px;
-            height:24px;
-            border-radius:50%;
-            background-color:${badgeColor};
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-weight:bold;
-            color:#fff;
-          ">${index + 1}</div>
-          <div>
-            <strong>${g.grade}</strong> - ${g.average.toFixed(1)} Avg<br>
-            <small style="color:#555;">${g.level} - ${g.description}</small>
-          </div>
-        </div>
-        <div style="
-          flex:1;
-          height:10px;
-          background:#e0e0e0;
-          border-radius:5px;
-          margin-left:15px;
-          margin-right:10px;
-        ">
-          <div style="
-            width:${progressWidth}%;
-            height:100%;
-            background:${badgeColor};
-            border-radius:5px;
-          "></div>
-        </div>
-      </div>
-    `;
-  }).join("");
+  document.getElementById("topGrade").innerText =
+    highestAvg > 0
+      ? `${topGrade} (${highestAvg.toFixed(1)} Avg)`
+      : "No Exam Data";
 }
 function hideLoadingSpinner() {
   if (!spinnerContainer) return;
@@ -4525,18 +4512,13 @@ function attachDelete(row, data) {
     if (!isAdminLoggedIn) return Swal.fire("Access Denied","Admins only","error");
 
     Swal.fire({
-  title: `<span style="color:red;">Dangerous Action</span>`,
-  html: `
-    <h3>Confirm Deletion</h3>
-    <p>This learner will be permanently removed</p>
-  `,
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonColor: "#d33",
-  confirmButtonText: "Delete",
-  cancelButtonText: "Cancel"
-}).then(async result => {
-  if (!result.isConfirmed) return;
+      title: "Confirm Deletion",
+      text: "This learner will be permanently removed",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33"
+    }).then(async result => {
+      if (!result.isConfirmed) return;
 
       try {
         await remove(ref(database, `learners/${data.key}`));
@@ -4564,7 +4546,6 @@ if (scrollContainer) {
     }
   });
 }
-
 // ================= SEARCH =================
 if (searchInput) {
   searchInput.addEventListener("input", function () {
@@ -4582,18 +4563,11 @@ if (searchInput) {
 // ================= INIT =================
 loadLearners().then(() => {
   populateAttendanceGrades();
+loadFeeStudents();
 });
 
-// ================= DASHBOARD EXAM FILTER LISTENER =================
-const dashboardExamSelect = document.getElementById("marksExamPeriodSelect");
-
-if (dashboardExamSelect) {
-  dashboardExamSelect.addEventListener("change", () => {
-    updateDashboard();
-  });
-}
 printButton.addEventListener('click', () => {
-    const schoolName = "NACHU JUNIOR SCHOOL ";
+    const schoolName = "NACHU PRIMARY SCHOOL ";
     const year = "202...";
     const term = " ....";
 
@@ -4700,7 +4674,7 @@ function printRegisteredLearners(schoolName, year, term, learners) {
                 </div>
                 ${tableHtml}
                 <div class="stamp">
-                    Nachu Junior School<br>
+                    Nachu Primary School<br>
                     P.O. Box 561-00902, Kikuyu<br>
                     ICT Department<br>
                     Date: ${printDate}
@@ -4731,7 +4705,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <img src="https://i.imgur.com/VSAh48K.jpeg" class="school-logo">
 
             <div class="school-info">
-              <h3>NACHU JUNIOR SCHOOL</h3>
+              <h3>NACHU PRIMARY SCHOOL</h3>
               <small>Student Identification Card</small>
             </div>
           </div>
@@ -4861,7 +4835,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="id-header">
             <img src="logo.png" class="school-logo">
             <div>
-              <h4>NACHU JUNIOR SCHOOL</h4>
+              <h4>NACHU PRIMARY SCHOOL</h4>
               <small>Student ID Card</small>
             </div>
           </div>
@@ -5028,8 +5002,7 @@ document.getElementById("saveMarksButton").addEventListener("click", () => {
     engLev: getLevel(document.getElementById("eng").value),
     math: document.getElementById("math").value,
     mathLev: getLevel(document.getElementById("math").value),
-    preTech: document.getElementById("preTech").value,
-    preTechLev: getLevel(document.getElementById("preTech").value),
+
     kiswahili: document.getElementById("kiswahili").value,
     kiswahiliLev: getLevel(document.getElementById("kiswahili").value),
     science: document.getElementById("science").value,
@@ -5138,7 +5111,7 @@ function calculateTotalLevel(marks) {
   return (
     parseInt(getLevel(marks.eng)) +
     parseInt(getLevel(marks.math)) +
-    parseInt(getLevel(marks.preTech)) +
+ 
     parseInt(getLevel(marks.kiswahili)) +
     parseInt(getLevel(marks.science)) +
     parseInt(getLevel(marks.social)) +
@@ -5168,7 +5141,7 @@ function loadMarksFromFirebase() {
   if (spinner) spinner.style.display = "block";
   marksTableBody.innerHTML = "";
 
-  const learnersMap = new Map(); // key → learner object
+  const learnersMap = new Map(); // Use Map to prevent duplicates
   const grades = new Set();
 
   onValue(learnersRef, (snapshot) => {
@@ -5180,12 +5153,11 @@ function loadMarksFromFirebase() {
       if (data.grade) grades.add(data.grade);
 
       if (marks && data.grade === selectedGrade) {
-        // Avoid duplicates by key
+        // Prevent duplicate learners
         if (!learnersMap.has(childSnapshot.key)) {
           const rowTotal =
             (parseFloat(marks.eng) || 0) +
             (parseFloat(marks.math) || 0) +
-            (parseFloat(marks.preTech) || 0) +
             (parseFloat(marks.kiswahili) || 0) +
             (parseFloat(marks.science) || 0) +
             (parseFloat(marks.social) || 0) +
@@ -5203,11 +5175,11 @@ function loadMarksFromFirebase() {
       }
     });
 
-    // Convert Map → Array and sort
-    const learnersArray = Array.from(learnersMap.values()).sort((a, b) => b.rowTotal - a.rowTotal);
+    const learnersArray = Array.from(learnersMap.values())
+                               .sort((a, b) => b.rowTotal - a.rowTotal);
 
     let sums = {
-      eng: 0, math: 0, preTech: 0, kiswahili: 0,
+      eng: 0, math: 0, kiswahili: 0,
       science: 0, social: 0, agriculture: 0,
       cre: 0, creativeArt: 0, totalMarks: 0, totalLevel: 0
     };
@@ -5218,7 +5190,6 @@ function loadMarksFromFirebase() {
 
       sums.eng += (parseFloat(marks.eng) || 0);
       sums.math += (parseFloat(marks.math) || 0);
-      sums.preTech += (parseFloat(marks.preTech) || 0);
       sums.kiswahili += (parseFloat(marks.kiswahili) || 0);
       sums.science += (parseFloat(marks.science) || 0);
       sums.social += (parseFloat(marks.social) || 0);
@@ -5239,7 +5210,6 @@ function loadMarksFromFirebase() {
         <td>${data.grade}</td>
         <td data-editable="true">${marks.eng || ''}</td><td>${marks.engLev || ''}</td>
         <td data-editable="true">${marks.math || ''}</td><td>${marks.mathLev || ''}</td>
-        <td data-editable="true">${marks.preTech || ''}</td><td>${marks.preTechLev || ''}</td>
         <td data-editable="true">${marks.kiswahili || ''}</td><td>${marks.kiswahiliLev || ''}</td>
         <td data-editable="true">${marks.science || ''}</td><td>${marks.scienceLev || ''}</td>
         <td data-editable="true">${marks.social || ''}</td><td>${marks.socialLev || ''}</td>
@@ -5259,6 +5229,7 @@ function loadMarksFromFirebase() {
     });
 
     if (isAdminLoggedIn) enableMarksEditing();
+
     populateGradeSelectors(grades);
     updateTotalsAndAverages(sums, learnersArray.length);
     renderSubjectAverages(sums, learnersArray.length);
@@ -5320,16 +5291,12 @@ function populateGradeSelectors(grades) {
   });
 }
 
-// Get the level based on the score
+// Get the level based on the score (4 Levels Only)
 function getLevel(score) {
-  if (score >= 90) return 8;
-  if (score >= 75) return 7;
-  if (score >= 58) return 6;
-  if (score >= 41) return 5;
-  if (score >= 31) return 4;
-  if (score >= 21) return 3;
-  if (score >= 11) return 2;
-  return 1;
+  if (score >= 75) return 4;   // EE
+  if (score >= 50) return 3;   // ME
+  if (score >= 25) return 2;   // AE
+  return 1;                    // BE
 }
 
 // Update totals and averages for the filtered data
@@ -5341,7 +5308,7 @@ function updateTotalsAndAverages(sums, count) {
     <td colspan="3"><strong>Totals</strong></td>
     <td>${sums.eng}</td><td></td>
     <td>${sums.math}</td><td></td>
-    <td>${sums.preTech}</td><td></td>
+ 
     <td>${sums.kiswahili}</td><td></td>
     <td>${sums.science}</td><td></td>
     <td>${sums.social}</td><td></td>
@@ -5358,7 +5325,7 @@ function updateTotalsAndAverages(sums, count) {
     <td colspan="3"><strong>Averages</strong></td>
     <td>${(sums.eng / divisor).toFixed(2)}</td><td></td>
     <td>${(sums.math / divisor).toFixed(2)}</td><td></td>
-    <td>${(sums.preTech / divisor).toFixed(2)}</td><td></td>
+ 
     <td>${(sums.kiswahili / divisor).toFixed(2)}</td><td></td>
     <td>${(sums.science / divisor).toFixed(2)}</td><td></td>
     <td>${(sums.social / divisor).toFixed(2)}</td><td></td>
@@ -5377,7 +5344,7 @@ filterMarksGrade.addEventListener("change", () => {
   const rows = marksTableBody.querySelectorAll("tr");
 
   let sums = {
-    eng: 0, math: 0, preTech: 0, kiswahili: 0,
+    eng: 0, math: 0, kiswahili: 0,
     science: 0, social: 0, agriculture: 0, cre: 0, creativeArt: 0, totalMarks: 0, totalLevel: 0
   };
   let filteredCount = 0;
@@ -5391,25 +5358,25 @@ filterMarksGrade.addEventListener("change", () => {
       const cells = row.querySelectorAll("td");
       sums.eng += parseFloat(cells[3].textContent) || 0;
       sums.math += parseFloat(cells[5].textContent) || 0;
-      sums.preTech += parseFloat(cells[7].textContent) || 0;
-      sums.kiswahili += parseFloat(cells[9].textContent) || 0;
-      sums.science += parseFloat(cells[11].textContent) || 0;
-      sums.social += parseFloat(cells[13].textContent) || 0;
-      sums.agriculture += parseFloat(cells[15].textContent) || 0;
-      sums.cre += parseFloat(cells[17].textContent) || 0;
-      sums.creativeArt += parseFloat(cells[19].textContent) || 0;
-      sums.totalMarks += parseFloat(cells[21].textContent) || 0;
+   
+      sums.kiswahili += parseFloat(cells[7].textContent) || 0;
+      sums.science += parseFloat(cells[9].textContent) || 0;
+      sums.social += parseFloat(cells[11].textContent) || 0;
+      sums.agriculture += parseFloat(cells[13].textContent) || 0;
+      sums.cre += parseFloat(cells[15].textContent) || 0;
+      sums.creativeArt += parseFloat(cells[17].textContent) || 0;
+      sums.totalMarks += parseFloat(cells[19].textContent) || 0;
 
       // Calculate levels for each subject and accumulate them
       sums.totalLevel += getLevel(parseFloat(cells[3].textContent) || 0); // English level
       sums.totalLevel += getLevel(parseFloat(cells[5].textContent) || 0); // Math level
-      sums.totalLevel += getLevel(parseFloat(cells[7].textContent) || 0); // PreTech level
-      sums.totalLevel += getLevel(parseFloat(cells[9].textContent) || 0); // Kiswahili level
-      sums.totalLevel += getLevel(parseFloat(cells[11].textContent) || 0); // Science level
-      sums.totalLevel += getLevel(parseFloat(cells[13].textContent) || 0); // Social level
-      sums.totalLevel += getLevel(parseFloat(cells[15].textContent) || 0); // Agriculture level
-      sums.totalLevel += getLevel(parseFloat(cells[17].textContent) || 0); // CRE level
-      sums.totalLevel += getLevel(parseFloat(cells[19].textContent) || 0); // CreativeArt level
+
+      sums.totalLevel += getLevel(parseFloat(cells[7].textContent) || 0); // Kiswahili level
+      sums.totalLevel += getLevel(parseFloat(cells[9].textContent) || 0); // Science level
+      sums.totalLevel += getLevel(parseFloat(cells[11].textContent) || 0); // Social level
+      sums.totalLevel += getLevel(parseFloat(cells[13].textContent) || 0); // Agriculture level
+      sums.totalLevel += getLevel(parseFloat(cells[15].textContent) || 0); // CRE level
+      sums.totalLevel += getLevel(parseFloat(cells[17].textContent) || 0); // CreativeArt level
 
       filteredCount++;
     }
@@ -5524,13 +5491,13 @@ document.getElementById("levelSummaryBtn").addEventListener("click", () => {
 });
 function generateSubjectChampionsReport(selectedGrade, selectedExamPeriod) {
     const subjects = [
-        'English', 'Mathematics', 'Pre-Technical Studies',
-        'Kiswahili', 'Integrated Science', 'Social Studies',
-        'Agriculture', 'Religious Education', 'Creative Art'
+        'English', 'Mathematics', 
+        'Kiswahili', 'Science', 'Social Studies',
+        'Agriculture', 'Religious Education', 'Creative Arts & sports '
     ];
 
     const subjectKeys = [
-        'eng', 'math', 'preTech',
+        'eng', 'math', 
         'kiswahili', 'science', 'social',
         'agriculture', 'cre', 'creativeArt'
     ];
@@ -5559,30 +5526,22 @@ function generateSubjectChampionsReport(selectedGrade, selectedExamPeriod) {
         });
     });
 
-    function getLevel(score) {
-        if (score >= 90) return "EE 1";
-        if (score >= 75) return "EE 2";
-        if (score >= 58) return "ME 1";
-        if (score >= 41) return "ME 2";
-        if (score >= 31) return "AE 1";
-        if (score >= 21) return "AE 2";
-        if (score >= 11) return "BE 1";
-        return "BE 2";
-    }
+ function getPerformanceLevel(score) {
+    if (score >= 75) return "EE";
+    if (score >= 50) return "ME";
+    if (score >= 25) return "AE";
+    return "BE";
+}
 
-    function getPoints(level) {
-        switch (level) {
-            case "EE 1": return 8;
-            case "EE 2": return 7;
-            case "ME 1": return 6;
-            case "ME 2": return 5;
-            case "AE 1": return 4;
-            case "AE 2": return 3;
-            case "BE 1": return 2;
-            case "BE 2": return 1;
-            default: return 0;
-        }
+function getPoints(level) {
+    switch (level) {
+        case "EE": return 4;
+        case "ME": return 3;
+        case "AE": return 2;
+        case "BE": return 1;
+        default: return 0;
     }
+}
 
     const sortedChampions = Object.entries(champions)
         .map(([subject, data]) => ({ subject, ...data }))
@@ -5597,7 +5556,7 @@ function generateSubjectChampionsReport(selectedGrade, selectedExamPeriod) {
     let html = `
         <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="display: block; margin: 0 auto 10px; max-width: 80px;">
-            <h2 style="margin: 0;">NACHU JUNIOR SCHOOL SUBJECT CHAMPIONS REPORT</h2>
+            <h2 style="margin: 0;">NACHU PRIMARY SCHOOL SUBJECT CHAMPIONS REPORT</h2>
             <p style="margin: 5px 0;">Address: P.O. Box 561-00902, Kikuyu, Kenya</p>
             <p style="margin: 5px 0;">Phone: +254-700-123456</p>
             <p style="margin: 5px 0;">School Motto: "My Talent My Passion"</p>
@@ -5613,32 +5572,30 @@ function generateSubjectChampionsReport(selectedGrade, selectedExamPeriod) {
                     <th style="border: 2px solid black; padding: 10px;">Champion</th>
                     <th style="border: 2px solid black; padding: 10px;">Score</th>
                     <th style="border: 2px solid black; padding: 10px;">Performance Level</th>
-                    <th style="border: 2px solid black; padding: 10px;">Points</th>
+                 
                 </tr>
             </thead>
             <tbody>`;
 
     let count = 1;
     sortedChampions.forEach(({ subject, name, score }, index) => {
-        const level = getLevel(score);
-        const points = getPoints(level);
+       const level = getLevel(score);
         const isTop = index < 3;
         const medal = isTop ? medals[index] + ' 🎉' : '✨';
         const rowStyle = isTop ? 'background: #FFD700; font-weight: bold;' : '';
         html += `<tr style="${rowStyle}">
-            <td style="border: 2px solid black; padding: 10px;">${count++}</td>
-            <td style="border: 2px solid black; padding: 10px;">${subject}</td>
-            <td style="border: 2px solid black; padding: 10px;">${medal} ${name}</td>
-            <td style="border: 2px solid black; padding: 10px;">${score >= 0 ? score : 'N/A'}</td>
-            <td style="border: 2px solid black; padding: 10px;">${level}</td>
-            <td style="border: 2px solid black; padding: 10px;">${points}</td>
-        </tr>`;
-    });
+    <td style="border: 2px solid black; padding: 10px;">${count++}</td>
+    <td style="border: 2px solid black; padding: 10px;">${subject}</td>
+    <td style="border: 2px solid black; padding: 10px;">${medal} ${name}</td>
+    <td style="border: 2px solid black; padding: 10px;">${score >= 0 ? score : 'N/A'}</td>
+    <td style="border: 2px solid black; padding: 10px;">${level}</td>
+</tr>`;
+});
 
-    html += `</tbody></table>`;
+html += `</tbody></table>`;
 
-    const reportOutput = document.getElementById("reportOutput");
-    reportOutput.innerHTML = html;
+const reportOutput = document.getElementById("reportOutput");
+reportOutput.innerHTML = html;
 
 
     // 🌀 Create animated style (once)
@@ -5757,7 +5714,7 @@ function generateSubjectChampionsReport(selectedGrade, selectedExamPeriod) {
                     <body>
                         ${reportOutput.innerHTML}
                         <div class="stamp">
-                            Nachu Junior School<br>
+                            Nachu Primary School<br>
                             P.O. Box 561-00902, Kikuyu<br>
                             Exam Department<br>
                             Date: ${printDate}
@@ -5775,18 +5732,18 @@ function generateSubjectChampionsReport(selectedGrade, selectedExamPeriod) {
 
 function generateLevelSummary(selectedGrade, selectedExamPeriod) {
     const subjects = [
-        'English', 'Mathematics', 'Pre-Technical Studies',
-        'Kiswahili', 'Integrated Science', 'Social Studies',
-        'Agriculture', 'Religious Education', 'Creative Art'
+        'English', 'Mathematics', 
+        'Kiswahili', 'Science', 'Social Studies',
+        'Agriculture', 'Religious Education', 'Creative Arts & sports '
     ];
 
     const subjectKeys = [
-        'engLev', 'mathLev', 'preTechLev',
+        'engLev', 'mathLev', 
         'kiswahiliLev', 'scienceLev', 'socialLev',
         'agricultureLev', 'creLev', 'creativeArtLev'
     ];
 
-    const levels = ['8', '7', '6', '5', '4', '3', '2', '1'];
+    const levels = ['1', '2', '3', '4'];
     const summary = {};
     const topPerformers = {};
 
@@ -5825,7 +5782,7 @@ function generateLevelSummary(selectedGrade, selectedExamPeriod) {
     let html = `
         <div class="header" style="text-align: center; margin-bottom: 20px;">
             <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="display: block; margin: 0 auto 10px; max-width: 80px;">
-            <h2>NACHU JUNIOR SCHOOL SUBJECT LEVEL SUMMARY REPORT</h2>
+            <h2>NACHU PRIMARY SCHOOL SUBJECT LEVEL SUMMARY REPORT</h2>
             <p>Address: P.O. Box 561-00902, Kikuyu, Kenya</p>
             <p>Phone: +254-700-123456</p>
             <p>School Motto: "My Talent My Passion"</p>
@@ -5855,7 +5812,7 @@ function generateLevelSummary(selectedGrade, selectedExamPeriod) {
 
     html += `</tbody></table>
         <div class="stamp print-only" style="margin-top:40px;">
-            Nachu Junior School<br>
+            Nachu Primary School<br>
             P.O. Box 561-00902, Kikuyu<br>
             Exam Department<br>
             Date: ${printDate}
@@ -5985,9 +5942,9 @@ function generateLevelSummary(selectedGrade, selectedExamPeriod) {
 
 function showSubjectRanking(selectedGrade, selectedExamPeriod) {
     const subjects = [
-        'English', 'Mathematics', 'Pre-Technical Studies',
-        'Kiswahili', 'Integrated Science', 'Social Studies',
-        'Agriculture', 'Religious Education', 'Creative Art'
+        'English', 'Mathematics', 
+        'Kiswahili', 'Science', 'Social Studies',
+        'Agriculture', 'Religious Education', 'Creative Arts & sports '
     ];
 
     const rankings = {};
@@ -6017,29 +5974,21 @@ function showSubjectRanking(selectedGrade, selectedExamPeriod) {
     }
 
     function getPerformanceLevel(score) {
-        if (score >= 90) return "EE 1";
-        if (score >= 75) return "EE 2";
-        if (score >= 58) return "ME 1";
-        if (score >= 41) return "ME 2";
-        if (score >= 31) return "AE 1";
-        if (score >= 21) return "AE 2";
-        if (score >= 11) return "BE 1";
-        return "BE 2";
-    }
+    if (score >= 75) return "EE";
+    if (score >= 50) return "ME";
+    if (score >= 25) return "AE";
+    return "BE";
+}
 
-    function getPoints(level) {
-        switch (level) {
-            case "EE 1": return 8;
-            case "EE 2": return 7;
-            case "ME 1": return 6;
-            case "ME 2": return 5;
-            case "AE 1": return 4;
-            case "AE 2": return 3;
-            case "BE 1": return 2;
-            case "BE 2": return 1;
-            default: return 0;
-        }
+function getPoints(level) {
+    switch (level) {
+        case "EE": return 4;
+        case "ME": return 3;
+        case "AE": return 2;
+        case "BE": return 1;
+        default: return 0;
     }
+}
 
     const today = new Date();
     const printDate = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
@@ -6087,7 +6036,7 @@ function showSubjectRanking(selectedGrade, selectedExamPeriod) {
 
     rankingsHtml += `
         <div class="stamp print-only" style="margin-top: 40px;">
-            Nachu Junior School<br>
+            Nachu Primary School<br>
             P.O. Box 561-00902, Kikuyu<br>
             Exam Department<br>
             Date: ${printDate}
@@ -6213,27 +6162,34 @@ function showSubjectRanking(selectedGrade, selectedExamPeriod) {
 }
 
 function generateSubjectPerformance(selectedGrade, selectedExamPeriod) {
+
     const subjects = [
-        'English', 'Mathematics', 'Pre-Technical Studies',
-        'Kiswahili', 'Integrated Science', 'Social Studies',
-        'Agriculture', 'Religious Education', 'Creative Art'
+        'English', 'Mathematics',
+        'Kiswahili', 'Science', 'Social Studies',
+        'Agriculture', 'Religious Education', 'Creative Arts & Sports'
     ];
+
     const subjectKeys = [
-        'eng', 'math', 'preTech',
+        'eng', 'math',
         'kiswahili', 'science', 'social',
         'agriculture', 'cre', 'creativeArt'
     ];
+
     const subjectScores = {};
     const marks = document.getElementById("marksList");
 
+    if (!marks) return;
+
+    // Collect Scores
     marks.querySelectorAll("tr").forEach(row => {
         const g = row.getAttribute("data-grade");
         const p = row.getAttribute("data-exam-period");
+
         if (selectedGrade && g !== selectedGrade) return;
         if (selectedExamPeriod && p !== selectedExamPeriod) return;
 
         subjectKeys.forEach((key, i) => {
-            const sc = parseFloat(row.cells[3 + i * 2].textContent);
+            const sc = parseFloat(row.cells[3 + i * 2]?.textContent);
             if (!isNaN(sc)) {
                 if (!subjectScores[subjects[i]]) {
                     subjectScores[subjects[i]] = { total: 0, count: 0 };
@@ -6244,78 +6200,84 @@ function generateSubjectPerformance(selectedGrade, selectedExamPeriod) {
         });
     });
 
-    function getLevel(score) {
-        if (score >= 90) return "EE 1";
-        if (score >= 75) return "EE 2";
-        if (score >= 58) return "ME 1";
-        if (score >= 41) return "ME 2";
-        if (score >= 31) return "AE 1";
-        if (score >= 21) return "AE 2";
-        if (score >= 11) return "BE 1";
-        return "BE 2";
+    // 4-Level Performance System
+    function getPerformanceLevel(score) {
+        if (score >= 75) return "EE";
+        if (score >= 50) return "ME";
+        if (score >= 25) return "AE";
+        return "BE";
     }
 
-    function getPoints(level) {
-        switch (level) {
-            case "EE 1": return 8;
-            case "EE 2": return 7;
-            case "ME 1": return 6;
-            case "ME 2": return 5;
-            case "AE 1": return 4;
-            case "AE 2": return 3;
-            case "BE 1": return 2;
-            case "BE 2": return 1;
-            default: return 0;
-        }
-    }
-
+    // Calculate Means
     const means = Object.keys(subjectScores).map(sub => {
         const { total, count } = subjectScores[sub];
         const mean = count > 0 ? total / count : 0;
-        const level = getLevel(mean);
-        const points = getPoints(level);
-        return { subject: sub, mean: parseFloat(mean.toFixed(2)), level, points };
+        return {
+            subject: sub,
+            mean: parseFloat(mean.toFixed(2)),
+            level: getPerformanceLevel(mean)
+        };
     }).sort((a, b) => b.mean - a.mean);
 
     const top5 = means.slice(0, 5);
+
     const year = new Date().getFullYear();
     const today = new Date();
     const printDate = `${today.getDate()}-${today.getMonth() + 1}-${year}`;
 
     let html = `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://i.imgur.com/VSAh48K.jpeg" alt="Logo" style="max-width:80px;margin:0 auto 10px;">
-            <h2>NACHU JUNIOR SCHOOL SUBJECT TRACKER ANALYSIS REPORT</h2>
-            <p>Year: ${year} | Grade: ${selectedGrade || 'All'} | Period: ${selectedExamPeriod || 'All'}</p>
+        <div style="text-align:center;margin-bottom:20px;">
+            <img src="https://i.imgur.com/VSAh48K.jpeg" 
+                 alt="Logo" 
+                 style="max-width:80px;margin:0 auto 10px;display:block;">
+            <h2 style="margin:5px 0;">NACHU PRIMARY SCHOOL</h2>
+            <h3 style="margin:5px 0;">SUBJECT PERFORMANCE ANALYSIS REPORT</h3>
+            <p style="margin:5px 0;">
+                Year: ${year} | 
+                Grade: ${selectedGrade || 'All'} | 
+                Period: ${selectedExamPeriod || 'All'}
+            </p>
         </div>
+
         <table style="width:100%;border-collapse:collapse;font-size:16px;">
-            <thead><tr style="background:#f2f2f2;">
-                <th style="border:2px solid black;padding:10px;">No.</th>
-                <th style="border:2px solid black;padding:10px;">Subject</th>
-                <th style="border:2px solid black;padding:10px;">Mean Score</th>
-                <th style="border:2px solid black;padding:10px;">Level</th>
-                <th style="border:2px solid black;padding:10px;">Points</th>
-            </tr></thead><tbody>`;
+            <thead>
+                <tr style="background:#f2f2f2;">
+                    <th style="border:2px solid black;padding:10px;">No.</th>
+                    <th style="border:2px solid black;padding:10px;">Subject</th>
+                    <th style="border:2px solid black;padding:10px;">Mean Score</th>
+                    <th style="border:2px solid black;padding:10px;">Level</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
     means.forEach((m, i) => {
         const isTop = top5.find(t => t.subject === m.subject);
         const style = isTop ? 'background:#FFD700;font-weight:bold;' : '';
-        html += `<tr style="${style}">
-            <td style="border:2px solid black;padding:10px;">${i + 1}</td>
-            <td style="border:2px solid black;padding:10px;">${m.subject}</td>
-            <td style="border:2px solid black;padding:10px;">${m.mean}</td>
-            <td style="border:2px solid black;padding:10px;">${m.level}</td>
-            <td style="border:2px solid black;padding:10px;">${m.points}</td>
-        </tr>`;
+
+        html += `
+            <tr style="${style}">
+                <td style="border:2px solid black;padding:10px;">${i + 1}</td>
+                <td style="border:2px solid black;padding:10px;">${m.subject}</td>
+                <td style="border:2px solid black;padding:10px;">${m.mean}</td>
+                <td style="border:2px solid black;padding:10px;">${m.level}</td>
+            </tr>
+        `;
     });
 
-    html += `</tbody></table>
-        <div class="stamp print-only" style="margin-top:30px;">
-            Nachu Junior School<br>Exam Dept — Date: ${printDate}
-        </div>`;
+    html += `
+            </tbody>
+        </table>
+
+        <div style="margin-top:30px;text-align:center;font-weight:bold;">
+            Nachu Primary School<br>
+            Exam Department — Date: ${printDate}
+        </div>
+    `;
 
     const out = document.getElementById("reportOutput");
-    out.innerHTML = html;
+    if (out) out.innerHTML = html;
+
 
     // 🎨 Styles (once)
     if (!document.getElementById("perfCelebrationStyles")) {
@@ -6395,9 +6357,9 @@ function generateReport(reportType, selectedGrade, examPeriod) {
     reportOutput.innerHTML = ""; // Clear any existing content
 
     const subjects = [
-        'English', 'Mathematics', 'Pre-Technical Studies',
-        'Kiswahili', 'Integrated Science', 'Social Studies',
-        'Agriculture', 'Religious Education', 'Creative Art'
+        'English', 'Mathematics', 
+        'Kiswahili', 'Science', 'Social Studies',
+        'Agriculture', 'Religious Education', 'Creative Arts & sports '
     ];
 
     const levels = ['8', '7', '6', '5', '5', '4', '3', '2' ,'1'];
@@ -6435,7 +6397,7 @@ function generateReport(reportType, selectedGrade, examPeriod) {
     let html = `
         <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="display: block; margin: 0 auto 10px; max-width: 80px; height: auto;">
-            <h2 style="margin: 0;">NACHU JUNIOR SCHOOL REPORT</h2>
+            <h2 style="margin: 0;">NACHU PRIMARY SCHOOL REPORT</h2>
             <p style="margin: 5px 0;">Address: P.O. Box 561-00902, Kikuyu, Kenya</p>
             <p style="margin: 5px 0;">School Motto: "My Talent My Passion"</p>
             <p style="margin: 5px 0;">Year: ${year}</p>
@@ -6508,7 +6470,7 @@ function generateReport(reportType, selectedGrade, examPeriod) {
                     <body>
                         ${reportOutput.innerHTML}
                         <div class="stamp">
-                            Nachu Junior School<br>
+                            Nachu Primary School<br>
                             P.O. Box 561-00902<br>
                             Kikuyu...Exam Department
                         </div>
@@ -6529,23 +6491,18 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
     alert("Marks or learners table not found.");
     return;
   }
-
-  function getLevel(score) {
-    if (score >= 90) return "8";
-    if (score >= 75) return "7";
-    if (score >= 58) return "6";
-    if (score >= 41) return "5";
-    if (score >= 31) return "4";
-    if (score >= 21) return "3";
-    if (score >= 11) return "2";
-    return "1";
-  }
+ function getLevel(score) {
+    if (score >= 75) return "EE";
+    if (score >= 50) return "ME";
+    if (score >= 25) return "AE";
+    return "BE";
+}
 
   function getTotalLevel(entry) {
     return (
       parseInt(getLevel(entry.english)) +
       parseInt(getLevel(entry.math)) +
-      parseInt(getLevel(entry.preTech)) +
+
       parseInt(getLevel(entry.kiswahili)) +
       parseInt(getLevel(entry.science)) +
       parseInt(getLevel(entry.social)) +
@@ -6581,22 +6538,22 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
       const cells = row.querySelectorAll("td");
       const english = parseInt(cells[3]?.textContent.trim()) || 0;
       const math = parseInt(cells[5]?.textContent.trim()) || 0;
-      const preTech = parseInt(cells[7]?.textContent.trim()) || 0;
-      const kiswahili = parseInt(cells[9]?.textContent.trim()) || 0;
-      const science = parseInt(cells[11]?.textContent.trim()) || 0;
-      const social = parseInt(cells[13]?.textContent.trim()) || 0;
-      const agriculture = parseInt(cells[15]?.textContent.trim()) || 0;
-      const cre = parseInt(cells[17]?.textContent.trim()) || 0;
-      const art = parseInt(cells[19]?.textContent.trim()) || 0;
+ 
+      const kiswahili = parseInt(cells[7]?.textContent.trim()) || 0;
+      const science = parseInt(cells[9]?.textContent.trim()) || 0;
+      const social = parseInt(cells[11]?.textContent.trim()) || 0;
+      const agriculture = parseInt(cells[13]?.textContent.trim()) || 0;
+      const cre = parseInt(cells[15]?.textContent.trim()) || 0;
+      const art = parseInt(cells[17]?.textContent.trim()) || 0;
 
-      const totalMarks = english + math + preTech + kiswahili + science + social + agriculture + cre + art;
+      const totalMarks = english + math + kiswahili + science + social + agriculture + cre + art;
 
       return {
         learner: cells[1]?.textContent.trim(),
         grade: cells[2]?.textContent.trim(),
         english,
         math,
-        preTech,
+    
         kiswahili,
         science,
         social,
@@ -6628,7 +6585,7 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
     const color = gender === "male" ? "blue" : "purple";
 
     const totals = {
-      english: 0, math: 0, preTech: 0, kiswahili: 0,
+      english: 0, math: 0, kiswahili: 0,
       science: 0, social: 0, agriculture: 0, cre: 0,
       art: 0, totalMarks: 0, totalLevel: 0
     };
@@ -6644,7 +6601,7 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
             <th style="border:2px solid black;">Grade</th>
             <th style="border:2px solid black;">Eng</th><th>Lev</th>
             <th style="border:2px solid black;">Math</th><th>Lev</th>
-            <th style="border:2px solid black;">PreTech</th><th>Lev</th>
+      
             <th style="border:2px solid black;">Kisw</th><th>Lev</th>
             <th style="border:2px solid black;">Scie</th><th>Lev</th>
             <th style="border:2px solid black;">SST</th><th>Lev</th>
@@ -6667,7 +6624,7 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
         <td>${entry.grade}</td>
         <td>${entry.english}</td><td>${getLevel(entry.english)}</td>
         <td>${entry.math}</td><td>${getLevel(entry.math)}</td>
-        <td>${entry.preTech}</td><td>${getLevel(entry.preTech)}</td>
+    
         <td>${entry.kiswahili}</td><td>${getLevel(entry.kiswahili)}</td>
         <td>${entry.science}</td><td>${getLevel(entry.science)}</td>
         <td>${entry.social}</td><td>${getLevel(entry.social)}</td>
@@ -6680,7 +6637,7 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
 
       totals.english += entry.english;
       totals.math += entry.math;
-      totals.preTech += entry.preTech;
+  
       totals.kiswahili += entry.kiswahili;
       totals.science += entry.science;
       totals.social += entry.social;
@@ -6695,7 +6652,7 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
     html += `
       <tr style="background:yellow;font-weight:bold;"><td colspan="3">Totals</td>
         <td>${totals.english}</td><td>-</td><td>${totals.math}</td><td>-</td>
-        <td>${totals.preTech}</td><td>-</td><td>${totals.kiswahili}</td><td>-</td>
+ 
         <td>${totals.science}</td><td>-</td><td>${totals.social}</td><td>-</td>
         <td>${totals.agriculture}</td><td>-</td><td>${totals.cre}</td><td>-</td>
         <td>${totals.art}</td><td>-</td>
@@ -6703,7 +6660,7 @@ function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
       </tr>
       <tr style="background:lightblue;font-weight:bold;"><td colspan="3">Averages</td>
         <td>${(totals.english/count).toFixed(1)}</td><td>-</td><td>${(totals.math/count).toFixed(1)}</td><td>-</td>
-        <td>${(totals.preTech/count).toFixed(1)}</td><td>-</td><td>${(totals.kiswahili/count).toFixed(1)}</td><td>-</td>
+  ${(totals.kiswahili/count).toFixed(1)}</td><td>-</td>
         <td>${(totals.science/count).toFixed(1)}</td><td>-</td><td>${(totals.social/count).toFixed(1)}</td><td>-</td>
         <td>${(totals.agriculture/count).toFixed(1)}</td><td>-</td><td>${(totals.cre/count).toFixed(1)}</td><td>-</td>
         <td>${(totals.art/count).toFixed(1)}</td><td>-</td>
@@ -6815,7 +6772,7 @@ function printSection(sectionId, grade, examPeriod) {
       <body>
         <div class="header">
           <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo">
-          <h2><b>NACHU JUNIOR SCHOOL GENDER PERFORMANCE REPORT</b></h2>
+          <h2><b>NACHU PRIMARY SCHOOL GENDER PERFORMANCE REPORT</b></h2>
           <p><b>Address:</b> P.O. Box 561-00902, Kikuyu, Kenya</p>
           <p><b>Phone:</b> +254-700-123456</p>
           <p><b>School Motto:</b> "My Talent My Passion"</p>
@@ -6827,7 +6784,7 @@ function printSection(sectionId, grade, examPeriod) {
         ${section.innerHTML}
 
         <div class="stamp">
-          Nachu Junior School<br>
+          Nachu Primary School<br>
           P.O. Box 561-00902, Kikuyu<br>
           Exam Department<br>
           Date: ${printDate}
@@ -6950,37 +6907,28 @@ function generateLearnerAssessmentReports(termDetails) {
 
   const gradeFilter = document.getElementById("reportGradeSelect").value;
 
-  function getPoints(level) {
-    switch (level) {
-      case "EE 1": return 8;
-      case "EE 2": return 7;
-      case "ME 1": return 6;
-      case "ME 2": return 5;
-      case "AE 1": return 4;
-      case "AE 2": return 3;
-      case "BE 1": return 2;
-      case "BE 2": return 1;
-      default: {
-        const numeric = parseInt(level);
-        return isNaN(numeric) ? 0 : numeric;
-      }
+ function getPoints(level) {
+  switch (level) {
+    case "EE": return 4;
+    case "ME": return 3;
+    case "AE": return 2;
+    case "BE": return 1;
+    default: {
+      const numeric = parseInt(level);
+      return isNaN(numeric) ? 0 : numeric;
     }
   }
+}
 
-  function getLevelFromPoints(points) {
-    switch (String(points)) {
-      case "8": return "EE 1";
-      case "7": return "EE 2";
-      case "6": return "ME 1";
-      case "5": return "ME 2";
-      case "4": return "AE 1";
-      case "3": return "AE 2";
-      case "2": return "BE 1";
-      case "1": return "BE 2";
-      default: return "N/A";
-    }
+function getLevelFromPoints(points) {
+  switch (String(points)) {
+    case "4": return "EE";
+    case "3": return "ME";
+    case "2": return "AE";
+    case "1": return "BE";
+    default: return "N/A";
   }
-
+}
   rows.forEach(row => {
     const cells = row.querySelectorAll("td");
     if (cells.length < 22) return;
@@ -6989,7 +6937,7 @@ function generateLearnerAssessmentReports(termDetails) {
     const grade = cells[2].textContent.trim();
     if (grade !== gradeFilter) return;
 
-    const rawTotalMarks = cells[21].textContent.trim();
+    const rawTotalMarks = cells[19].textContent.trim();
     const totalMarks = parseInt(rawTotalMarks) || 0;
     const performance = getPerformanceLevel(totalMarks);
 
@@ -7004,13 +6952,13 @@ function generateLearnerAssessmentReports(termDetails) {
     const subjects = [
       { name: "English", mark: cells[3].textContent.trim(), level: cells[4].textContent.trim() },
       { name: "Mathematics", mark: cells[5].textContent.trim(), level: cells[6].textContent.trim() },
-      { name: "Pre-Technical Studies", mark: cells[7].textContent.trim(), level: cells[8].textContent.trim() },
-      { name: "Kiswahili", mark: cells[9].textContent.trim(), level: cells[10].textContent.trim() },
-      { name: "Integrated Science", mark: cells[11].textContent.trim(), level: cells[12].textContent.trim() },
-      { name: "Social Studies", mark: cells[13].textContent.trim(), level: cells[14].textContent.trim() },
-      { name: "Agriculture", mark: cells[15].textContent.trim(), level: cells[16].textContent.trim() },
-      { name: "Religious Education", mark: cells[17].textContent.trim(), level: cells[18].textContent.trim() },
-      { name: "Creative Arts & Sports", mark: cells[19].textContent.trim(), level: cells[20].textContent.trim() },
+
+      { name: "Kiswahili", mark: cells[7].textContent.trim(), level: cells[8].textContent.trim() },
+      { name: "Science", mark: cells[9].textContent.trim(), level: cells[10].textContent.trim() },
+      { name: "Social Studies", mark: cells[11].textContent.trim(), level: cells[12].textContent.trim() },
+      { name: "Agriculture", mark: cells[13].textContent.trim(), level: cells[14].textContent.trim() },
+      { name: "Religious Education", mark: cells[15].textContent.trim(), level: cells[16].textContent.trim() },
+      { name: "Creative Arts & sports s & Sports", mark: cells[17].textContent.trim(), level: cells[18].textContent.trim() },
     ].map(s => {
       let level = s.level;
       if (!isNaN(level)) {
@@ -7036,7 +6984,7 @@ function generateLearnerAssessmentReports(termDetails) {
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <img src="${govtLogo}" alt="Gov Logo" style="height: 80px;">
         <div style="text-align: center; flex-grow: 1; color: #000;">
-          <h2 style="margin: 0;">NACHU JUNIOR SCHOOL</h2>
+          <h2 style="margin: 0;">NACHU PRIMARY SCHOOL</h2>
           <p style="margin: 2px;">PO BOX 561-00902 KIKUYU, KENYA</p>
           <p style="margin: 2px;">MINISTRY OF EDUCATION SCIENCE AND TECHNOLOGY</p>
           <strong style="font-size: 14px;">SCHOOL MOTTO: MY TALENT MY PASSION</strong>
@@ -7088,10 +7036,13 @@ function generateLearnerAssessmentReports(termDetails) {
         </tbody>
       </table>
 
-      <p style="font-size: 14px; margin-top: 10px;"><strong>KEY:</strong><br>
-        1–10: BE2,&nbsp;&nbsp;11–20: BE1,&nbsp;&nbsp;21–30: AE2,&nbsp;&nbsp;31–40: AE1,<br>
-        41–57: ME2,&nbsp;&nbsp;58–74: ME1,&nbsp;&nbsp;75–89: EE2,&nbsp;&nbsp;90–99: EE1
-      </p>
+<p style="font-size: 14px; margin-top: 10px;">
+  <strong>KEY:</strong><br>
+  0–24: BE,&nbsp;&nbsp;
+  25–49: AE,&nbsp;&nbsp;
+  50–74: ME,&nbsp;&nbsp;
+  75–100: EE
+</p>
 
       <p><strong>Teacher Comments:</strong><br>${getComment(totalMarks)}</p>
       <p><strong>Learner's General Performance Level:</strong> ${performance}</p>
@@ -7101,7 +7052,7 @@ function generateLearnerAssessmentReports(termDetails) {
         <p><strong>Class Teacher Signature:</strong> ${classTeacherSignature} &emsp; <strong>Principal Signature:</strong> ${principalSignature}</p>
 
         <div style="border: 2px solid blue; color: blue; padding: 10px; display: inline-block; text-align: center; font-style: italic; font-weight: bold; border-radius: 5px;">
-          Nachu Junior School<br>
+          Nachu Primary School<br>
           P.O. Box 561-00902 Kikuyu<br>
           Date: ${date}
         </div>
@@ -7143,9 +7094,9 @@ function generateLearnerAssessmentReports(termDetails) {
 
 
 const subjectList = [
-    "English", "Mathematics", "Pre-Technical Studies", "Kiswahili",
-    "Integrated Science", "Social Studies", "Agriculture",
-    "Religious Education", "Creative Arts & Sports"
+    "English", "Mathematics",  "Kiswahili",
+    "Science", "Social Studies", "Agriculture",
+    "Religious Education", "Creative Arts & sports s & Sports"
 ];
 let subjectTeachers = {};
 
@@ -7345,7 +7296,7 @@ function combineMarksByGradeWithDetails(mainGrade, selectedPeriod) {
     const rows = document.querySelectorAll("#marksList tr");
     const learnersData = [];
     const totals = {
-        eng: 0, math: 0, preTech: 0, kiswahili: 0,
+        eng: 0, math: 0, kiswahili: 0,
         science: 0, social: 0, agriculture: 0, cre: 0, creativeArt: 0, totalMarks: 0, totalLevel: 0
     };
     let learnerCount = 0;
@@ -7366,13 +7317,13 @@ function combineMarksByGradeWithDetails(mainGrade, selectedPeriod) {
                 grade: cells[2].textContent.trim(),
                 eng: parseFloat(cells[3].textContent) || 0,
                 math: parseFloat(cells[5].textContent) || 0,
-                preTech: parseFloat(cells[7].textContent) || 0,
-                kiswahili: parseFloat(cells[9].textContent) || 0,
-                science: parseFloat(cells[11].textContent) || 0,
-                social: parseFloat(cells[13].textContent) || 0,
-                agriculture: parseFloat(cells[15].textContent) || 0,
-                cre: parseFloat(cells[17].textContent) || 0,
-                creativeArt: parseFloat(cells[19].textContent) || 0
+           
+                kiswahili: parseFloat(cells[7].textContent) || 0,
+                science: parseFloat(cells[9].textContent) || 0,
+                social: parseFloat(cells[11].textContent) || 0,
+                agriculture: parseFloat(cells[13].textContent) || 0,
+                cre: parseFloat(cells[15].textContent) || 0,
+                creativeArt: parseFloat(cells[17].textContent) || 0
             };
 
             learnerData.totalMarks = Object.values(learnerData).slice(2).reduce((sum, mark) => sum + mark, 0);
@@ -7409,7 +7360,7 @@ function combineMarksByGradeWithDetails(mainGrade, selectedPeriod) {
     let html = `
     <div style="text-align:center; margin-bottom:20px;">
         <img src="https://i.imgur.com/VSAh48K.jpeg" alt="Logo" style="display:block; margin:0 auto 10px; width:80px;">
-        <h2 style="margin:0;">NACHU JUNIOR SCHOOL COMBINED MARKS REPORT</h2>
+        <h2 style="margin:0;">NACHU PRIMARY SCHOOL COMBINED MARKS REPORT</h2>
         <p>Address: P.O. Box 561-00902, Kikuyu, Kenya</p>
         <p>Motto: "My Talent My Passion"</p>
         <p>Year: ${year}</p>
@@ -7422,7 +7373,7 @@ function combineMarksByGradeWithDetails(mainGrade, selectedPeriod) {
                 <th style="border:3px solid black;">No.</th>
                 <th style="border:3px solid black;">Name</th>
                 <th style="border:3px solid black;">Grade</th>
-                ${['Eng','Math','Pre-Tech','Kisw','Scie','SST','Agric','CRE','C/A'].map(sub => `
+                ${['Eng','Math','Kisw','Scie','SST','Agric','CRE','C/A'].map(sub => `
                 <th style="border:3px solid black;">${sub}</th>
                 <th style="border:3px solid black;">Level</th>`).join('')}
                 <th style="border:3px solid black;">Total</th>
@@ -7436,7 +7387,7 @@ function combineMarksByGradeWithDetails(mainGrade, selectedPeriod) {
             <td style="border:3px solid black;">${i + 1}</td>
             <td style="border:3px solid black;">${l.name}</td>
             <td style="border:3px solid black;">${l.grade}</td>
-            ${['eng','math','preTech','kiswahili','science','social','agriculture','cre','creativeArt']
+            ${['eng','math','kiswahili','science','social','agriculture','cre','creativeArt']
             .map(k => `<td style="border:3px solid black;">${l[k]}</td><td style="border:3px solid black;">${getLevel(l[k])}</td>`).join('')}
             <td style="border:3px solid black;">${l.totalMarks}</td>
             <td style="border:3px solid black;">${l.totalLevel}</td> <!-- Added Total Level value -->
@@ -7446,14 +7397,14 @@ function combineMarksByGradeWithDetails(mainGrade, selectedPeriod) {
     html += `
     <tr style="background:#e6f7ff; font-weight:bold;">
         <td colspan="3" style="border:3px solid black;">TOTAL</td>
-        ${['eng','math','preTech','kiswahili','science','social','agriculture','cre','creativeArt']
+        ${['eng','math','kiswahili','science','social','agriculture','cre','creativeArt']
         .map(k => `<td style="border:3px solid black;">${totals[k]}</td><td style="border:3px solid black;"></td>`).join('')}
         <td style="border:3px solid black;">${totals.totalMarks}</td>
         <td style="border:3px solid black;">${totals.totalLevel}</td> <!-- Added Total Level value -->
     </tr>
     <tr style="background:#fcf8e3; font-weight:bold;">
         <td colspan="3" style="border:3px solid black;">AVERAGE</td>
-        ${['eng','math','preTech','kiswahili','science','social','agriculture','cre','creativeArt']
+        ${['eng','math','kiswahili','science','social','agriculture','cre','creativeArt']
         .map(k => `<td style="border:3px solid black;">${avg(totals[k])}</td><td style="border:3px solid black;"></td>`).join('')}
         <td style="border:3px solid black;">${avg(totals.totalMarks)}</td>
         <td style="border:3px solid black;">${avg(totals.totalLevel)}</td> <!-- Added Average Level value -->
@@ -7490,7 +7441,7 @@ function combineMarksByGradeWithDetails(mainGrade, selectedPeriod) {
                     @media screen {.stamp { display: none; }}
                 </style>
                 </head><body>${reportOutput.innerHTML}
-                <div class="stamp">Nachu Junior School<br>P.O. Box 561-00902, Kikuyu<br>Exam Department<br>Date: ${printDate}</div>
+                <div class="stamp">Nachu Primary School<br>P.O. Box 561-00902, Kikuyu<br>Exam Department<br>Date: ${printDate}</div>
                 </body></html>`);
             printWindow.document.close();
             printWindow.print();
@@ -7690,7 +7641,7 @@ function printLearnersByGender(schoolName, year, term, gender, learners) {
         ${tableHtml}
 
         <div class="stamp">
-          <div>NACHU JUNIOR SCHOOL</div>
+          <div>NACHU PRIMARY SCHOOL</div>
           <div>P.O. Box 561-00902, Kikuyu</div>
           <div>ICT Department</div>
           <div>Date: ${printDate}</div>
@@ -7756,7 +7707,7 @@ async function generateClassList(selectedGrade) {
         const headerHtml = `
         <div style="text-align: center; margin-bottom: 20px;">
             <img src="${logoUrl}" alt="School Logo" style="height: 80px; margin-bottom: 10px;"><br>
-            <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR SCHOOL</strong><br>
+            <strong style="font-size: 22px;">NACHU PRIMARY SCHOOL</strong><br>
             <strong style="font-size: 20px;">CLASS LIST REGISTER</strong><br>
             <div style="margin-top: 5px; font-size: 14px;">
                 ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
@@ -7853,7 +7804,7 @@ window.printClassList = function () {
     const createHeader = (sectionTitle) => `
         <div style="text-align: center; margin-bottom: 20px;">
             <img src="${logoUrl}" alt="School Logo" style="height: 80px; margin-bottom: 10px;"><br>
-            <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR SCHOOL</strong><br>
+            <strong style="font-size: 22px;">NACHU PRIMARY SCHOOL</strong><br>
             <strong style="font-size: 20px;">${sectionTitle}</strong><br>
             <div style="margin-top: 5px; font-size: 14px;">
                 ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
@@ -7924,6 +7875,7 @@ document.getElementById("generateClassListBtn").addEventListener("click", () => 
 
   generateClassList(selectedGrade);
 });
+
 document.getElementById("generateParentsListBtn").addEventListener("click", () => {
 
   // 1️⃣ Collect all grades dynamically from the table
@@ -8003,7 +7955,7 @@ document.getElementById("generateParentsListBtn").addEventListener("click", () =
     const headerHtml = `
       <div style="text-align: center; margin-bottom: 20px;">
         <img src="school-logo.png" alt="School Logo" style="height: 80px; margin-bottom: 10px;"><br>
-        <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR SCHOOL</strong><br>
+        <strong style="font-size: 22px;">NACHU PRIMARY SCHOOL</strong><br>
         <strong style="font-size: 20px;">PARENTS ATTENDANCE REGISTER</strong><br>
         <div style="margin-top: 5px; font-size: 14px;">
           ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
@@ -8083,7 +8035,7 @@ function generatePathwayGrouping(selectedGrade, selectedExamPeriod) {
     };
 
     const subjectMap = {
-        'eng': 3, 'math': 5, 'preTech': 7, 'kiswahili': 9,
+        'eng': 3, 'math': 5, 'kiswahili': 9,
         'science': 11, 'social': 13, 'agriculture': 15,
         'cre': 17, 'creativeArt': 19
     };
@@ -8132,7 +8084,7 @@ function generatePathwayGrouping(selectedGrade, selectedExamPeriod) {
     let html = `
         <div style="text-align: center; margin-bottom: 20px;">
             <img src="  https://i.imgur.com/VSAh48K.jpeg"" alt="School Logo" style="display: block; margin: 0 auto 10px; width: 80px; height: 80px;">
-            <h2 style="margin: 0;">NACHU JUNIOR SCHOOL PATHWAY REPORT</h2>
+            <h2 style="margin: 0;">NACHU PRIMARY SCHOOL PATHWAY REPORT</h2>
             <p style="margin: 5px 0;">Address: P.O. Box 561-00902, Kikuyu, Kenya</p>
             <p style="margin: 5px 0;">Phone: +254-700-123456</p>
             <p style="margin: 5px 0;">School Motto: "Excellence Through Knowledge"</p>
@@ -8149,7 +8101,7 @@ function generatePathwayGrouping(selectedGrade, selectedExamPeriod) {
                 <th style="border:1px solid #000; padding:6px;">Grade</th>
                 <th style="border:1px solid #000; padding:6px;">ENG</th>
                 <th style="border:1px solid #000; padding:6px;">MATH</th>
-                <th style="border:1px solid #000; padding:6px;">PRETECH</th>
+                
                 <th style="border:1px solid #000; padding:6px;">KISW</th>
                 <th style="border:1px solid #000; padding:6px;">SCIE</th>
                 <th style="border:1px solid #000; padding:6px;">AGRIC</th>
@@ -8209,7 +8161,7 @@ function generatePathwayGrouping(selectedGrade, selectedExamPeriod) {
         </tbody>
     </table>`;
 html += `<div class="stamp print-only">
-    Nachu Junior School<br>
+    Nachu Primary School<br>
     P.O. Box 561-00902<br>
     Kikuyu...Exam Department<br>
     Examiner: ${examinerName}<br>
@@ -8436,6 +8388,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
+ 
 
 document.getElementById("printFilteredMarksBtn").addEventListener("click", () => {
   const visibleRows = Array.from(document.querySelectorAll("#marksList tr"))
@@ -8473,7 +8426,7 @@ document.getElementById("printFilteredMarksBtn").addEventListener("click", () =>
   let totalMarksSum = 0;
   let totalLevelsSum = 0;
 
-  const scoreColumns = [3, 5, 7, 9, 11, 13, 15, 17, 19]; // Score indices
+  const scoreColumns = [3, 5, 7, 9, 11, 13, 15, 17]; // Score indices
   const totals = Array(scoreColumns.length).fill(0);
 
   const cleanedRows = visibleRows.map(row => {
@@ -8523,7 +8476,7 @@ document.getElementById("printFilteredMarksBtn").addEventListener("click", () =>
           <th>Grade</th>
           <th>Eng</th><th>Lev</th>
           <th>Math</th><th>Lev</th>
-          <th>Pre-Tech</th><th>Lev</th>
+        
           <th>Kisw</th><th>Lev</th>
           <th>Scie</th><th>Lev</th>
           <th>Sst</th><th>Lev</th>
@@ -8577,7 +8530,7 @@ printWindow.document.write(`
     <body>
       <div class="header-container">
         <div class="school-info">
-          <h2 style="margin: 0;">NACHU JUNIOR SCHOOL</h2>
+          <h2 style="margin: 0;">NACHU PRIMARY SCHOOL</h2>
           <p style="margin: 0;"><em>My Talent My Passion</em></p>
           <p style="margin: 5px 0 0 0;">
             <strong>Term:</strong> ${term} &nbsp;&nbsp;
@@ -8867,7 +8820,7 @@ function countMarksStatusPerGrade() {
       printWindow.document.write(`
         <html>
         <head>
-          <title>NACHU JUNIOR SCHOOL MARKS CAPTURE Report</title>
+          <title>NACHU PRIMARY SCHOOL MARKS CAPTURE Report</title>
           <style>
             body { font-family: Arial, sans-serif; margin: 40px; color: black; }
             h2, p { text-align: center; margin: 5px 0; color: black; }
@@ -8891,13 +8844,13 @@ function countMarksStatusPerGrade() {
         </head>
         <body>
           <img src="${logoUrl}" alt="School Logo" class="logo">
-          <h2>NACHU JUNIOR SCHOOL MARKS CAPTURE Report</h2>
+          <h2>NACHU PRIMARY SCHOOL MARKS CAPTURE Report</h2>
           <p>ADDRESS: P.O. BOX 561-00902 Kikuyu KENYA</p>
           <p>School Motto: "My Talent My Passion"</p>
           <p>Year: ${year}</p>
           ${tableHTML}
           <div class="stamp">
-            Nachu Junior School<br>
+            Nachu Primary School<br>
             Po Box 561-00902<br>
             Kikuyu...Exam Department
           </div>
@@ -9028,7 +8981,7 @@ function generateBlankMeritLists(learnersSnapshot, selectedGrade) {
 
     const term = "Term ";
     const year = new Date().getFullYear();
-    const schoolName = "NACHU JUNIOR SCHOOL";
+    const schoolName = "NACHU PRIMARY SCHOOL";
     const logoUrl = "https://i.imgur.com/VSAh48K.jpeg";
 
     // Print Button
@@ -9073,7 +9026,7 @@ function generateBlankMeritLists(learnersSnapshot, selectedGrade) {
 
     // Subjects
     const subjects = [
-        'Eng', 'Math', 'Pre-Tech', 'Kisw', 'Scie',
+        'Eng', 'Math',  'Kisw', 'Scie',
         'Sst', 'Agric', 'Cre', 'C/A'
     ];
 
@@ -9126,24 +9079,20 @@ function generateSubjectRanking(grade, subjectKey, period) {
   const subjectNames = {
     eng: "English",
     math: "Mathematics",
-    preTech: "Pre-Technical Studies",
+   
     kiswahili: "Kiswahili",
-    science: "Integrated Science",
+    science: "Science",
     social: "Social Studies",
     agriculture: "Agriculture",
     cre: "Religious Education",
-    creativeArt: "Creative Art"
+    creativeArt: "Creative Arts & sports "
   };
 
   function getLevel(score) {
-    if (score >= 90) return "EE 1";
-    if (score >= 75) return "EE 2";
-    if (score >= 58) return "ME 1";
-    if (score >= 41) return "ME 2";
-    if (score >= 31) return "AE 1";
-    if (score >= 21) return "AE 2";
-    if (score >= 11) return "BE 1";
-    return "BE 2";
+    if (score >= 75) return "EE";
+    if (score >= 50) return "ME";
+    if (score >= 25) return "AE";
+    return "BE";
   }
 
   const learners = [];
@@ -9154,8 +9103,8 @@ function generateSubjectRanking(grade, subjectKey, period) {
 
     const learnerName = row.cells[1].textContent;
     const subjectColIndex = {
-      eng: 3, math: 5, preTech: 7, kiswahili: 9, science: 11,
-      social: 13, agriculture: 15, cre: 17, creativeArt: 19
+      eng: 3, math: 5, kiswahili: 7, science: 9,
+      social: 11, agriculture: 13, cre: 15, creativeArt: 17
     }[subjectKey];
 
     const score = parseFloat(row.cells[subjectColIndex].textContent) || 0;
@@ -9170,7 +9119,7 @@ function generateSubjectRanking(grade, subjectKey, period) {
   let html = `
     <div style="text-align: center; margin-bottom: 20px;">
       <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="display: block; margin: 0 auto 10px; max-width: 80px; height: auto;">
-      <h2 style="margin: 0;">NACHU JUNIOR SCHOOL SUBJECT PERFORMANCE REPORT</h2>
+      <h2 style="margin: 0;">NACHU PRIMARY SCHOOL SUBJECT PERFORMANCE REPORT</h2>
       <p style="margin: 5px 0;">Address: P.O. Box 561-00902, Kikuyu, Kenya</p>
       <p style="margin: 5px 0;">School Motto: "My Talent My Passion"</p>
       <p style="margin: 5px 0;">Year: ${year}</p>
@@ -9249,7 +9198,7 @@ function loadMarksTableForPeriod(examPeriod) {
   const gradeGroups = {};
 
   let sums = {
-    eng: 0, math: 0, preTech: 0, kiswahili: 0,
+    eng: 0, math: 0, kiswahili: 0,
     science: 0, social: 0, agriculture: 0,
     cre: 0, creativeArt: 0, totalMarks: 0, totalLevels: 0
   };
@@ -9268,7 +9217,7 @@ function loadMarksTableForPeriod(examPeriod) {
         const rowTotal =
           (parseFloat(marks.eng) || 0) +
           (parseFloat(marks.math) || 0) +
-          (parseFloat(marks.preTech) || 0) +
+      
           (parseFloat(marks.kiswahili) || 0) +
           (parseFloat(marks.science) || 0) +
           (parseFloat(marks.social) || 0) +
@@ -9279,7 +9228,7 @@ function loadMarksTableForPeriod(examPeriod) {
         const totalLevel =
           (parseInt(marks.engLev) || 0) +
           (parseInt(marks.mathLev) || 0) +
-          (parseInt(marks.preTechLev) || 0) +
+      
           (parseInt(marks.kiswahiliLev) || 0) +
           (parseInt(marks.scienceLev) || 0) +
           (parseInt(marks.socialLev) || 0) +
@@ -9314,7 +9263,7 @@ function loadMarksTableForPeriod(examPeriod) {
 
         sums.eng += (parseFloat(marks.eng) || 0);
         sums.math += (parseFloat(marks.math) || 0);
-        sums.preTech += (parseFloat(marks.preTech) || 0);
+      
         sums.kiswahili += (parseFloat(marks.kiswahili) || 0);
         sums.science += (parseFloat(marks.science) || 0);
         sums.social += (parseFloat(marks.social) || 0);
@@ -9335,7 +9284,7 @@ function loadMarksTableForPeriod(examPeriod) {
           <td>${data.grade}</td>
           <td data-editable="true">${marks.eng}</td><td>${marks.engLev || ''}</td>
           <td data-editable="true">${marks.math}</td><td>${marks.mathLev || ''}</td>
-          <td data-editable="true">${marks.preTech}</td><td>${marks.preTechLev || ''}</td>
+ 
           <td data-editable="true">${marks.kiswahili}</td><td>${marks.kiswahiliLev || ''}</td>
           <td data-editable="true">${marks.science}</td><td>${marks.scienceLev || ''}</td>
           <td data-editable="true">${marks.social}</td><td>${marks.socialLev || ''}</td>
@@ -9359,7 +9308,7 @@ function loadMarksTableForPeriod(examPeriod) {
       <td colspan="3"><strong>Totals</strong></td>
       <td>${sums.eng}</td><td></td>
       <td>${sums.math}</td><td></td>
-      <td>${sums.preTech}</td><td></td>
+  
       <td>${sums.kiswahili}</td><td></td>
       <td>${sums.science}</td><td></td>
       <td>${sums.social}</td><td></td>
@@ -9375,7 +9324,7 @@ function loadMarksTableForPeriod(examPeriod) {
       <td colspan="3"><strong>Averages</strong></td>
       <td>${(sums.eng / divisor).toFixed(2)}</td><td></td>
       <td>${(sums.math / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.preTech / divisor).toFixed(2)}</td><td></td>
+   
       <td>${(sums.kiswahili / divisor).toFixed(2)}</td><td></td>
       <td>${(sums.science / divisor).toFixed(2)}</td><td></td>
       <td>${(sums.social / divisor).toFixed(2)}</td><td></td>
@@ -9424,12 +9373,12 @@ document.getElementById("subjectRankingReportBtn").addEventListener("click", () 
 
 function generateSubjectRankingPerLearner(selectedGrade, selectedPeriod) {
     const subjects = [
-        'English', 'Mathematics', 'Pre-Technical Studies',
-        'Kiswahili', 'Integrated Science', 'Social Studies',
-        'Agriculture', 'Religious Education', 'Creative Art'
+        'English', 'Mathematics', 
+        'Kiswahili', 'Science', 'Social Studies',
+        'Agriculture', 'Religious Education', 'Creative Arts & sports '
     ];
     const subjectKeys = [
-        'eng', 'math', 'preTech',
+        'eng', 'math', 
         'kiswahili', 'science', 'social',
         'agriculture', 'cre', 'creativeArt'
     ];
@@ -9440,7 +9389,7 @@ function generateSubjectRankingPerLearner(selectedGrade, selectedPeriod) {
     let html = `
         <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="display: block; margin: 0 auto 10px; max-width: 80px;">
-            <h2 style="margin: 0;">NACHU JUNIOR SCHOOL LEARNER SUBJECT TRACKER REPORT</h2>
+            <h2 style="margin: 0;">NACHU PRIMARY SCHOOL LEARNER SUBJECT TRACKER REPORT</h2>
             <p>Address: P.O. Box 561-00902, Kikuyu, Kenya | Motto: "My Talent My Passion"</p>
             <p>Year: ${year} | Grade: ${selectedGrade} | Exam Period: ${selectedPeriod}</p>
         </div>
@@ -9634,9 +9583,10 @@ function generateSubjectRankingPerLearner(selectedGrade, selectedPeriod) {
   enableEnterAsTab('#learnersList');     // Registered Learners table rows
 
 // ==============================
-// 🔹 USER & ADMIN CREDENTIALS
+// 🔹 User & Admin Credentials
 // ==============================
 const adminCredentials = { username: 'admin', password: 'admin123' };
+
 const users = [
   { username: "Nachu", password: "1", role: "parent" },
   { username: "Teacher1", password: "123", role: "teacher" },
@@ -9644,119 +9594,226 @@ const users = [
 ];
 
 let isAdminLoggedIn = false;
-let logoutTimer;
 
 // ==============================
-// 🔹 AUTO LOGOUT (10 MINUTES)
+// 🔹 Login Form Submission
 // ==============================
-function startAutoLogout() {
-  clearTimeout(logoutTimer);
-  logoutTimer = setTimeout(() => {
-    alert("Session expired. Logging out...");
-    location.reload();
-  }, 10 * 60 * 1000);
-}
-document.addEventListener("click", startAutoLogout);
-document.addEventListener("keypress", startAutoLogout);
+document.getElementById("loginForm").addEventListener("submit", function (e) {
+  e.preventDefault();
 
-// ==============================
-// 🔹 ROLE BADGE
-// ==============================
-function showUserRole(role, username) {
-  let roleBox = document.getElementById("userRoleDisplay");
-  if (!roleBox) {
-    roleBox = document.createElement("div");
-    roleBox.id = "userRoleDisplay";
-    roleBox.style.cssText = `
-      position:fixed;
-      top:10px;
-      right:10px;
-      padding:8px 15px;
-      border-radius:20px;
-      font-weight:bold;
-      color:white;
-      z-index:9999;
-    `;
-    document.body.appendChild(roleBox);
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  // Check admin credentials first
+  const isAdmin = username === adminCredentials.username && password === adminCredentials.password;
+
+  // Check regular users
+  const currentUser = users.find(u => u.username === username && u.password === password);
+
+  if (isAdmin || currentUser) {
+
+    // ==============================
+    // 🔹 LOGIN SUCCESS
+    // ==============================
+    if (isAdmin) isAdminLoggedIn = true;
+
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+    document.getElementById("loginError").style.display = "none";
+
+    // ==============================
+    // 🔹 BUTTON ACCESS CONTROL
+    // ==============================
+    const allButtons = document.querySelectorAll("#mainContent button");
+
+    allButtons.forEach(btn => {
+
+      // ADMIN sees everything
+      if (isAdmin) {
+        btn.style.display = "inline-block";
+      }
+
+      // PARENT sees only parent lookup buttons
+      else if (currentUser.role === "parent") {
+
+        if (
+          btn.id === "toggleParentLookupBtn" ||
+          btn.id === "fetchParentResults"
+        ) {
+          btn.style.display = "inline-block";
+        } else {
+          btn.style.display = "none";
+        }
+
+      }
+
+      // TEACHER default (will refine below)
+      else if (currentUser.role === "teacher") {
+        btn.style.display = "inline-block";
+      }
+
+    });
+
+    // ==============================
+    // 🔹 REPORTS SECTION ACCESS
+    // ==============================
+    const reportsControls = document.getElementById("reportsControls");
+    const examReportsBtn = document.getElementById("togglePerformanceReportsBtn");
+    const marksSectionBtn = document.getElementById("toggleMarksSectionBtn");
+    const recordMarksBtn = document.getElementById("toggleRecordMarksBtn");
+
+    if (reportsControls) {
+
+      // hide all first
+      reportsControls.style.display = "none";
+      if (examReportsBtn) examReportsBtn.style.display = "none";
+      if (marksSectionBtn) marksSectionBtn.style.display = "none";
+      if (recordMarksBtn) recordMarksBtn.style.display = "none";
+
+      // ADMIN → sees everything
+      if (isAdmin || (currentUser && currentUser.role === "admin")) {
+
+        reportsControls.style.display = "flex";
+
+        if (examReportsBtn) examReportsBtn.style.display = "inline-block";
+        if (marksSectionBtn) marksSectionBtn.style.display = "inline-block";
+        if (recordMarksBtn) recordMarksBtn.style.display = "inline-block";
+      }
+
+      // TEACHER → Marks + Record only
+      else if (currentUser && currentUser.role === "teacher") {
+
+        reportsControls.style.display = "flex";
+
+        if (marksSectionBtn) marksSectionBtn.style.display = "inline-block";
+        if (recordMarksBtn) recordMarksBtn.style.display = "inline-block";
+      }
+
+      // PARENT → cannot see reports area
+      else {
+        reportsControls.style.display = "none";
+      }
+    }
+
+    // ==============================
+    // 🔹 ADMIN ONLY BUTTONS
+    // ==============================
+    if (isAdmin) {
+
+      const adminBtns = document.querySelectorAll(".admin-only");
+      adminBtns.forEach(btn => btn.style.display = "inline-block");
+
+      const saveBtn = document.getElementById("saveEditedMarksBtn");
+      if (saveBtn) saveBtn.style.display = "inline-block";
+
+    }
+
+    // ==============================
+    // 🔹 SWEET ALERT MESSAGES
+    // ==============================
+    if (typeof Swal !== "undefined") {
+
+      // ADMIN MESSAGE
+      if (isAdmin) {
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          text: 'Welcome, Admin!',
+          timer: 1500,
+          showConfirmButton: false
+        });
+
+      }
+
+      // PARENT MESSAGE
+      else if (currentUser.role === "parent") {
+
+        if (typeof openModal === "function") {
+          openModal();
+        }
+
+        Swal.fire({
+          title: `Welcome, ${currentUser.username}!`,
+          html: `
+            <p>🎉 Login Successful!</p>
+            <p>Here's how to fetch your child's results:</p>
+
+            <ol style="text-align:left;">
+              <li>Open Parent Lookup</li>
+              <li>Select your child</li>
+              <li>Click Fetch Results</li>
+            </ol>
+          `,
+          icon: "success",
+          confirmButtonText: "OK"
+        });
+
+      }
+
+      // TEACHER MESSAGE
+      else {
+
+        Swal.fire({
+          icon: "success",
+          title: "Login Successful",
+          text: `Welcome ${currentUser.username}`,
+          confirmButtonText: "Continue"
+        });
+
+      }
+
+    }
+
   }
 
-  let color = "#3498db";
-  if (role === "admin") color = "#e74c3c";
-  if (role === "teacher") color = "#27ae60";
-  if (role === "parent") color = "#8e44ad";
+  // ==============================
+  // 🔹 LOGIN FAILED
+  // ==============================
+  else {
 
-  roleBox.style.background = color;
-  roleBox.innerText = `${role.toUpperCase()} | ${username}`;
-}
+    const loginError = document.getElementById("loginError");
+    if (loginError) loginError.style.display = "block";
 
-// ==============================
-// 🔹 ENABLE MARKS EDITING (ADMIN ONLY, LOCAL)
-// ==============================
+    if (typeof Swal !== "undefined") {
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: 'Incorrect username or password'
+      });
+
+    } else {
+
+      alert("Login failed");
+
+    }
+
+  }
+
+});
 function enableMarksEditing() {
   if (!isAdminLoggedIn) return;
 
   const cells = document.querySelectorAll("#marksList td[data-editable='true']");
   cells.forEach(cell => {
+    // Enable editable style
     cell.contentEditable = true;
     cell.style.backgroundColor = "#fff8dc";
     cell.style.border = "1px solid #ff9800";
-    cell.title = "Click to edit";
 
-    // Update totals immediately when cell changes
-    cell.addEventListener("input", () => {
+    // Auto-save on blur
+    cell.addEventListener("blur", function () {
       const row = cell.closest("tr");
-      const cellValues = row.querySelectorAll("td[data-editable='true']");
-      const marks = {
-        eng: parseFloat(cellValues[0].innerText) || 0,
-        math: parseFloat(cellValues[1].innerText) || 0,
-        preTech: parseFloat(cellValues[2].innerText) || 0,
-        kiswahili: parseFloat(cellValues[3].innerText) || 0,
-        science: parseFloat(cellValues[4].innerText) || 0,
-        social: parseFloat(cellValues[5].innerText) || 0,
-        agriculture: parseFloat(cellValues[6].innerText) || 0,
-        cre: parseFloat(cellValues[7].innerText) || 0,
-        creativeArt: parseFloat(cellValues[8].innerText) || 0
-      };
-      updateRowTotals(row, marks);
-      updateMeritList(); // Update ranks live
-    });
-  });
-}
-// ==============================
-// 🔹 SAVE MARKS BUTTON (ADMIN ONLY)
-// ==============================
-function setupSaveMarksButton() {
-  const saveBtn = document.getElementById("saveMarksBtn");
-  if (!saveBtn || !isAdminLoggedIn) return;
-  saveBtn.style.display = "inline-block";
-
-  saveBtn.addEventListener("click", async () => {
-    const examPeriod = marksExamPeriodSelect.value;
-    if (!examPeriod) {
-      Swal.fire({ icon:"warning", title:"Select exam period first" });
-      return;
-    }
-
-    const rows = document.querySelectorAll("#marksList tbody tr");
-    if (!rows.length) return;
-
-    Swal.fire({
-      title: 'Saving Marks...',
-      html: '<div id="swal-progress-container" style="width:100%; background:#eee; border-radius:6px; margin-top:10px;">' +
-            '<div id="swal-progress-bar" style="width:0%; height:16px; background:#27ae60; border-radius:6px;"></div>' +
-            '</div>' +
-            `<p id="swal-progress-text" style="margin-top:10px;">0/${rows.length} rows saved</p>`,
-      allowOutsideClick: false,
-      didOpen: () => { Swal.showLoading(); }
-    });
-
-    let progress = 0;
-    const totalRows = rows.length;
-
-    for (const row of rows) {
       const learnerKey = row.getAttribute("data-key");
-      if (!learnerKey) continue;
+      const examPeriod = marksExamPeriodSelect.value;
 
+      const subjectName = cell.getAttribute("data-subject") || "Subject";
+      const learnerName = row.querySelector(".learner-name")?.innerText || "Learner";
+
+      if (!learnerKey || !examPeriod) return;
+
+      // Collect marks
       const cellValues = row.querySelectorAll("td[data-editable='true']");
       const marks = {
         eng: parseFloat(cellValues[0].innerText) || 0,
@@ -9770,34 +9827,47 @@ function setupSaveMarksButton() {
         creativeArt: parseFloat(cellValues[8].innerText) || 0
       };
 
-      try {
-        const learnerMarksRef = ref(database, `learners/${learnerKey}/marks/${examPeriod}`);
-        await update(learnerMarksRef, marks);
-        updateRowTotals(row, marks);
-      } catch(err) {
-        console.error(`Error updating ${learnerKey}`, err);
-      }
+      // Update Firebase
+      const learnerMarksRef = ref(database, `learners/${learnerKey}/marks/${examPeriod}`);
+      update(learnerMarksRef, marks)
+        .then(() => {
+          // ✅ Visual feedback
+          cell.style.border = "2px solid green";
+          setTimeout(() => {
+            cell.style.border = "1px solid #ff9800";
+          }, 1500);
 
-      progress++;
-      const percent = Math.round((progress / totalRows) * 100);
-      const progressBar = document.getElementById("swal-progress-bar");
-      const progressText = document.getElementById("swal-progress-text");
-      if (progressBar) progressBar.style.width = `${percent}%`;
-      if (progressText) progressText.innerText = `${progress}/${totalRows} rows saved (${percent}%)`;
+          // 🎉 Toast message
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: `✅ ${subjectName} updated for ${learnerName}`,
+            showConfirmButton: false,
+            timer: 1800
+          });
 
-      await new Promise(res=>setTimeout(res, 50));
-    }
+          // --- 🔹 IMMEDIATE CALCULATION ---
+          updateRowTotals(row, marks);       // Update total & average in the row
+          updateMeritList();                 // Refresh merit list ranking
 
-    updateMeritList();
-    Swal.fire({ icon:'success', title:'All marks saved successfully!', timer:2000, showConfirmButton:false });
+        })
+        .catch(error => {
+          console.error(`❌ Error updating ${learnerKey}:`, error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: `Could not save ${subjectName} mark for ${learnerName}.`,
+            footer: 'Check internet or permissions.',
+            timer: 3000
+          });
+        });
+    });
   });
 }
-
-// ==============================
-// 🔹 UPDATE ROW TOTALS
-// ==============================
+// Update total & average for a single learner row
 function updateRowTotals(row, marks) {
-  const total = Object.values(marks).reduce((sum,val)=>sum+val,0);
+  const total = Object.values(marks).reduce((sum, val) => sum + val, 0);
   const avg = total / Object.keys(marks).length;
 
   const totalCell = row.querySelector("td.total");
@@ -9807,327 +9877,156 @@ function updateRowTotals(row, marks) {
   if (avgCell) avgCell.innerText = avg.toFixed(1);
 }
 
-// ==============================
-// 🔹 UPDATE MERIT LIST
-// ==============================
+// Recompute merit list (sorting all learners by total)
 function updateMeritList() {
   const rows = Array.from(document.querySelectorAll("#marksList tbody tr"));
-  rows.sort((a,b)=>{
-    const totalA = parseFloat(a.querySelector("td.total")?.innerText)||0;
-    const totalB = parseFloat(b.querySelector("td.total")?.innerText)||0;
-    return totalB - totalA;
+  rows.sort((a, b) => {
+    const totalA = parseFloat(a.querySelector("td.total")?.innerText) || 0;
+    const totalB = parseFloat(b.querySelector("td.total")?.innerText) || 0;
+    return totalB - totalA; // descending
   });
 
   const tbody = document.querySelector("#marksList tbody");
-  rows.forEach((row,index)=>{
+  rows.forEach((row, index) => {
+    // Update rank
     const rankCell = row.querySelector("td.rank");
-    if (rankCell) rankCell.innerText = index+1;
+    if (rankCell) rankCell.innerText = index + 1;
+
+    // Re-append rows in correct order
     tbody.appendChild(row);
   });
 }
 
-// ==============================
-// 🔹 REAL-TIME MARKS LISTEN
-// ==============================
-function listenForMarksUpdates(examPeriod) {
-  const marksRef = ref(database, `learners`);
-  onValue(marksRef, snapshot=>{
-    const learnersData = snapshot.val();
-    if (!learnersData) return;
 
-    const tbody = document.querySelector("#marksList tbody");
-    if (!tbody) return;
-
-    tbody.querySelectorAll("tr").forEach(tr=>{
-      const key = tr.getAttribute("data-key");
-      if (!key || !learnersData[key] || !learnersData[key].marks) return;
-
-      const marks = learnersData[key].marks[examPeriod];
-      if (!marks) return;
-
-      const cellValues = tr.querySelectorAll("td[data-editable='true']");
-      const subjects = ["eng","math","preTech","kiswahili","science","social","agriculture","cre","creativeArt"];
-      subjects.forEach((subj,idx)=>{
-        if(cellValues[idx] && parseFloat(cellValues[idx].innerText)!==marks[subj]){
-          cellValues[idx].innerText = marks[subj];
-        }
-      });
-
-      updateRowTotals(tr, marks);
-    });
-
-    updateMeritList();
-  });
-}
-
-// ==============================
-// 🔹 LOGIN FORM
-// ==============================
-document.getElementById("loginForm").addEventListener("submit", function(e){
-  e.preventDefault();
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  const isAdmin = username === adminCredentials.username && password === adminCredentials.password;
-  const currentUser = users.find(u=>u.username===username && u.password===password);
-
-  if(isAdmin || currentUser){
-    if(isAdmin) isAdminLoggedIn=true;
-
-    document.getElementById("loginSection").style.display="none";
-    document.getElementById("mainContent").style.display="block";
-    startAutoLogout();
-
-    if(isAdmin) showUserRole("admin",username);
-    else showUserRole(currentUser.role,username);
-
-    const reportsSection = document.getElementById("reportsControls");
-    const examReportsBtn = document.getElementById("togglePerformanceReportsBtn");
-    const marksSectionBtn = document.getElementById("toggleMarksSectionBtn");
-    const recordMarksBtn = document.getElementById("toggleRecordMarksBtn");
-    const saveBtn = document.getElementById("saveMarksBtn");
-
-    [reportsSection,examReportsBtn,marksSectionBtn,recordMarksBtn,saveBtn].forEach(el=>{
-      if(el) el.style.display="none";
-    });
-
-    // Admin access
-    if(isAdmin || (currentUser && currentUser.role==="admin")){
-      if(reportsSection) reportsSection.style.display="flex";
-      if(examReportsBtn) examReportsBtn.style.display="inline-block";
-      if(marksSectionBtn) marksSectionBtn.style.display="inline-block";
-      if(recordMarksBtn) recordMarksBtn.style.display="inline-block";
-
-      enableMarksEditing();
-      setupSaveMarksButton();
-    }
-
-    // Teacher access
-    else if(currentUser && currentUser.role==="teacher"){
-      if(reportsSection) reportsSection.style.display="flex";
-      if(marksSectionBtn) marksSectionBtn.style.display="inline-block";
-      if(recordMarksBtn) recordMarksBtn.style.display="inline-block";
-    }
-
-    // Parent access
-    else if(currentUser && currentUser.role==="parent"){
-      if(reportsSection) reportsSection.style.display="none";
-    }
-
-    // Welcome alert
-    if(typeof Swal!=="undefined"){
-      if(isAdmin) Swal.fire({icon:'success',title:'Welcome Admin',timer:1500,showConfirmButton:false});
-      else if(currentUser.role==="parent"){
-        if(typeof openModal==="function") openModal();
-        Swal.fire({icon:"success",title:"Welcome Parent",text:"Use Parent Lookup to view results"});
-      }else Swal.fire({icon:"success",title:"Welcome Teacher"});
-    }
-
-    // Real-time marks
-    const examPeriod = marksExamPeriodSelect.value;
-    if(examPeriod) listenForMarksUpdates(examPeriod);
-    marksExamPeriodSelect.addEventListener("change",()=>{
-      const period = marksExamPeriodSelect.value;
-      if(period) listenForMarksUpdates(period);
-    });
-
-  } else {
-    document.getElementById("loginError").style.display="block";
-    if(typeof Swal!=="undefined"){
-      Swal.fire({icon:'error',title:'Login Failed',text:'Incorrect credentials'});
-    }
-  }
-});
-
-// 🔁 Helper: get unique grades from learners
-async function getAvailableGrades() {
-  const snapshot = await get(learnersRef);
-  if (!snapshot.exists()) return [];
-
-  const learners = snapshot.val();
-  const gradesSet = new Set();
-
-  for (const key in learners) {
-    const grade = learners[key].grade;
-    if (grade) gradesSet.add(grade.toUpperCase());
-  }
-
-  return Array.from(gradesSet).sort(); // sorted for nicer dropdown
-}
-
-// 🔁 Promote learners (admin-only)
+// 🔁 Promote learners in the "learners" node (admin-only)
 window.promoteLearners = async function () {
-
   if (!isAdminLoggedIn) {
     Swal.fire({
       icon: "error",
       title: "Access Denied",
-      text: "Only admins can promote learners."
+      text: "Only admins can promote learners.",
+      timer: 2000,
+      showConfirmButton: false
     });
     return;
   }
 
-  const availableGrades = await getAvailableGrades();
-  if (availableGrades.length === 0) {
-    Swal.fire("No grades available for promotion.");
-    return;
-  }
-
-  const { value: selectedGrade } = await Swal.fire({
-    title: "Select grade to promote",
-    input: "select",
-    inputOptions: availableGrades.reduce((acc, g) => ({ ...acc, [g]: g }), {}),
-    inputPlaceholder: "Select grade",
-    showCancelButton: true
-  });
-
-  if (!selectedGrade) return;
-
   try {
     const snapshot = await get(learnersRef);
+
+    if (!snapshot.exists()) {
+      Swal.fire("No learners found to promote.");
+      return;
+    }
+
     const learners = snapshot.val();
     const updates = {};
     const summary = [];
 
     for (const key in learners) {
       const learner = learners[key];
-      if (learner.grade.toUpperCase() === selectedGrade.toUpperCase()) {
-        const nextGrade = getNextGrade(learner.grade);
-        if (!nextGrade) continue;
+      const currentGrade = learner.grade;
+      const nextGrade = getNextGrade(currentGrade);
 
-        updates[`learners/${key}/previousGrade`] = learner.grade;
+      if (nextGrade) {
         updates[`learners/${key}/grade`] = nextGrade;
-        summary.push(`${learner.name}: ${learner.grade} → ${nextGrade}`);
+        summary.push(`${learner.name}: ${currentGrade} → ${nextGrade}`);
       }
     }
 
-    if (summary.length === 0) {
-      Swal.fire("No learners found in the selected grade.");
+    if (Object.keys(updates).length === 0) {
+      Swal.fire("No valid grades found for promotion.");
       return;
     }
-
-    const confirm = await Swal.fire({
-  title: `<span style="color:red;">Dangerous Action</span>`,
-  html: `
-    <h3>Confirm Promotion for ${selectedGrade}</h3>
-    <pre style="text-align:left">${summary.join("\n")}</pre>
-  `,
-  icon: "question",
-  showCancelButton: true,
-  confirmButtonText: "Promote",
-  cancelButtonText: "Cancel"
-});
-
-    if (!confirm.isConfirmed) return;
 
     await update(ref(database), updates);
 
     Swal.fire({
-      title: "Promotion Complete",
+      title: "🎉 Promotion Complete",
       html: `<pre style="text-align:left">${summary.join("\n")}</pre>`,
       icon: "success"
     });
 
   } catch (error) {
-    console.error(error);
-    Swal.fire("Error promoting learners");
+    console.error("Error promoting learners:", error);
+    Swal.fire("Error", "Something went wrong while promoting.", "error");
   }
 };
 
-// 🔁 Undo promotion (per selected grade)
 window.undoPromotion = async function () {
-
   if (!isAdminLoggedIn) {
     Swal.fire({
       icon: "error",
       title: "Access Denied",
-      text: "Only admins can undo promotions."
+      text: "Only admins can undo promotions.",
+      timer: 2000,
+      showConfirmButton: false
     });
     return;
   }
 
-  const availableGrades = await getAvailableGrades();
-  if (availableGrades.length === 0) {
-    Swal.fire("No grades available to undo.");
-    return;
-  }
-
-  const { value: selectedGrade } = await Swal.fire({
-    title: "Select grade to undo promotion",
-    input: "select",
-    inputOptions: availableGrades.reduce((acc, g) => ({ ...acc, [g]: g }), {}),
-    inputPlaceholder: "Select grade",
-    showCancelButton: true
-  });
-
-  if (!selectedGrade) return;
-
   try {
     const snapshot = await get(learnersRef);
+
+    if (!snapshot.exists()) {
+      Swal.fire("No learners found to undo promotion.");
+      return;
+    }
+
     const learners = snapshot.val();
     const updates = {};
     const summary = [];
 
     for (const key in learners) {
       const learner = learners[key];
-      if (learner.grade.toUpperCase() === selectedGrade.toUpperCase() && learner.previousGrade) {
-        updates[`learners/${key}/grade`] = learner.previousGrade;
-        updates[`learners/${key}/previousGrade`] = null;
-        summary.push(`${learner.name}: ${learner.grade} → ${learner.previousGrade}`);
+      const currentGrade = learner.grade;
+      const prevGrade = getPreviousGrade(currentGrade);
+
+      if (prevGrade) {
+        updates[`learners/${key}/grade`] = prevGrade;
+        summary.push(`${learner.name}: ${currentGrade} → ${prevGrade}`);
       }
     }
 
-    if (summary.length === 0) {
-      Swal.fire("No learners found to undo for the selected grade.");
+    if (Object.keys(updates).length === 0) {
+      Swal.fire("No valid grades to undo.");
       return;
     }
-
-   const confirm = await Swal.fire({
-  title: `<span style="color:red;">Dangerous Action</span>`,
-  html: `
-    <h3>Confirm Undo for ${selectedGrade}</h3>
-    <pre style="text-align:left">${summary.join("\n")}</pre>
-  `,
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonText: "Undo",
-  cancelButtonText: "Cancel"
-});
-    if (!confirm.isConfirmed) return;
 
     await update(ref(database), updates);
 
     Swal.fire({
-      title: "Undo Complete",
+      title: "🔁 Undo Complete",
       html: `<pre style="text-align:left">${summary.join("\n")}</pre>`,
       icon: "info"
     });
 
   } catch (error) {
-    console.error(error);
-    Swal.fire("Undo failed");
+    console.error("Undo error:", error);
+    Swal.fire("Error", "Something went wrong during undo.", "error");
   }
 };
-function getNextGrade(currentGrade) {
-  const match = currentGrade.match(/(\d+)\s*([A-Z]?)/i);
-  if (!match) return null;
-
-  const number = parseInt(match[1]);
-  const letter = match[2] ? match[2].toUpperCase() : "";
-
-  if (number >= 12) return null; // STOP at Grade 12
-  return `${number + 1}${letter ? " " + letter : ""}`; // merge number + stream
-}
 
 function getPreviousGrade(currentGrade) {
-  const match = currentGrade.match(/(\d+)\s*([A-Z]?)/i);
+  const match = currentGrade.match(/(\d+)([A-Z]?)/i);
   if (!match) return null;
 
   const number = parseInt(match[1]);
-  const letter = match[2] ? match[2].toUpperCase() : "";
+  if (number <= 1) return null; // Avoid going below Grade 1
 
-  if (number <= 1) return null; // STOP at Grade 1
-  return `${number - 1}${letter ? " " + letter : ""}`; // merge number + stream
+  const letter = match[2] || "";
+  return `Grade ${number - 1}${letter.toUpperCase()}`;
+}
+function getNextGrade(currentGrade) {
+  if (!currentGrade || typeof currentGrade !== "string") return null;
+
+  const match = currentGrade.trim().match(/(\d+)([A-Z]?)/i);
+  if (!match) return null;
+
+  const number = parseInt(match[1]);
+  const letter = match[2]?.toUpperCase() || "";
+
+  return `Grade ${number + 1}${letter}`;
 }
 document.getElementById('searchMarksInput').addEventListener('input', function () {
   const searchValue = this.value.toLowerCase();
@@ -10238,7 +10137,8 @@ document.getElementById("bulkDeleteButton").addEventListener("click", async () =
     // Remove any lingering highlights
     selectedRows.forEach(row => row.style.backgroundColor = "");
   }
-});function generateInsight() {
+});
+function generateInsight() {
 
   const totalStudents = allLearners.length;
 
@@ -10253,7 +10153,7 @@ document.getElementById("bulkDeleteButton").addEventListener("click", async () =
       totalMarks +=
         (parseFloat(exam.eng) || 0) +
         (parseFloat(exam.math) || 0) +
-        (parseFloat(exam.preTech) || 0) +
+  
         (parseFloat(exam.kiswahili) || 0) +
         (parseFloat(exam.science) || 0) +
         (parseFloat(exam.social) || 0) +
@@ -10337,15 +10237,16 @@ function animateValue(id, target, suffix=""){
 // ===============================
 function getGradeDetails(avg){
 
-  if(avg >= 90) return { grade:"EE1", color:"#2E7D32", comment:"Excellent mastery" };
-  if(avg >= 75) return { grade:"EE2", color:"#4CAF50", comment:"Very good understanding" };
-  if(avg >= 58) return { grade:"ME1", color:"#FFC107", comment:"Meets expectations" };
-  if(avg >= 41) return { grade:"ME2", color:"#FF9800", comment:"Approaching expectation" };
-  if(avg >= 31) return { grade:"AE1", color:"#F44336", comment:"Basic understanding" };
-  if(avg >= 21) return { grade:"AE2", color:"#E91E63", comment:"Below expectation" };
-  if(avg >= 11) return { grade:"BE1", color:"#9C27B0", comment:"Needs improvement" };
+  if(avg >= 75) 
+    return { grade:"EE", color:"#2E7D32", comment:"Excellent mastery" };
 
-  return { grade:"BE2", color:"#673AB7", comment:"Significant support required" };
+  if(avg >= 50) 
+    return { grade:"ME", color:"#FFC107", comment:"Meets expectations" };
+
+  if(avg >= 25) 
+    return { grade:"AE", color:"#FF9800", comment:"Approaching expectations" };
+
+  return { grade:"BE", color:"#F44336", comment:"Below expectations - Support required" };
 }
 
 // ===============================
@@ -10376,7 +10277,7 @@ function renderSubjectAverages(sums, count, previousSums=null, selectedClass="")
     const subjects = {
       English: sums.eng,
       Math: sums.math,
-      PreTech: sums.preTech,
+  
       Kiswahili: sums.kiswahili,
       Science: sums.science,
       Social: sums.social,
@@ -10727,7 +10628,7 @@ document.getElementById("fetchParentResults").addEventListener("click", () => {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
           <img src="https://i.imgur.com/91hfOYL.png" alt="Government Logo" style="height:60px;">
           <div style="text-align:center;">
-            <h2 style="margin:0;">Nachu Junior School</h2>
+            <h2 style="margin:0;">Nachu Primary School</h2>
             <h4 style="margin:2px 0; font-weight:normal;">${examPeriod}</h4>
             <h3 style="margin:5px 0;">${learnerName}</h3>
           </div>
@@ -10759,7 +10660,7 @@ document.getElementById("fetchParentResults").addEventListener("click", () => {
         </table>
 
         <div style="text-align:center; margin-top:20px; font-size:12px; color:#555;">
-          Generated by Nachu Junior School Academic Portal
+          Generated by Nachu Primary School Academic Portal
         </div>
       `;
 
@@ -10792,8 +10693,6 @@ printReportBtn.addEventListener("click", () => {
   printWindow.print();
   printWindow.close();
 });
-
-
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggleParentLookupBtn");
   const parentModal = document.getElementById("parentLookup");
@@ -11287,111 +11186,36 @@ function markAllAbsent() {
   });
 }
 
- 
+
 document.addEventListener("DOMContentLoaded", function () {
 
-  // =========================
-  // SECTION CONTROL (Auto-Close)
-  // =========================
-  const buttons = document.querySelectorAll(".section-btn");
-  const sections = document.querySelectorAll(".controlled-section");
-
-  function closeAllSections() {
-    sections.forEach(sec => sec.style.display = "none");
-  }
-
-  buttons.forEach(button => {
-    button.addEventListener("click", () => {
-      const targetId = button.getAttribute("data-target");
-      sections.forEach(section => {
-        section.style.display = section.id === targetId
-          ? (section.style.display === "block" ? "none" : "block")
-          : "none";
-      });
-    });
-  });
-
 
   // =========================
-  // NOTIFICATIONS BELL
+  // Existing Notification / Messaging Code
   // =========================
-  const notificationsBell = document.getElementById("notificationsBell");
-  const unreadCountEl = document.getElementById("unreadCount");
-
-  // Ensure dropdown exists
-  let bellDropdown = document.getElementById("bellMessagesDropdown");
-  if (!bellDropdown) {
-    bellDropdown = document.createElement("ul");
-    bellDropdown.id = "bellMessagesDropdown";
-    bellDropdown.style.cssText = `
-      position:absolute;
-      top:100%;
-      right:0;
-      width:320px;
-      max-height:400px;
-      overflow-y:auto;
-      background:rgba(0,0,0,0.85);
-      backdrop-filter:blur(5px);
-      color:white;
-      border-radius:8px;
-      padding:10px;
-      display:none;
-      opacity:0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(-10px);
-      z-index:9999;
-      list-style:none;
-    `;
-    notificationsBell.appendChild(bellDropdown);
-  }
-
-  const notificationsRef = ref(database, "notifications");
-
-  // Render messages inside the bell
-  async function renderBellMessages(data) {
-    bellDropdown.innerHTML = "";
-    let unread = 0;
-
-    const messages = Object.entries(data || {}).sort((a, b) => b[1].timestamp - a[1].timestamp);
-
-    for (let [key, msg] of messages) {
-      if (!msg.read) unread++;
-
-      const li = document.createElement("li");
-      li.style.padding = "6px 8px";
-      li.style.borderBottom = "1px solid rgba(255,255,255,0.2)";
-      li.style.wordBreak = "break-word";
-      li.style.background = msg.read ? "transparent" : "rgba(255,255,255,0.1)";
-      li.innerHTML = `<strong>[${msg.time}]</strong> (${msg.recipient}): ${msg.message}`;
-      bellDropdown.appendChild(li);
-    }
-
-    if (messages.length === 0) {
-      const li = document.createElement("li");
-      li.textContent = "No notifications";
-      li.style.padding = "6px";
-      bellDropdown.appendChild(li);
-    }
-
-    // Update unread count
-    unreadCountEl.textContent = unread;
-  }
-
-  // Real-time Firebase listener
-  onValue(notificationsRef, snapshot => {
-    const data = snapshot.val() || {};
-    renderBellMessages(data);
-  });
-
-
-  // =========================
-  // SEND MESSAGE
-  // =========================
+  const notifications = [];
   const sendBtn = document.getElementById("sendMessageBtn");
   const recipientEl = document.getElementById("messageRecipient");
   const messageEl = document.getElementById("messageContent");
+  const list = document.getElementById("notificationsList");
+  const unreadCountEl = document.getElementById("unreadCount");
 
-  sendBtn.addEventListener("click", async () => {
+  function renderNotifications() {
+    list.innerHTML = "";
+    notifications.forEach((n) => {
+      const li = document.createElement("li");
+      li.style.padding = "8px";
+      li.style.borderBottom = "1px solid #ccc";
+      li.innerHTML = `<strong>[${n.timestamp}]</strong> (${n.recipient}): ${n.message}`;
+      list.appendChild(li);
+    });
+  }
+
+  function updateUnreadCount() {
+    unreadCountEl.textContent = notifications.length;
+  }
+
+  sendBtn.addEventListener("click", () => {
     const message = messageEl.value.trim();
     const recipient = recipientEl.value;
 
@@ -11404,73 +11228,992 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const timestamp = Date.now();
-    const timeStr = new Date().toLocaleString();
-
-    await set(ref(database, `notifications/${timestamp}`), {
-      message,
-      recipient,
-      time: timeStr,
-      read: false,
-      timestamp
-    });
-
+    const timestamp = new Date().toLocaleString();
+    notifications.unshift({ recipient, message, timestamp });
     messageEl.value = "";
 
+    // Toast
     const toast = document.createElement("div");
     toast.className = "toast success show";
     toast.textContent = `Message sent to ${recipient}`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
+
+    renderNotifications();
+    updateUnreadCount();
   });
 
+  // Initialize unread count
+  updateUnreadCount();
+});
 
-  // =========================
-  // CLICK BELL → TOGGLE DROPDOWN & MARK AS READ
-  // =========================
-  notificationsBell.addEventListener("click", async (e) => {
-    e.stopPropagation();
-    const isOpen = bellDropdown.style.display === "block";
+document.addEventListener("DOMContentLoaded", function () {
 
-    if (isOpen) {
-      // Close with fade
-      bellDropdown.style.opacity = 0;
-      bellDropdown.style.transform = "translateY(-10px)";
-      setTimeout(() => bellDropdown.style.display = "none", 300);
-    } else {
-      // Open with fade
-      bellDropdown.style.display = "block";
-      setTimeout(() => {
-        bellDropdown.style.opacity = 1;
-        bellDropdown.style.transform = "translateY(0)";
-      }, 10);
+  const buttons = document.querySelectorAll(".section-btn");
+  const sections = document.querySelectorAll(".controlled-section");
 
-      // Mark all unread messages as read
-      const snapshot = await get(notificationsRef);
-      const data = snapshot.val() || {};
-      const updates = {};
-      Object.entries(data).forEach(([key, msg]) => {
-        if (!msg.read) updates[`notifications/${key}/read`] = true;
+  buttons.forEach(button => {
+    button.addEventListener("click", () => {
+      const targetId = button.getAttribute("data-target");
+
+      sections.forEach(section => {
+        if (section.id === targetId) {
+          section.style.display =
+            section.style.display === "block" ? "none" : "block";
+        } else {
+          section.style.display = "none";
+        }
       });
-      if (Object.keys(updates).length > 0) await update(ref(database), updates);
-    }
-  });
-
-  // Close dropdown if clicking outside
-  document.addEventListener("click", (e) => {
-    if (!notificationsBell.contains(e.target)) {
-      if (bellDropdown.style.display === "block") {
-        bellDropdown.style.opacity = 0;
-        bellDropdown.style.transform = "translateY(-10px)";
-        setTimeout(() => bellDropdown.style.display = "none", 300);
-      }
-    }
+    });
   });
 
 });
 
+// ================= FEES SECTION TOGGLE =================
+document.getElementById("toggleFeesBtn").onclick = () => {
+  const section = document.getElementById("feesSection");
+  section.style.display = section.style.display === "none" ? "block" : "none";
+};
+
+
+// ================= LOAD GRADES & STUDENTS =================
+function loadFeeStudents() {
+  const gradeSelect = document.getElementById("feeGrade");
+  const studentSelect = document.getElementById("feeStudent");
+
+  gradeSelect.innerHTML = '<option value="">Select Grade</option>';
+  studentSelect.innerHTML = '<option value="">Select Student</option>';
+
+  if (!allLearners || allLearners.length === 0) {
+    console.log("No learners found yet");
+    return;
+  }
+
+  // Get unique grades
+  const grades = [...new Set(allLearners.map(l => l.grade))];
+
+  grades.forEach(g => {
+    gradeSelect.innerHTML += `<option value="${g}">${g}</option>`;
+  });
+
+  // When grade changes → load students + reload fee table
+  gradeSelect.onchange = () => {
+    studentSelect.innerHTML = '<option value="">Select Student</option>';
+
+    allLearners.forEach(l => {
+      if (l.grade === gradeSelect.value) {
+        studentSelect.innerHTML += `
+          <option value="${l.key}">
+            ${l.name}
+          </option>`;
+      }
+    });
+
+    // 🔥 reload fee table when grade changes
+    loadFeeStatement();
+  };
+
+  // ✅ When student changes → reload table + autofill last payment
+  studentSelect.onchange = () => {
+    loadFeeStatement();
+    loadLastPaymentDetails();
+  };
+}
+document.getElementById("payFeeBtn").onclick = async () => {
+  const studentId = document.getElementById("feeStudent").value;
+  const amount = Number(document.getElementById("feeAmount").value);
+  const feeType = document.getElementById("feeType").value;
+  const year = document.getElementById("feeYear").value;
+
+  if (!studentId || !amount || !feeType || !year) {
+    alert("Fill all fields including Year and Fee Type");
+    return;
+  }
+
+  try {
+    const learner = allLearners.find(l => l.key === studentId);
+
+    // ✅ YEAR-BASED PATH
+    const feeRef = ref(db, "fees/" + year + "/" + studentId);
+    const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
+
+    const snapshot = await get(feeRef);
+    let existingData = snapshot.val();
+
+    // initialize structure if empty
+    let fees = existingData?.fees || {};
+
+    // add to existing category or create new
+    if (!fees[feeType]) {
+      fees[feeType] = 0;
+    }
+
+    fees[feeType] += amount;
+
+    const updatedPayment = {
+      studentId: studentId,
+      name: learner ? learner.name : "",
+      grade: learner ? learner.grade : "",
+      year: year, // ✅ store year
+      fees: fees,
+      lastUpdated: new Date().toLocaleString()
+    };
+
+    // ✅ Save summary under year
+    await set(feeRef, updatedPayment);
+
+    // ✅ Save history under year
+    await push(historyRef, {
+      feeType: feeType,
+      amount: amount,
+      date: new Date().toLocaleString(),
+      type: "PAYMENT"
+    });
+
+    alert("Payment Recorded & Saved to History ✅");
+
+    // reset inputs
+    document.getElementById("feeAmount").value = "";
+    document.getElementById("feeType").value = "";
+
+    // reload table
+    loadFeeStatement();
+
+  } catch (err) {
+    console.error(err);
+    alert("Error saving payment: " + err.message);
+  }
+};
+
+let allFeeData = {};
+let allFeeTypes = [];
+let filteredFeeData = {};
+
+// ================= LOAD FEE STATEMENT =================
+function loadFeeStatement() {
+  const container = document.getElementById("feeStatement");
+  const year = document.getElementById("feeYear").value;
+  const grade = document.getElementById("feeGrade").value;
+  const studentId = document.getElementById("feeStudent").value; // selected student
+
+  if (!year) {
+    container.innerHTML = "<p>Please select a year</p>";
+    return;
+  }
+
+  const feeRef = ref(db, "fees/" + year);
+
+  onValue(feeRef, snapshot => {
+    const data = snapshot.val();
+
+    if (!data) {
+      container.innerHTML = "<p>No fee records found for this year</p>";
+      allFeeData = {};
+      allFeeTypes = [];
+      return;
+    }
+
+    allFeeData = data;
+
+    // Collect fee types
+    const feeTypesSet = new Set();
+    Object.values(data).forEach(student => {
+      if (student.fees) Object.keys(student.fees).forEach(type => feeTypesSet.add(type));
+    });
+    allFeeTypes = Array.from(feeTypesSet);
+
+    // Filter by grade first
+    let filteredData = grade
+      ? Object.fromEntries(
+          Object.entries(data).filter(([id, student]) => student.grade === grade)
+        )
+      : data;
+// After filtering
+if (studentId) {
+  filteredData = filteredData[studentId] ? { [studentId]: filteredData[studentId] } : {};
+}
+
+// ✅ SAVE FILTERED DATA HERE
+filteredFeeData = filteredData;
+
+renderFeeTable("", filteredData);
+
+  });
+}
+document.getElementById("payFeeBtn").onclick = async () => {
+  const studentId = document.getElementById("feeStudent").value;
+  const amount = Number(document.getElementById("feeAmount").value);
+  const feeType = document.getElementById("feeType").value;
+  const year = document.getElementById("feeYear").value;
+
+  if (!studentId || !amount || !feeType || !year) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Missing Information',
+      text: 'Fill all fields including Year and Fee Type'
+    });
+    return;
+  }
+
+  try {
+    const learner = allLearners.find(l => l.key === studentId);
+
+    const feeRef = ref(db, "fees/" + year + "/" + studentId);
+    const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
+
+    const snapshot = await get(feeRef);
+    let existingData = snapshot.val();
+
+    let fees = existingData?.fees || {};
+
+    if (!fees[feeType]) fees[feeType] = 0;
+
+    fees[feeType] += amount;
+
+    const updatedPayment = {
+      studentId: studentId,
+      name: learner ? learner.name : "",
+      grade: learner ? learner.grade : "",
+      year: year,
+      fees: fees,
+      lastUpdated: new Date().toLocaleString()
+    };
+
+    await set(feeRef, updatedPayment);
+
+    await push(historyRef, {
+      feeType: feeType,
+      amount: amount,
+      date: new Date().toLocaleString(),
+      type: "PAYMENT"
+    });
+
+    // ✅ SweetAlert success
+    Swal.fire({
+      icon: 'success',
+      title: 'Payment Recorded',
+      text: `Payment of ${amount} for ${feeType} recorded successfully!`,
+      timer: 2500,
+      showConfirmButton: false
+    });
+
+    // reset inputs
+    document.getElementById("feeAmount").value = "";
+    document.getElementById("feeType").value = "";
+
+    loadFeeStatement();
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error Saving Payment',
+      text: err.message
+    });
+  }
+};
+function renderFeeTable(filterText = "", feeData = allFeeData) {
+  const container = document.getElementById("feeStatement");
+
+  let html = `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:14px; min-width:900px; border:2px solid #000;">`;
+  html += `<thead style="background:#f5f7fa; position:sticky; top:0; z-index:1;">
+            <tr>
+              <th style="padding:10px; border:1px solid #000;">No.</th>
+              <th style="padding:10px; border:1px solid #000;">Name</th>
+              <th style="padding:10px; border:1px solid #000;">Grade</th>`;
+
+  allFeeTypes.forEach(type => html += `<th style="padding:10px; border:1px solid #000;">${type}</th>`);
+
+  html += `<th style="padding:10px; border:1px solid #000;">Total Paid</th>
+           <th style="padding:10px; border:1px solid #000;">Balance</th>
+           <th style="padding:10px; border:1px solid #000;">History</th>
+           <th style="padding:10px; border:1px solid #000;">Actions</th>
+           </tr></thead><tbody>`;
+
+  let index = 1;
+  let columnTotals = {};
+  allFeeTypes.forEach(type => columnTotals[type] = 0);
+  let grandTotalPaid = 0;
+  let grandTotalBalance = 0;
+
+  Object.entries(feeData).forEach(([id, student]) => {
+    const name = (student.name || "").toLowerCase();
+    const studentGrade = (student.grade || "").toLowerCase();
+
+    if (filterText && !name.includes(filterText) && !studentGrade.includes(filterText)) return;
+
+    let totalPaid = 0;
+    html += `<tr style="text-align:center;">
+              <td style="padding:8px; border:1px solid #000;">${index++}</td>
+              <td style="padding:8px; border:1px solid #000; text-align:left;">${student.name || ""}</td>
+              <td style="padding:8px; border:1px solid #000;">${student.grade || ""}</td>`;
+
+    allFeeTypes.forEach(type => {
+      const amount = student.fees && student.fees[type] ? student.fees[type] : 0;
+      totalPaid += amount;
+      columnTotals[type] += amount;
+      const expected = feeStructure[type] || 0;
+      html += `<td style="padding:8px; border:1px solid #000; font-weight:500; color:${amount < expected ? "#e63946" : "#2a9d8f"};">${amount}</td>`;
+    });
+
+    const expectedTotal = Object.values(feeStructure).reduce((a,b)=>a+b,0);
+    const balance = expectedTotal - totalPaid;
+    grandTotalPaid += totalPaid;
+    grandTotalBalance += balance;
+
+    html += `<td style="padding:8px; border:1px solid #000; font-weight:bold;">${totalPaid}</td>`;
+    html += `<td style="padding:8px; border:1px solid #000; font-weight:bold; color:${balance>0?"#e63946":"#2a9d8f"};">${balance}</td>`;
+
+    html += `<td style="padding:8px; border:1px solid #000;">
+               <button onclick="viewHistory('${id}')" style="padding:5px 10px; border:none; background:#457b9d; color:white; border-radius:5px; cursor:pointer;">View</button>
+             </td>`;
+  html += `<td style="padding:8px; border:1px solid #000; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+
+  <button onclick="printReceipt('${id}')"
+    title="Print Receipt"
+    style="padding:6px 10px; background:#007bff; color:#fff; border:none; border-radius:4px; cursor:pointer;">
+    🧾
+  </button>
+
+  <button onclick="editFees('${id}')"
+    title="Edit Fee"
+    style="padding:6px 10px; background:#28a745; color:#fff; border:none; border-radius:4px; cursor:pointer;">
+    ✏️
+  </button>
+
+  <button onclick="refundFees('${id}')"
+    title="Refund Fee"
+    style="padding:6px 10px; background:#ffc107; color:#000; border:none; border-radius:4px; cursor:pointer;">
+    ↩
+  </button>
+
+  <button onclick="deleteLearnerFees('${id}')"
+    title="Delete Record"
+    style="padding:6px 10px; background:#dc3545; color:#fff; border:none; border-radius:4px; cursor:pointer;">
+    🗑
+  </button>
+
+</td></tr>`;
+  });
+
+  // TOTAL ROW
+  html += `<tr style="font-weight:bold; background:#f1f3f5; text-align:center;">
+            <td colspan="3" style="border:1px solid #000;">TOTALS</td>`;
+  allFeeTypes.forEach(type => html += `<td style="border:1px solid #000;">${columnTotals[type]}</td>`);
+  html += `<td style="border:1px solid #000;">${grandTotalPaid}</td>
+           <td style="border:1px solid #000;">${grandTotalBalance}</td>
+           <td colspan="2" style="border:1px solid #000;"></td>
+           </tr>`;
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+document.getElementById("feeSearch").addEventListener("input", function () {
+  const value = this.value.toLowerCase();
+  renderFeeTable(value);
+});
+const feeStructure = {
+  "Tuition Fees": 1000,
+  "Admission Registration Fees": 500,
+  "Boarding Fees": 1500,
+  "Lunch": 500,
+  "Activity Fees": 300,
+  "Examination Fees": 200,
+  "Development Fees": 400,
+  "Maintenance Fees": 300,
+  "Uniform Fees": 700,
+  "Transport Fees": 600,
+  "PTA Fees": 200,
+  "Medical Fees": 150,
+  "Computer ICT Fees": 800,
+
+  // Term Exam Fees
+  "Term 1 Midterm Exam": 500,
+  "Term 1 End Term Exam": 700,
+  "Term 2 Midterm Exam": 500,
+  "Term 2 End Term Exam": 700,
+  "Term 3 Midterm Exam": 500,
+  "Term 3 End Term Exam": 700,
+
+  // Additional Fees
+  "KNEC Project": 1200,
+  "Trip": 2000,
+  "Others": 300,
+
+  // School Support / Operational Fees
+  "Security Fees": 1500,
+  "Boarding Teacher Fees": 2500,
+  "Cooks Fees": 800,
+  "Electricity Fees": 1000,
+  "Internet Fees": 600,
+
+  // Activities / Co-curricular Fees
+  "Games Fees": 400,
+  "Clubs Fees": 300,
+  "Scouts Fees": 350
+};
+window.viewHistory = async function(studentId) {
+  const year = document.getElementById("feeYear").value;
+
+  if (!year) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Year Not Selected',
+      text: 'Please select a year first'
+    });
+    return;
+  }
+
+  const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
+
+  try {
+    const snapshot = await get(historyRef);
+    const data = snapshot.val();
+
+    if (!data) {
+      Swal.fire({
+        icon: 'info',
+        title: 'No Payment History',
+        text: 'No payment history found for this student in ' + year
+      });
+      return;
+    }
+
+    // Convert records to sorted array (latest first)
+    const records = Object.values(data).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    let totalPaid = 0;
+    let totalRefund = 0;
+
+    let tableRows = records.map((item, index) => {
+      const type = item.type || "PAYMENT";
+      if (type === "REFUND") totalRefund += item.amount;
+      else totalPaid += item.amount;
+
+      return `
+        <tr>
+          <td style="text-align:center;">${index + 1}</td>
+          <td>${item.feeType}</td>
+          <td>${item.amount}</td>
+          <td style="color:${type === "REFUND" ? "orange" : "green"};">${type}</td>
+          <td>${item.date}</td>
+        </tr>
+      `;
+    }).join("");
+
+    // Add totals
+    tableRows += `
+      <tr style="font-weight:bold; background:#f9f9f9;">
+        <td colspan="2">TOTAL PAID</td>
+        <td colspan="3" style="color:green;">${totalPaid}</td>
+      </tr>
+      <tr style="font-weight:bold; background:#f9f9f9;">
+        <td colspan="2">TOTAL REFUNDED</td>
+        <td colspan="3" style="color:orange;">${totalRefund}</td>
+      </tr>
+    `;
+
+    // Display in SweetAlert modal
+    Swal.fire({
+      title: `Payment History (${year})`,
+      html: `
+        <div style="max-height:400px; overflow:auto;">
+          <table border="1" cellpadding="6" style="width:100%; border-collapse:collapse;">
+            <thead style="background:#f2f2f2;">
+              <tr>
+                <th>No.</th>
+                <th>Fee Type</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+        </div>
+      `,
+      width: 700,
+      showCloseButton: true,
+      focusConfirm: false,
+      confirmButtonText: 'Close'
+    });
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error Loading History',
+      text: err.message
+    });
+  }
+};
+
+window.closeHistoryModal = function() {
+  document.getElementById("historyModal").style.display = "none";
+};
+window.deleteLearnerFees = async function(studentId) {
+
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "This will permanently delete the learner's fee record!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const year = document.getElementById("feeYear").value;
+    const feeRef = ref(db, "fees/" + year + "/" + studentId);
+
+    await remove(feeRef);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Deleted!',
+      text: 'Learner fee record deleted successfully.',
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+    loadFeeStatement(); // reload table
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: err.message
+    });
+  }
+};
+window.printReceipt = function(studentId) {
+  const student = allFeeData[studentId];
+  if (!student) return;
+
+  let total = 0;
+  let breakdown = "";
+
+  Object.entries(student.fees || {}).forEach(([type, amount]) => {
+    total += amount;
+    breakdown += `<p>${type}: ${amount}</p>`;
+  });
+
+  const win = window.open("", "", "width=600,height=600");
+
+  win.document.write(`
+    <h2 style="text-align:center;">SCHOOL RECEIPT</h2>
+    <hr/>
+    <p><strong>Name:</strong> ${student.name}</p>
+    <p><strong>Grade:</strong> ${student.grade}</p>
+    <hr/>
+    ${breakdown}
+    <hr/>
+    <h3>Total Paid: ${total}</h3>
+    <p>Date: ${new Date().toLocaleString()}</p>
+  `);
+
+  win.print();
+};
+
+async function payWithMpesa() {
+  const phone = document.getElementById("mpesaPhone").value;
+  const amount = Number(document.getElementById("feeAmount").value);
+
+  if (!phone || !amount) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Missing Details',
+      text: 'Enter phone number and amount'
+    });
+    return;
+  }
+
+  try {
+    Swal.fire({
+      title: 'Processing...',
+      text: 'Sending STK Push',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    const response = await fetch("https://your-backend-url.com/stkpush", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        phone: phone,
+        amount: amount
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.ResponseCode === "0") {
+      Swal.fire({
+        icon: 'success',
+        title: 'STK Push Sent',
+        text: 'Check your phone to complete payment 📲',
+        timer: 3000,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: 'Failed to initiate payment'
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Error initiating M-Pesa payment'
+    });
+  }
+}
+const feeGradeSelect = document.getElementById("feeGrade");
+const feeYearSelect = document.getElementById("feeYear");
+
+// Whenever grade changes, reload fee statement
+feeGradeSelect.addEventListener("change", () => {
+  loadFeeStatement();
+});
+
+// Whenever year changes, reload fee statement
+feeYearSelect.addEventListener("change", () => {
+  loadFeeStatement();
+});
+const feeStudentSelect = document.getElementById("feeStudent");
+
+feeStudentSelect.addEventListener("change", () => {
+  loadFeeStatement(); // reload the table
+});
+
+async function loadLastPaymentDetails() {
+  const studentId = document.getElementById("feeStudent").value;
+  const year = document.getElementById("feeYear").value;
+
+  const infoBox = document.getElementById("lastPaymentInfo");
+
+  // Clear if nothing selected
+  if (!studentId || !year) {
+    infoBox.innerHTML = "";
+    return;
+  }
+
+  const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
+
+  try {
+    const snapshot = await get(historyRef);
+    const data = snapshot.val();
+
+    if (!data) {
+      infoBox.innerHTML = "";
+
+      Swal.fire({
+        icon: 'info',
+        title: 'No History',
+        text: 'No payment history found for this student'
+      });
+
+      return;
+    }
+
+    // Convert to array and sort latest first
+    const records = Object.values(data).sort((a, b) => {
+      return new Date(b.date) - new Date(a.date);
+    });
+
+    const lastPayment = records.find(r => r.type === "PAYMENT");
+
+    if (lastPayment) {
+      // ✅ DISPLAY LAST PAYMENT INFO IN UI
+      infoBox.innerHTML = `
+        <strong>Last Payment:</strong><br>
+        Fee Type: ${lastPayment.feeType}<br>
+        Amount: ${lastPayment.amount}<br>
+        Date: ${lastPayment.date}
+      `;
+
+      // Autofill inputs
+      document.getElementById("feeType").value = lastPayment.feeType || "";
+      document.getElementById("feeAmount").value = lastPayment.amount || "";
+
+      // Optional toast notification
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Last payment loaded',
+        showConfirmButton: false,
+        timer: 1500
+      });
+
+    } else {
+      infoBox.innerHTML = "";
+
+      Swal.fire({
+        icon: 'info',
+        title: 'No Payments',
+        text: 'No previous payments found for this student'
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+
+    infoBox.innerHTML = "";
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Error loading payment info'
+    });
+  }
+}
+window.editFees = async function(studentId) {
+  const student = allFeeData[studentId];
+  if (!student) return;
+
+  try {
+    const { value: feeType } = await Swal.fire({
+      title: "Edit Fee",
+      input: "text",
+      inputLabel: "Enter fee type (exact name)",
+      inputPlaceholder: "e.g. Tuition Fees",
+      showCancelButton: true
+    });
+
+    if (!feeType) return;
+
+    const { value: newAmount } = await Swal.fire({
+      title: "Enter New Amount",
+      input: "number",
+      inputLabel: "New Amount",
+      inputPlaceholder: "Enter amount",
+      showCancelButton: true
+    });
+
+    if (!newAmount) return;
+
+    const year = document.getElementById("feeYear").value;
+    const feeRef = ref(db, "fees/" + year + "/" + studentId + "/fees/" + feeType);
+
+    await set(feeRef, Number(newAmount));
+
+    await Swal.fire({
+      icon: "success",
+      title: "Updated!",
+      text: "Fee updated successfully ✅"
+    });
+
+    loadFeeStatement();
+
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: err.message
+    });
+  }
+};
+
+
+window.refundFees = async function(studentId) {
+  try {
+    const { value: feeType } = await Swal.fire({
+      title: "Refund Fee",
+      input: "text",
+      inputLabel: "Enter fee type",
+      inputPlaceholder: "e.g. Transport Fees",
+      showCancelButton: true
+    });
+
+    if (!feeType) return;
+
+    const { value: amount } = await Swal.fire({
+      title: "Enter Refund Amount",
+      input: "number",
+      inputLabel: "Refund Amount",
+      inputPlaceholder: "Enter amount",
+      showCancelButton: true
+    });
+
+    if (!amount) return;
+
+    const feeRef = ref(db, "fees/" + studentId);
+    const historyRef = ref(db, "fees/" + studentId + "/history");
+
+    const snapshot = await get(feeRef);
+    let data = snapshot.val();
+
+    if (!data || !data.fees || !data.fees[feeType]) {
+      await Swal.fire({
+        icon: "error",
+        title: "Not Found",
+        text: "Fee type not found"
+      });
+      return;
+    }
+
+    // subtract amount
+    data.fees[feeType] -= Number(amount);
+    if (data.fees[feeType] < 0) data.fees[feeType] = 0;
+
+    await set(feeRef, data);
+
+    // save refund history
+    await push(historyRef, {
+      feeType: feeType,
+      amount: Number(amount),
+      type: "REFUND",
+      date: new Date().toLocaleString()
+    });
+
+    await Swal.fire({
+      icon: "success",
+      title: "Refund Successful",
+      text: "Refund processed ✅"
+    });
+
+    loadFeeStatement();
+
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: err.message
+    });
+  }
+};
+function printFilteredFees() {
+  const year = document.getElementById("feeYear").value;
+  const grade = document.getElementById("feeGrade").value;
+
+  if (!year) {
+    Swal.fire({
+      icon: "warning",
+      title: "Select Year",
+      text: "Please select a year before printing"
+    });
+    return;
+  }
+
+  if (!filteredFeeData || Object.keys(filteredFeeData).length === 0) {
+    Swal.fire({
+      icon: "info",
+      title: "No Data",
+      text: "No filtered data to print"
+    });
+    return;
+  }
+
+  let html = `
+    <h2 style="text-align:center;">FEE STATEMENT</h2>
+    <p><strong>Year:</strong> ${year}</p>
+    <p><strong>Grade:</strong> ${grade || "All Grades"}</p>
+    <table border="1" cellpadding="6" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Name</th>
+          <th>Grade</th>
+  `;
+
+  allFeeTypes.forEach(type => {
+    html += `<th>${type}</th>`;
+  });
+
+  html += `
+        <th>Total Paid</th>
+        <th>Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  let index = 1;
+
+  Object.values(filteredFeeData).forEach(student => {
+    let totalPaid = 0;
+
+    html += `
+      <tr>
+        <td>${index++}</td>
+        <td>${student.name}</td>
+        <td>${student.grade}</td>
+    `;
+
+    allFeeTypes.forEach(type => {
+      const amount = student.fees?.[type] || 0;
+      totalPaid += amount;
+      html += `<td>${amount}</td>`;
+    });
+
+    const expectedTotal = Object.values(feeStructure).reduce((a,b)=>a+b,0);
+    const balance = expectedTotal - totalPaid;
+
+    html += `
+      <td><strong>${totalPaid}</strong></td>
+      <td><strong>${balance}</strong></td>
+    </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+
+  // ✅ FIXED PRINT WINDOW
+  const win = window.open("", "_blank");
+
+  if (!win) {
+    Swal.fire({
+      icon: "error",
+      title: "Popup Blocked",
+      text: "Allow popups for this site to print"
+    });
+    return;
+  }
+
+  win.document.write(`
+    <html>
+      <head>
+        <title>Print Fee Statement</title>
+        <style>
+          body { font-family: Arial; padding: 20px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #000; padding: 6px; text-align: center; }
+          th { background: #f2f2f2; }
+        </style>
+      </head>
+      <body>
+        ${html}
+      </body>
+    </html>
+  `);
+
+  win.document.close();
+
+  // ✅ KEY FIX: wait for content load
+  win.onload = function () {
+    win.focus();   // 🔥 VERY IMPORTANT
+    win.print();
+  };
+}
 
 </script>
 </body>
 </html>
+
   

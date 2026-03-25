@@ -1793,15 +1793,7 @@ button[onclick^="show"] {
     <i class="fas fa-bell" style="font-size:28px;"></i>
   </div>
 </div>
-<div id="floatingNotificationsContainer" style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 10000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-"></div>
+
 <!-- ================= STUDENTS PER GRADE ================= -->
 <div style="
   background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/v9bRrjG.jpeg');
@@ -1836,7 +1828,7 @@ button[onclick^="show"] {
   <canvas id="genderChart"></canvas>
 </div>
 
-
+<div id="floatingNotificationsContainer"></div>
 <!-- ================= LEARNERS & REPORTS CONTROLS ================= -->
 <div style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin-top:30px;">
 
@@ -11377,7 +11369,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // =========================
-// NOTIFICATIONS BELL SYSTEM (UPGRADED + FLOATING)
+// NOTIFICATIONS BELL SYSTEM (UPGRADED + CENTER FLOATING)
 // =========================
 
 const notificationsBell = document.getElementById("notificationsBell");
@@ -11413,70 +11405,84 @@ if (!bellDropdown) {
 
 const notificationsRef = ref(db, "notifications");
 
-let lastNotificationCount = 0;
-
 // =========================
-// FLOATING NOTIFICATIONS UI
+// FLOATING CENTER CONTAINER
 // =========================
 
 let floatingContainer = document.getElementById("floatingNotificationsContainer");
 
-// Use existing container from HTML (no duplication)
 if (!floatingContainer) {
   floatingContainer = document.createElement("div");
   floatingContainer.id = "floatingNotificationsContainer";
   floatingContainer.style.cssText = `
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 10000;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    align-items: center;
   `;
   document.body.appendChild(floatingContainer);
 }
 
-// Floating notification function
-function showFloatingNotification(msg) {
-  const div = document.createElement("div");
+// =========================
+// FLOATING NOTIFICATION (CENTER)
+// =========================
 
-  div.style.cssText = `
+function showFloatingNotification(msg) {
+  const box = document.createElement("div");
+
+  box.style.cssText = `
     background: rgba(0,0,0,0.9);
     color: white;
-    padding: 12px 14px;
-    border-radius: 8px;
-    width: 260px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    animation: slideIn 0.4s ease, fadeOut 0.5s ease 4.5s forwards;
-    cursor: pointer;
-    font-size: 13px;
+    padding: 16px;
+    border-radius: 10px;
+    width: 320px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    position: relative;
+    animation: popIn 0.3s ease;
+    text-align: center;
   `;
 
-  div.innerHTML = `
-    <strong>${msg.recipient}</strong><br>
-    ${msg.message}<br>
+  box.innerHTML = `
+    <button style="
+      position:absolute;
+      top:6px;
+      right:8px;
+      background:red;
+      border:none;
+      color:white;
+      border-radius:50%;
+      width:24px;
+      height:24px;
+      cursor:pointer;
+      font-weight:bold;
+    ">×</button>
+
+    <strong>${msg.recipient}</strong><br><br>
+    ${msg.message}<br><br>
     <small>${msg.time}</small>
   `;
 
-  div.onclick = () => div.remove();
+  // Close button
+  box.querySelector("button").onclick = () => {
+    box.remove();
+  };
 
-  floatingContainer.appendChild(div);
-
-  setTimeout(() => div.remove(), 5000);
+  floatingContainer.appendChild(box);
 }
 
-// Add animations once
-if (!document.getElementById("floatingStyles")) {
+// Add animation styles once
+if (!document.getElementById("notifStyles")) {
   const style = document.createElement("style");
-  style.id = "floatingStyles";
+  style.id = "notifStyles";
   style.innerHTML = `
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes fadeOut {
-      to { opacity: 0; transform: translateX(100%); }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
     .pulse {
       animation: pulseAnim 1s infinite;
@@ -11493,14 +11499,18 @@ if (!document.getElementById("floatingStyles")) {
 // =========================
 // SOUND
 // =========================
+
 function playNotificationSound() {
   const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
   audio.play().catch(() => {});
 }
 
 // =========================
-// RENDER NOTIFICATIONS
+// RENDER BELL DROPDOWN
 // =========================
+
+let lastNotificationCount = 0;
+
 async function renderBellMessages(data) {
   bellDropdown.innerHTML = "";
   let unread = 0;
@@ -11513,11 +11523,12 @@ async function renderBellMessages(data) {
     if (!msg.read) unread++;
 
     const li = document.createElement("li");
-    li.style.padding = "6px 8px";
-    li.style.borderBottom = "1px solid rgba(255,255,255,0.2)";
-    li.style.wordBreak = "break-word";
-    li.style.cursor = "pointer";
-    li.style.background = msg.read ? "transparent" : "rgba(255,255,255,0.15)";
+    li.style.cssText = `
+      padding:6px 8px;
+      border-bottom:1px solid rgba(255,255,255,0.2);
+      cursor:pointer;
+      background:${msg.read ? "transparent" : "rgba(255,255,255,0.15)"};
+    `;
 
     li.innerHTML = `
       <strong>[${msg.time}]</strong><br>
@@ -11551,10 +11562,10 @@ async function renderBellMessages(data) {
 
   lastNotificationCount = unread;
 
-  // Mark all read
-  const markAllBtn = document.createElement("button");
-  markAllBtn.textContent = "Mark all as read";
-  markAllBtn.style.cssText = `
+  // Mark all as read button
+  const btn = document.createElement("button");
+  btn.textContent = "Mark all as read";
+  btn.style.cssText = `
     width:100%;
     margin-top:8px;
     padding:6px;
@@ -11565,7 +11576,7 @@ async function renderBellMessages(data) {
     cursor:pointer;
   `;
 
-  markAllBtn.onclick = async () => {
+  btn.onclick = async () => {
     const snapshot = await get(notificationsRef);
     const data = snapshot.val() || {};
     const updates = {};
@@ -11579,20 +11590,27 @@ async function renderBellMessages(data) {
     }
   };
 
-  bellDropdown.appendChild(markAllBtn);
+  bellDropdown.appendChild(btn);
 }
 
 // =========================
-// REAL-TIME LISTENER
+// REAL-TIME LISTENERS
 // =========================
+
+// Bell updates
+onValue(notificationsRef, snapshot => {
+  const data = snapshot.val() || {};
+  renderBellMessages(data);
+});
+
+// Floating notifications (latest only)
 let lastShownTimestamp = 0;
 
 onValue(notificationsRef, snapshot => {
   const data = snapshot.val() || {};
-  renderBellMessages(data);
 
-  const messages = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
-  const latest = messages[0];
+  const messages = Object.values(data).sort((a, b) => a.timestamp - b.timestamp);
+  const latest = messages[messages.length - 1];
 
   if (latest && latest.timestamp !== lastShownTimestamp) {
     showFloatingNotification(latest);
@@ -11603,6 +11621,7 @@ onValue(notificationsRef, snapshot => {
 // =========================
 // SEND MESSAGE
 // =========================
+
 const sendBtn = document.getElementById("sendMessageBtn");
 const recipientEl = document.getElementById("messageRecipient");
 const messageEl = document.getElementById("messageContent");
@@ -11645,6 +11664,7 @@ if (sendBtn) {
 // =========================
 // TOGGLE DROPDOWN
 // =========================
+
 notificationsBell.addEventListener("click", (e) => {
   e.stopPropagation();
 
@@ -11663,13 +11683,14 @@ notificationsBell.addEventListener("click", (e) => {
   }
 });
 
-// Close when clicking outside
+// Close dropdown when clicking outside
 document.addEventListener("click", (e) => {
   if (!notificationsBell.contains(e.target)) {
     if (bellDropdown.style.display === "block") {
       bellDropdown.style.opacity = 0;
       bellDropdown.style.transform = "translateY(-10px)";
       setTimeout(() => bellDropdown.style.display = "none", 300);
+
  
       }
     }

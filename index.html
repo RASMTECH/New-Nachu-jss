@@ -1578,6 +1578,62 @@ button[onclick^="show"] {
   text-align:center;
   font-weight:bold;
 }
+/* ===== RESPONSIVE CHART SIZE CONTROL ===== */
+
+.chart-container{
+  width:100%;
+  max-width:750px;   /* prevents chart becoming too wide */
+  margin:30px auto;  /* center horizontally */
+  background:#ffffff;
+  padding:18px;
+  border-radius:12px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.06);
+}
+
+/* control chart height proportion */
+.chart-container canvas{
+  width:100% !important;
+  height:280px !important;
+}
+
+/* slightly larger on tablets */
+@media (max-width:900px){
+
+.chart-container canvas{
+  height:240px !important;
+}
+
+}
+
+/* compact on phones */
+@media (max-width:600px){
+
+.chart-container{
+  padding:12px;
+}
+
+.chart-container canvas{
+  height:200px !important;
+}
+
+}
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
 </style>
 
 </head>
@@ -1737,7 +1793,15 @@ button[onclick^="show"] {
     <i class="fas fa-bell" style="font-size:28px;"></i>
   </div>
 </div>
-
+<div id="floatingNotificationsContainer" style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+"></div>
 <!-- ================= STUDENTS PER GRADE ================= -->
 <div style="
   background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.imgur.com/v9bRrjG.jpeg');
@@ -1762,13 +1826,15 @@ button[onclick^="show"] {
   </div>
 
 </div>
+<div class="chart-container">
+  <h3 class="section-title">📊 Students Per Grade Chart</h3>
+  <canvas id="gradeChart"></canvas>
+</div>
 
-<h3 class="section-title">📊 Students Per Grade Chart</h3>
-<canvas id="gradeChart" height="100"></canvas>
-
-
-<h3 class="section-title">👦👧 Gender Distribution</h3>
-<canvas id="genderChart" height="100"></canvas>
+<div class="chart-container">
+  <h3 class="section-title">👦👧 Gender Distribution</h3>
+  <canvas id="genderChart"></canvas>
+</div>
 
 
 <!-- ================= LEARNERS & REPORTS CONTROLS ================= -->
@@ -2127,6 +2193,8 @@ style="background:#6c5ce7; color:white; padding:8px 15px; border:none; border-ra
 
   <div id="historyContent"></div>
 </div>
+
+
 <!-- ================= COMMUNICATION CENTER ================= -->
 <div id="communicationCenter"
      class="controlled-section"
@@ -3830,20 +3898,25 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebas
 import { 
     getDatabase, ref, push, set, onValue, remove, get, update 
 } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyDhTehL7VIaGG-bC2n1AFILZeJJ-drmSC0",
-    authDomain: "rasm-school-management.firebaseapp.com",
-    databaseURL: "https://rasm-school-management-default-rtdb.firebaseio.com",
-    projectId: "rasm-school-management",
-    storageBucket: "rasm-school-management.appspot.com",
-    messagingSenderId: "1015313561987",
-    appId: "1:1015313561987:web:4329664df844c17ae59eb6",
-    measurementId: "G-MHKTNPG712"
-  };
 
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-  const learnersRef = ref(database, "learners");
+const firebaseConfig = {
+  apiKey: "AIzaSyDhTehL7VIaGG-bC2n1AFILZeJJ-drmSC0",
+  authDomain: "rasm-school-management.firebaseapp.com",
+  databaseURL: "https://rasm-school-management-default-rtdb.firebaseio.com",
+  projectId: "rasm-school-management",
+  storageBucket: "rasm-school-management.appspot.com",
+  messagingSenderId: "1015313561987",
+  appId: "1:1015313561987:web:4329664df844c17ae59eb6",
+  measurementId: "G-MHKTNPG712"
+};
+
+const app = initializeApp(firebaseConfig);
+
+// ✅ renamed from database → db
+const db = getDatabase(app);
+
+// learners reference
+const learnersRef = ref(db, "learners");
 
 // 🔹 Auto-generate age based on grade (random within range)
 function getRandomAgeByGrade(grade) {
@@ -4576,7 +4649,7 @@ function attachInlineEdit(row, data) {
       }
 
       try {
-        await set(ref(database, `learners/${data.key}`), {
+        await set(ref(db, `learners/${data.key}`), {
           ...data,
           [field]: value
         });
@@ -4606,7 +4679,7 @@ function attachPhotoEdit(row, data) {
       const reader = new FileReader();
       reader.onload = async () => {
         try {
-          await set(ref(database, `learners/${data.key}`), {
+          await set(ref(db, `learners/${data.key}`), {
             ...data,
             photo: reader.result
           });
@@ -4641,7 +4714,7 @@ function attachDelete(row, data) {
   if (!result.isConfirmed) return;
 
       try {
-        await remove(ref(database, `learners/${data.key}`));
+        await remove(ref(db, `learners/${data.key}`));
         allLearners = allLearners.filter(l => l.key !== data.key);
         filteredLearners = filteredLearners.filter(l => l.key !== data.key);
         resetPagination();
@@ -5148,7 +5221,7 @@ document.getElementById("saveMarksButton").addEventListener("click", () => {
   };
 
   // ✅ Save to Firebase
-  set(ref(database, `learners/${learnerKey}/marks/${examPeriod}`), marksData)
+  set(ref(db, `learners/${learnerKey}/marks/${examPeriod}`), marksData)
     .then(() => {
       Swal.fire({
         icon: 'success',
@@ -6520,7 +6593,7 @@ function generateReport(reportType, selectedGrade, examPeriod) {
         });
     }
 
-    // Process rows (e.g., marks table or database rows)
+    // Process rows (e.g., marks table or db rows)
     marksTableBody.querySelectorAll("tr").forEach(row => {
         if (selectedGrade && row.getAttribute("data-grade") !== selectedGrade) return;
         if (examPeriod && row.getAttribute("data-period") !== examPeriod) return;
@@ -8416,7 +8489,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // 🔹 SUB-ACCORDION (Dynamic Nested)
   // ===============================
   const subSections = [
-    // Learners Database sub-buttons
+    // Learners db sub-buttons
     { btnId: "toggleFormBtn", sectionId: "registrationContainer" },
     { btnId: "toggleTableBtn", sectionId: "tableContainer" },
 
@@ -8503,7 +8576,7 @@ document.addEventListener("DOMContentLoaded", function () {
   masterBtn?.addEventListener('click', () => {
     const hidden = learnersWrapper.style.display === 'none';
     learnersWrapper.style.display = hidden ? 'flex' : 'none';
-    masterBtn.innerHTML = `<i class="fas fa-database" style="margin-right: 8px;"></i> Learners Database`;
+    masterBtn.innerHTML = `<i class="fas fa-db" style="margin-right: 8px;"></i> Learners Database `;
 
     if (!hidden) closeAllSubSections(); // close sub-sections when collapsing
 
@@ -8534,10 +8607,10 @@ document.addEventListener("DOMContentLoaded", function () {
       wrapper.style.display = isHidden ? 'block' : 'none';
       if (label) label.textContent = isHidden ? hideText : showText;
 
-      // Close Learners Database if reports open
+      // Close Learners db if reports open
       if (wrapperId === 'reportsControls') {
         if (learnersWrapper) learnersWrapper.style.display = 'none';
-        if (masterBtn) masterBtn.innerHTML = `<i class="fas fa-database" style="margin-right: 8px;"></i> Learners Database`;
+        if (masterBtn) masterBtn.innerHTML = `<i class="fas fa-db" style="margin-right: 8px;"></i> Learners Database`;
         closeAllSubSections();
      }
     });
@@ -9897,7 +9970,7 @@ function enableMarksEditing() {
         creativeArt: parseFloat(cellValues[8].innerText) || 0
       };
 
-      const learnerMarksRef = ref(database, `learners/${learnerKey}/marks/${examPeriod}`);
+      const learnerMarksRef = ref(db, `learners/${learnerKey}/marks/${examPeriod}`);
       update(learnerMarksRef, marks)
         .then(() => {
           // Visual feedback on the cell
@@ -10011,7 +10084,7 @@ window.promoteLearners = async function () {
 
     if (!confirm.isConfirmed) return;
 
-    await update(ref(database), updates);
+    await update(ref(db), updates);
 
     Swal.fire({
       title: "Promotion Complete",
@@ -10086,7 +10159,7 @@ window.undoPromotion = async function () {
 });
     if (!confirm.isConfirmed) return;
 
-    await update(ref(database), updates);
+    await update(ref(db), updates);
 
     Swal.fire({
       title: "Undo Complete",
@@ -10194,7 +10267,7 @@ document.getElementById("bulkDeleteButton").addEventListener("click", async () =
     });
 
     // Delete all selected learners from Firebase
-    const deletePromises = keysToDelete.map(key => remove(ref(database, `learners/${key}`)));
+    const deletePromises = keysToDelete.map(key => remove(ref(db, `learners/${key}`)));
     await Promise.all(deletePromises);
 
     // Update local arrays
@@ -10681,7 +10754,7 @@ document.getElementById("fetchParentResults").addEventListener("click", () => {
     allLearners.sort((a,b) => b.total - a.total);
     const position = allLearners.findIndex(l => l.key === learnerKey) + 1;
 
-    onValue(ref(database, `learners/${learnerKey}/marks/${examPeriod}`), snap => {
+    onValue(ref(db, `learners/${learnerKey}/marks/${examPeriod}`), snap => {
       if (!snap.exists()) {
         Swal.fire({
           icon: "info",
@@ -10983,7 +11056,7 @@ document.getElementById("saveAttendanceBtn").addEventListener("click", async () 
       });
 
       if (status) {
-        await set(ref(database, `attendance/${date}/${l.key}`), {
+        await set(ref(db, `attendance/${date}/${l.key}`), {
           name: l.name,
           admissionNo: l.admissionNo,
           grade: l.grade,
@@ -11059,7 +11132,7 @@ document.getElementById("viewAttendanceReportBtn").addEventListener("click", asy
   const grade = document.getElementById("attendanceGrade").value;
   if (!grade) return alert("Select grade");
 
-  const snapshot = await get(ref(database, "attendance"));
+  const snapshot = await get(ref(db, "attendance"));
 
   if (!snapshot.exists()) {
     return alert("No attendance data");
@@ -11303,85 +11376,238 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 
-  // =========================
-  // NOTIFICATIONS BELL
-  // =========================
-  const notificationsBell = document.getElementById("notificationsBell");
-  const unreadCountEl = document.getElementById("unreadCount");
+// =========================
+// NOTIFICATIONS BELL SYSTEM (UPGRADED + FLOATING)
+// =========================
 
-  // Ensure dropdown exists
-  let bellDropdown = document.getElementById("bellMessagesDropdown");
-  if (!bellDropdown) {
-    bellDropdown = document.createElement("ul");
-    bellDropdown.id = "bellMessagesDropdown";
-    bellDropdown.style.cssText = `
-      position:absolute;
-      top:100%;
-      right:0;
-      width:320px;
-      max-height:400px;
-      overflow-y:auto;
-      background:rgba(0,0,0,0.85);
-      backdrop-filter:blur(5px);
-      color:white;
-      border-radius:8px;
-      padding:10px;
-      display:none;
-      opacity:0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(-10px);
-      z-index:9999;
-      list-style:none;
+const notificationsBell = document.getElementById("notificationsBell");
+const unreadCountEl = document.getElementById("unreadCount");
+
+let bellDropdown = document.getElementById("bellMessagesDropdown");
+
+// Create dropdown if not exists
+if (!bellDropdown) {
+  bellDropdown = document.createElement("ul");
+  bellDropdown.id = "bellMessagesDropdown";
+  bellDropdown.style.cssText = `
+    position:absolute;
+    top:100%;
+    right:0;
+    width:320px;
+    max-height:400px;
+    overflow-y:auto;
+    background:rgba(0,0,0,0.85);
+    backdrop-filter:blur(5px);
+    color:white;
+    border-radius:8px;
+    padding:10px;
+    display:none;
+    opacity:0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(-10px);
+    z-index:9999;
+    list-style:none;
+  `;
+  notificationsBell.appendChild(bellDropdown);
+}
+
+const notificationsRef = ref(db, "notifications");
+
+let lastNotificationCount = 0;
+
+// =========================
+// FLOATING NOTIFICATIONS UI
+// =========================
+
+let floatingContainer = document.getElementById("floatingNotificationsContainer");
+
+// Use existing container from HTML (no duplication)
+if (!floatingContainer) {
+  floatingContainer = document.createElement("div");
+  floatingContainer.id = "floatingNotificationsContainer";
+  floatingContainer.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  `;
+  document.body.appendChild(floatingContainer);
+}
+
+// Floating notification function
+function showFloatingNotification(msg) {
+  const div = document.createElement("div");
+
+  div.style.cssText = `
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 12px 14px;
+    border-radius: 8px;
+    width: 260px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: slideIn 0.4s ease, fadeOut 0.5s ease 4.5s forwards;
+    cursor: pointer;
+    font-size: 13px;
+  `;
+
+  div.innerHTML = `
+    <strong>${msg.recipient}</strong><br>
+    ${msg.message}<br>
+    <small>${msg.time}</small>
+  `;
+
+  div.onclick = () => div.remove();
+
+  floatingContainer.appendChild(div);
+
+  setTimeout(() => div.remove(), 5000);
+}
+
+// Add animations once
+if (!document.getElementById("floatingStyles")) {
+  const style = document.createElement("style");
+  style.id = "floatingStyles";
+  style.innerHTML = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translateX(100%); }
+    }
+    .pulse {
+      animation: pulseAnim 1s infinite;
+    }
+    @keyframes pulseAnim {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// =========================
+// SOUND
+// =========================
+function playNotificationSound() {
+  const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+  audio.play().catch(() => {});
+}
+
+// =========================
+// RENDER NOTIFICATIONS
+// =========================
+async function renderBellMessages(data) {
+  bellDropdown.innerHTML = "";
+  let unread = 0;
+
+  const messages = Object.entries(data || {})
+    .filter(([_, msg]) => msg.timestamp)
+    .sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+  messages.forEach(([key, msg]) => {
+    if (!msg.read) unread++;
+
+    const li = document.createElement("li");
+    li.style.padding = "6px 8px";
+    li.style.borderBottom = "1px solid rgba(255,255,255,0.2)";
+    li.style.wordBreak = "break-word";
+    li.style.cursor = "pointer";
+    li.style.background = msg.read ? "transparent" : "rgba(255,255,255,0.15)";
+
+    li.innerHTML = `
+      <strong>[${msg.time}]</strong><br>
+      (${msg.recipient})<br>
+      ${msg.message}
     `;
-    notificationsBell.appendChild(bellDropdown);
-  }
 
-  const notificationsRef = ref(database, "notifications");
+    li.onclick = async () => {
+      if (!msg.read) {
+        await update(ref(db, `notifications/${key}`), { read: true });
+      }
+    };
 
-  // Render messages inside the bell
-  async function renderBellMessages(data) {
-    bellDropdown.innerHTML = "";
-    let unread = 0;
-
-    const messages = Object.entries(data || {}).sort((a, b) => b[1].timestamp - a[1].timestamp);
-
-    for (let [key, msg] of messages) {
-      if (!msg.read) unread++;
-
-      const li = document.createElement("li");
-      li.style.padding = "6px 8px";
-      li.style.borderBottom = "1px solid rgba(255,255,255,0.2)";
-      li.style.wordBreak = "break-word";
-      li.style.background = msg.read ? "transparent" : "rgba(255,255,255,0.1)";
-      li.innerHTML = `<strong>[${msg.time}]</strong> (${msg.recipient}): ${msg.message}`;
-      bellDropdown.appendChild(li);
-    }
-
-    if (messages.length === 0) {
-      const li = document.createElement("li");
-      li.textContent = "No notifications";
-      li.style.padding = "6px";
-      bellDropdown.appendChild(li);
-    }
-
-    // Update unread count
-    unreadCountEl.textContent = unread;
-  }
-
-  // Real-time Firebase listener
-  onValue(notificationsRef, snapshot => {
-    const data = snapshot.val() || {};
-    renderBellMessages(data);
+    bellDropdown.appendChild(li);
   });
 
+  if (messages.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No notifications";
+    li.style.padding = "6px";
+    bellDropdown.appendChild(li);
+  }
 
-  // =========================
-  // SEND MESSAGE
-  // =========================
-  const sendBtn = document.getElementById("sendMessageBtn");
-  const recipientEl = document.getElementById("messageRecipient");
-  const messageEl = document.getElementById("messageContent");
+  unreadCountEl.textContent = unread;
 
+  if (unread > lastNotificationCount) {
+    notificationsBell.classList.add("pulse");
+    playNotificationSound();
+    setTimeout(() => notificationsBell.classList.remove("pulse"), 1000);
+  }
+
+  lastNotificationCount = unread;
+
+  // Mark all read
+  const markAllBtn = document.createElement("button");
+  markAllBtn.textContent = "Mark all as read";
+  markAllBtn.style.cssText = `
+    width:100%;
+    margin-top:8px;
+    padding:6px;
+    border:none;
+    border-radius:5px;
+    background:#28a745;
+    color:white;
+    cursor:pointer;
+  `;
+
+  markAllBtn.onclick = async () => {
+    const snapshot = await get(notificationsRef);
+    const data = snapshot.val() || {};
+    const updates = {};
+
+    Object.entries(data).forEach(([key, msg]) => {
+      if (!msg.read) updates[`notifications/${key}/read`] = true;
+    });
+
+    if (Object.keys(updates).length > 0) {
+      await update(ref(db), updates);
+    }
+  };
+
+  bellDropdown.appendChild(markAllBtn);
+}
+
+// =========================
+// REAL-TIME LISTENER
+// =========================
+let lastShownTimestamp = 0;
+
+onValue(notificationsRef, snapshot => {
+  const data = snapshot.val() || {};
+  renderBellMessages(data);
+
+  const messages = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+  const latest = messages[0];
+
+  if (latest && latest.timestamp !== lastShownTimestamp) {
+    showFloatingNotification(latest);
+    lastShownTimestamp = latest.timestamp;
+  }
+});
+
+// =========================
+// SEND MESSAGE
+// =========================
+const sendBtn = document.getElementById("sendMessageBtn");
+const recipientEl = document.getElementById("messageRecipient");
+const messageEl = document.getElementById("messageContent");
+
+if (sendBtn) {
   sendBtn.addEventListener("click", async () => {
     const message = messageEl.value.trim();
     const recipient = recipientEl.value;
@@ -11398,7 +11624,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const timestamp = Date.now();
     const timeStr = new Date().toLocaleString();
 
-    await set(ref(database, `notifications/${timestamp}`), {
+    await set(ref(db, `notifications/${timestamp}`), {
       message,
       recipient,
       time: timeStr,
@@ -11414,46 +11640,37 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
   });
+}
 
+// =========================
+// TOGGLE DROPDOWN
+// =========================
+notificationsBell.addEventListener("click", (e) => {
+  e.stopPropagation();
 
-  // =========================
-  // CLICK BELL → TOGGLE DROPDOWN & MARK AS READ
-  // =========================
-  notificationsBell.addEventListener("click", async (e) => {
-    e.stopPropagation();
-    const isOpen = bellDropdown.style.display === "block";
+  const isOpen = bellDropdown.style.display === "block";
 
-    if (isOpen) {
-      // Close with fade
+  if (isOpen) {
+    bellDropdown.style.opacity = 0;
+    bellDropdown.style.transform = "translateY(-10px)";
+    setTimeout(() => bellDropdown.style.display = "none", 300);
+  } else {
+    bellDropdown.style.display = "block";
+    setTimeout(() => {
+      bellDropdown.style.opacity = 1;
+      bellDropdown.style.transform = "translateY(0)";
+    }, 10);
+  }
+});
+
+// Close when clicking outside
+document.addEventListener("click", (e) => {
+  if (!notificationsBell.contains(e.target)) {
+    if (bellDropdown.style.display === "block") {
       bellDropdown.style.opacity = 0;
       bellDropdown.style.transform = "translateY(-10px)";
       setTimeout(() => bellDropdown.style.display = "none", 300);
-    } else {
-      // Open with fade
-      bellDropdown.style.display = "block";
-      setTimeout(() => {
-        bellDropdown.style.opacity = 1;
-        bellDropdown.style.transform = "translateY(0)";
-      }, 10);
-
-      // Mark all unread messages as read
-      const snapshot = await get(notificationsRef);
-      const data = snapshot.val() || {};
-      const updates = {};
-      Object.entries(data).forEach(([key, msg]) => {
-        if (!msg.read) updates[`notifications/${key}/read`] = true;
-      });
-      if (Object.keys(updates).length > 0) await update(ref(database), updates);
-    }
-  });
-
-  // Close dropdown if clicking outside
-  document.addEventListener("click", (e) => {
-    if (!notificationsBell.contains(e.target)) {
-      if (bellDropdown.style.display === "block") {
-        bellDropdown.style.opacity = 0;
-        bellDropdown.style.transform = "translateY(-10px)";
-        setTimeout(() => bellDropdown.style.display = "none", 300);
+ 
       }
     }
   });
@@ -12288,7 +12505,7 @@ window.refundFees = async function(studentId) {
     });
   }
 };
-function printFilteredFees() {
+window.printFilteredFees = function () {
   const year = document.getElementById("feeYear").value;
   const grade = document.getElementById("feeGrade").value;
 
@@ -12310,10 +12527,40 @@ function printFilteredFees() {
     return;
   }
 
+  const currentYear = year;
+  const selectedGrade = grade || "All Grades";
+
+  let studentCount = 0;
+  let grandTotalPaid = 0;
+  let grandTotalBalance = 0;
+
   let html = `
-    <h2 style="text-align:center;">FEE STATEMENT</h2>
-    <p><strong>Year:</strong> ${year}</p>
-    <p><strong>Grade:</strong> ${grade || "All Grades"}</p>
+    <!-- HEADER -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      
+      <!-- LEFT TEXT -->
+      <div>
+        <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR SCHOOL</strong><br>
+        <strong style="font-size: 20px;">FEE STATEMENT</strong><br>
+
+        <div style="margin-top: 5px; font-size: 14px;">
+          ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
+          Phone: +254-700-123456<br>
+          School Motto: <em>"MY TALENT MY PASSION"</em><br>
+          Year: ${currentYear} / GRADE: <strong>${selectedGrade}</strong>
+        </div>
+      </div>
+
+      <!-- RIGHT LOGO -->
+      <div>
+        <img src="school-logo.png" style="height:80px;">
+      </div>
+
+    </div>
+
+    <hr style="border:1px solid #000; margin:10px 0;">
+
+    <!-- TABLE -->
     <table border="1" cellpadding="6" style="width:100%; border-collapse:collapse;">
       <thead>
         <tr>
@@ -12329,21 +12576,23 @@ function printFilteredFees() {
   html += `
         <th>Total Paid</th>
         <th>Balance</th>
-        </tr>
-      </thead>
-      <tbody>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
   `;
 
   let index = 1;
 
   Object.values(filteredFeeData).forEach(student => {
     let totalPaid = 0;
+    studentCount++;
 
     html += `
       <tr>
         <td>${index++}</td>
-        <td>${student.name}</td>
-        <td>${student.grade}</td>
+        <td>${student.name || ""}</td>
+        <td>${student.grade || ""}</td>
     `;
 
     allFeeTypes.forEach(type => {
@@ -12352,19 +12601,46 @@ function printFilteredFees() {
       html += `<td>${amount}</td>`;
     });
 
-    const expectedTotal = Object.values(feeStructure).reduce((a,b)=>a+b,0);
+    const expectedTotal = Object.values(feeStructure).reduce((a, b) => a + b, 0);
     const balance = expectedTotal - totalPaid;
 
+    grandTotalPaid += totalPaid;
+    grandTotalBalance += balance;
+
+    const status = balance <= 0
+      ? `<span style="color:green; font-weight:bold;">PAID ✅</span>`
+      : `<span style="color:red; font-weight:bold;">BALANCE ❌</span>`;
+
     html += `
-      <td><strong>${totalPaid}</strong></td>
-      <td><strong>${balance}</strong></td>
-    </tr>
+        <td><strong>${totalPaid}</strong></td>
+        <td><strong>${balance}</strong></td>
+        <td>${status}</td>
+      </tr>
     `;
   });
 
-  html += `</tbody></table>`;
+  html += `
+    </tbody>
+  </table>
 
-  // ✅ FIXED PRINT WINDOW
+  <br>
+
+  <!-- SUMMARY -->
+  <div style="margin-top:15px; font-size:14px;">
+    <strong>Total Students:</strong> ${studentCount} <br>
+    <strong>Grand Total Paid:</strong> ${grandTotalPaid} <br>
+    <strong>Grand Total Balance:</strong> ${grandTotalBalance}
+  </div>
+
+  <br><br>
+
+  <!-- SIGNATURE -->
+  <div style="margin-top:40px;">
+    <p>__________________________</p>
+    <p><strong>Principal's Signature</strong></p>
+  </div>
+  `;
+
   const win = window.open("", "_blank");
 
   if (!win) {
@@ -12379,7 +12655,7 @@ function printFilteredFees() {
   win.document.write(`
     <html>
       <head>
-        <title>Print Fee Statement</title>
+        <title>Fee Statement</title>
         <style>
           body { font-family: Arial; padding: 20px; }
           table { width: 100%; border-collapse: collapse; }
@@ -12395,13 +12671,41 @@ function printFilteredFees() {
 
   win.document.close();
 
-  // ✅ KEY FIX: wait for content load
-  win.onload = function () {
-    win.focus();   // 🔥 VERY IMPORTANT
+  setTimeout(() => {
+    win.focus();
     win.print();
-  };
-}
+  }, 500);
+};
+const floatingContainer = document.getElementById("floatingNotificationsContainer");
 
+function showFloatingNotification(msg) {
+  const div = document.createElement("div");
+
+  div.style.cssText = `
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    width: 260px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    animation: slideIn 0.4s ease, fadeOut 0.5s ease 4.5s forwards;
+    cursor: pointer;
+  `;
+
+  div.innerHTML = `
+    <strong>${msg.recipient}</strong><br>
+    ${msg.message}<br>
+    <small>${msg.time}</small>
+  `;
+
+  // Click to dismiss
+  div.onclick = () => div.remove();
+
+  floatingContainer.appendChild(div);
+
+  // Auto remove
+  setTimeout(() => div.remove(), 5000);
+}
 </script>
 </body>
 </html>

@@ -1634,6 +1634,123 @@ button[onclick^="show"] {
     transform: translateX(100%);
   }
 }
+/* 🔰 Floating Badge Container */
+#userBadgeContainer {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* 🔰 Badge Style */
+.badge {
+  padding: 10px 16px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: fadeIn 0.5s ease;
+}
+
+/* 🎨 Role Colors */
+.badge-admin {
+  background: linear-gradient(45deg, #ff4b2b, #ff416c);
+}
+
+.badge-teacher {
+  background: linear-gradient(45deg, #36d1dc, #5b86e5);
+}
+
+.badge-parent {
+  background: linear-gradient(45deg, #11998e, #38ef7d);
+}
+
+/* ✨ Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🌸 Header Container */
+#schoolHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #f3e7ff, #e1d4ff);
+  box-shadow: 0 6px 15px rgba(103, 58, 183, 0.2);
+  border: 2px solid #673AB7;
+  margin-bottom: 15px;
+  animation: fadeSlide 0.6s ease;
+}
+
+/* 🏫 Left Section */
+.school-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Logo */
+.school-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #673AB7;
+  background: white;
+  padding: 5px;
+}
+
+/* School Name */
+.school-left h1 {
+  margin: 0;
+  font-size: 22px;
+  color: #4a2ea0;
+}
+
+/* Tagline */
+.tagline {
+  margin: 0;
+  font-size: 13px;
+  color: #777;
+}
+
+/* ⏰ Right Section */
+.school-right {
+  text-align: right;
+  font-weight: bold;
+  color: #4a2ea0;
+}
+
+#liveDate {
+  font-size: 14px;
+}
+
+#liveTime {
+  font-size: 18px;
+  color: #673AB7;
+}
+
+/* ✨ Animation */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>
 
 </head>
@@ -1674,14 +1791,16 @@ button[onclick^="show"] {
 <div id="mainContent" style="display: none; padding: 20px;">
 <!-- ================= DASHBOARD ================= -->
 <div id="dashboardSection" style="margin-bottom:20px;">
+<!-- 🌸 Cute School Header -->
+<div id="schoolHeader">
 
-<!-- School Name with Logo and Date/Time -->
-<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; border: 2px solid #673AB7; border-radius:8px; padding:10px; background:#f0e7ff;">
-  
-  <!-- School Name -->
-  <h1 style="font-size:24px; color:#673AB7; margin:0; font-weight:bold;">
-    NACHU JUNIOR SCHOOL 
-  </h1>
+    <div>
+      <h1>NACHU JUNIOR SCHOOL</h1>
+      <p class="tagline">🌟 Learn • Grow • Shine</p>
+    </div>
+  </div>
+
+
   
   <!-- Logo and Date/Time -->
   <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
@@ -1689,7 +1808,9 @@ button[onclick^="show"] {
     <span id="dateTime" style="font-size:16px; color:#673AB7; font-weight:bold;"></span>
   </div>
 </div>
-
+<div id="userBadgeContainer">
+  <span id="userBadge" class="badge">👤 Guest</span>
+</div>
 <!-- ================= ANNOUNCEMENT ================= -->
 <div
   id="announcement"
@@ -9834,6 +9955,12 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   const currentUser = users.find(u => u.username === username && u.password === password);
 
   if (isAdmin || currentUser) {
+
+  let role = isAdmin ? "admin" : currentUser.role;
+  let usernameToShow = isAdmin ? "Admin" : currentUser.username;
+
+  // Show badge
+  showUserBadge(usernameToShow, role, isAdmin);
     // Admin flag
     if (isAdmin) isAdminLoggedIn = true;
 
@@ -9922,6 +10049,26 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
     }
   }
 });
+
+function showUserBadge(username, role, isAdmin) {
+  const badge = document.getElementById("userBadge");
+
+  // Reset classes
+  badge.className = "badge";
+
+  if (isAdmin) {
+    badge.textContent = `👑 Admin: ${username}`;
+    badge.classList.add("badge-admin");
+  } else if (role === "teacher") {
+    badge.textContent = `👨‍🏫 Teacher: ${username}`;
+    badge.classList.add("badge-teacher");
+  } else if (role === "parent") {
+    badge.textContent = `👨‍👩‍👧 Parent: ${username}`;
+    badge.classList.add("badge-parent");
+  } else {
+    badge.textContent = `👤 User: ${username}`;
+  }
+}
 function enableMarksEditing() {
   if (!isAdminLoggedIn) return;
 
@@ -11697,6 +11844,8 @@ document.addEventListener("click", (e) => {
   });
 
 });
+
+
 // ================= FEES SECTION TOGGLE =================
 document.getElementById("toggleFeesBtn").onclick = () => {
   const section = document.getElementById("feesSection");
@@ -12727,6 +12876,9 @@ function showFloatingNotification(msg) {
   // Auto remove
   setTimeout(() => div.remove(), 5000);
 }
+
+
+
 </script>
 </body>
 </html>

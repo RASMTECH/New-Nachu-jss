@@ -1679,60 +1679,78 @@ button[onclick^="show"] {
   }
 }
 
-/* 🌸 Header Container */
+/* 🌸 Header */
 #schoolHeader {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  border-radius: 15px;
+  padding: 18px 22px;
+  border-radius: 18px;
   background: linear-gradient(135deg, #f3e7ff, #e1d4ff);
-  box-shadow: 0 6px 15px rgba(103, 58, 183, 0.2);
+  box-shadow: 0 8px 20px rgba(103, 58, 183, 0.25);
   border: 2px solid #673AB7;
-  margin-bottom: 15px;
-  animation: fadeSlide 0.6s ease;
+  overflow: hidden;
 }
 
-/* 🏫 Left Section */
+/* 🎈 Floating glow */
+.floating-bg {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255,255,255,0.4), transparent);
+  top: -50px;
+  right: -50px;
+  animation: floatGlow 6s infinite ease-in-out;
+}
+
+@keyframes floatGlow {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(15px); }
+}
+
+/* Left */
 .school-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* Logo */
 .school-logo {
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
-  border: 2px solid #673AB7;
-  background: white;
+  border: 3px solid white;
+  background: #fff;
   padding: 5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-/* School Name */
 .school-left h1 {
   margin: 0;
   font-size: 22px;
   color: #4a2ea0;
 }
 
-/* Tagline */
 .tagline {
   margin: 0;
   font-size: 13px;
   color: #777;
 }
 
-/* ⏰ Right Section */
+/* 👋 Greeting */
+#greetingText {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #673AB7;
+  font-weight: bold;
+}
+
+/* Right */
 .school-right {
   text-align: right;
   font-weight: bold;
   color: #4a2ea0;
-}
-
-#liveDate {
-  font-size: 14px;
 }
 
 #liveTime {
@@ -1740,16 +1758,38 @@ button[onclick^="show"] {
   color: #673AB7;
 }
 
-/* ✨ Animation */
-@keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* 🟢 Status Badge */
+.status-badge {
+  margin-top: 6px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  display: inline-block;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-weight: bold;
+}
+/* 🟢 Online indicator */
+.online-dot {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 🔴 Offline style */
+.online-dot.offline {
+  background: #ffebee;
+  color: #c62828;
 }
 </style>
 
@@ -1789,16 +1829,34 @@ button[onclick^="show"] {
 
 <!-- MAIN CONTENT SECTION -->
 <div id="mainContent" style="display: none; padding: 20px;">
-<!-- ================= DASHBOARD ================= -->
-<div id="dashboardSection" style="margin-bottom:20px;">
-<!-- 🌸 Cute School Header -->
 <div id="schoolHeader">
+
+  <!-- 🎈 Floating Glow -->
+  <div class="floating-bg"></div>
+
+  <!-- 🏫 Left -->
+  <div class="school-left">
+    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png" class="school-logo">
 
     <div>
       <h1>NACHU JUNIOR SCHOOL</h1>
       <p class="tagline">🌟 Learn • Grow • Shine</p>
+      <p id="greetingText">👋 Welcome!</p>
     </div>
   </div>
+<div id="onlineStatus" class="online-dot">
+  🟢 Online
+</div>
+  <!-- ⏰ Right -->
+  <div class="school-right">
+    <div id="liveDate"></div>
+    <div id="liveTime"></div>
+
+    <!-- 🟢 School Status -->
+    <div id="schoolStatus" class="status-badge">🟢 School Open</div>
+  </div>
+
+
 
 
   
@@ -1815,25 +1873,26 @@ button[onclick^="show"] {
 <div
   id="announcement"
   style="
-    padding:10px 16px;                 /* reduced padding */
-    background-color:#ff4d4f;          /* pure red */
-    border:1px solid #d9363e;         /* dark red border */
-    color:#fff;                        /* white text */
+    padding:10px 16px;
+    background-color:#ff4d4f;
+    border:1px solid #d9363e;
+    color:#fff;
     border-radius:8px;
     font-size:1rem;
     font-weight:600;
     box-shadow:0 4px 12px rgba(0,0,0,0.1);
-    display:inline-block;              /* box width fits text */
-    text-align:center;                 /* center text inside box */
-    margin:20px auto;                  /* center box horizontally */
+    display:inline-block;
+    text-align:center;
+    margin:20px auto;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   "
   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.15)';"
   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';"
 >
-  📢 <strong>Note:</strong> All new learners must be registered before entering marks.
+  📢 <strong>Notice:</strong> 
+  Learner registration is <u>strictly done by the Admin only</u>.  
+  All new learners must be registered before entering marks.
 </div>
-
 <!-- ================= SCHOOL DASHBOARD ================= -->
 <h2 style="
   background:#222;
@@ -1993,25 +2052,7 @@ button[onclick^="show"] {
       Registered Learners
     </button>
 
-    <!-- Communication Center -->
-    <button
-      class="section-btn"
-      data-target="communicationCenter"
-      style="
-        min-width:180px;
-        text-align:center;
-        background:rgba(255,255,255,0.9);
-        color:#6a1b9a;
-        border:none;
-        border-radius:8px;
-        padding:10px;
-        font-weight:600;
-        box-shadow:0 2px 6px rgba(0,0,0,0.2);
-      ">
-      <i class="fas fa-comments"></i>
-      Communication Center
-    </button>
-
+   
     <!-- Register Learner -->
     <button
       type="button"
@@ -2052,8 +2093,14 @@ button[onclick^="show"] {
     </button>
 
 
-<button id="toggleFeesBtn" class="main-btn orange">
-  <i class="fas fa-money-bill-wave"></i> Fee Management
+<!-- 💰 Fees Button -->
+<button class="main-section-btn" data-target="feesSection">
+  <i class="fas fa-chevron-down"></i> 💰 Fee Management
+</button>
+
+<!-- 💬 Communication Button -->
+<button class="main-section-btn" data-target="communicationCenter">
+  <i class="fas fa-chevron-down"></i> 💬 Communication Center
 </button>
   </div>
 
@@ -2208,7 +2255,10 @@ button[onclick^="show"] {
 
 <div id="attendanceSummary" style="margin-top:15px; font-weight:bold;"></div>
 
-<div id="feesSection" style="display:none; margin-top:20px;" class="table-container">
+<div id="feesSection"
+     class="table-container main-section"
+     style="display:none; margin-top:20px;">
+
   <h2>💰 Fee Management</h2>
 <input type="text" id="feeSearch" placeholder="🔍 Search by name or grade..." style="margin-bottom:10px; padding:8px; width:250px;">
   <div class="filter-bar">
@@ -2308,9 +2358,8 @@ style="background:#6c5ce7; color:white; padding:8px 15px; border:none; border-ra
 </div>
 
 
-<!-- ================= COMMUNICATION CENTER ================= -->
 <div id="communicationCenter"
-     class="controlled-section"
+     class="controlled-section main-section"
      style="
         display:none;
         padding:20px;
@@ -8707,24 +8756,44 @@ document.addEventListener("DOMContentLoaded", function () {
     'Hide Exam & Marks Controls'
   );
 
-  function setupToggle(masterBtnId, wrapperId, showText, hideText) {
-    const btn = document.getElementById(masterBtnId);
-    const wrapper = document.getElementById(wrapperId);
-    const label = btn?.querySelector('.btn-label');
-    if (!btn || !wrapper) return;
+function setupToggle(masterBtnId, wrapperId, showText, hideText) {
+  const btn = document.getElementById(masterBtnId);
+  const wrapper = document.getElementById(wrapperId);
+  const label = btn?.querySelector('.btn-label');
+  if (!btn || !wrapper) return;
 
-    wrapper.style.display = wrapper.style.display || 'none';
+  wrapper.style.display = wrapper.style.display || 'none';
 
-    btn.addEventListener('click', () => {
-      const isHidden = wrapper.style.display === 'none';
-      wrapper.style.display = isHidden ? 'block' : 'none';
-      if (label) label.textContent = isHidden ? hideText : showText;
+  btn.addEventListener('click', () => {
+    const isHidden = wrapper.style.display === 'none';
 
-      // Close Learners db if reports open
-      if (wrapperId === 'reportsControls') {
-        if (learnersWrapper) learnersWrapper.style.display = 'none';
-        if (masterBtn) masterBtn.innerHTML = `<i class="fas fa-db" style="margin-right: 8px;"></i> Learners Database`;
-        closeAllSubSections();
+    // Close all main sections before toggling this wrapper
+    mainSections.forEach(section => section.style.display = 'none');
+    mainButtons.forEach(b => {
+      const icon = b.querySelector("i");
+      if (icon) { 
+        icon.classList.remove("fa-chevron-up"); 
+        icon.classList.add("fa-chevron-down"); 
+      }
+    });
+
+    // Toggle wrapper
+    wrapper.style.display = isHidden ? 'block' : 'none';
+    if (label) label.textContent = isHidden ? hideText : showText;
+
+    // Close Learners DB if Reports open
+    if (wrapperId === 'reportsControls') {
+      if (learnersWrapper) learnersWrapper.style.display = 'none';
+      if (masterBtn) masterBtn.innerHTML = `<i class="fas fa-db" style="margin-right: 8px;"></i> Learners Database`;
+      closeAllSubSections();
+    }
+
+    // Close Reports if Learners DB opens
+    if (wrapperId === 'learnersButtons') {
+      if (reportsWrapper) reportsWrapper.style.display = 'none';
+      if (reportsBtn?.querySelector('.btn-label')) reportsBtn.querySelector('.btn-label').textContent = 'Exam & Marks Controls';
+      closeAllSubSections();
+
      }
     });
   }
@@ -9956,11 +10025,34 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
 
   if (isAdmin || currentUser) {
 
-  let role = isAdmin ? "admin" : currentUser.role;
-  let usernameToShow = isAdmin ? "Admin" : currentUser.username;
+    let role = isAdmin ? "admin" : currentUser.role;
+    let usernameToShow = isAdmin ? "Admin" : currentUser.username;
 
-  // Show badge
-  showUserBadge(usernameToShow, role, isAdmin);
+    // ==============================
+    // 🔰 UI UPDATES
+    // ==============================
+
+    // Show badge
+    showUserBadge(usernameToShow, role, isAdmin);
+
+    // Update greeting
+    updateGreeting(usernameToShow);
+
+    // Update profile name (dropdown)
+    const profileNameEl = document.getElementById("profileName");
+    if (profileNameEl) {
+      profileNameEl.textContent = usernameToShow;
+    }
+
+    // ==============================
+    // 💾 SAVE LOGIN (LOCAL STORAGE)
+    // ==============================
+    localStorage.setItem("loggedInUser", JSON.stringify({
+      username: usernameToShow,
+      role: role,
+      isAdmin: isAdmin
+    }));
+
     // Admin flag
     if (isAdmin) isAdminLoggedIn = true;
 
@@ -9973,7 +10065,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
     const allButtons = document.querySelectorAll("#mainContent button");
     allButtons.forEach(btn => {
       if (isAdmin) {
-        btn.style.display = "inline-block"; // Admin sees all
+        btn.style.display = "inline-block";
       } else if (currentUser.role === "parent") {
         if (btn.id === "toggleParentLookupBtn" || btn.id === "fetchParentResults") {
           btn.style.display = "inline-block";
@@ -9981,14 +10073,15 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
           btn.style.display = "none";
         }
       } else {
-        btn.style.display = "inline-block"; // Teacher sees all
+        btn.style.display = "inline-block";
       }
     });
 
-    // Admin-only special buttons
+    // Admin-only buttons
     if (isAdmin) {
       const adminBtns = document.querySelectorAll(".admin-only");
       adminBtns.forEach(btn => btn.style.display = "inline-block");
+
       const saveBtn = document.getElementById("saveEditedMarksBtn");
       if (saveBtn) saveBtn.style.display = "inline-block";
     }
@@ -10003,8 +10096,9 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
           timer: 1500,
           showConfirmButton: false
         });
+
       } else if (currentUser.role === "parent") {
-        openModal(); // Open parent lookup modal
+        openModal();
 
         Swal.fire({
           title: `Welcome, ${currentUser.username}!`,
@@ -10012,17 +10106,15 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
             <p>🎉 Login Successful!</p>
             <p>Here's how to fetch your child's results:</p>
             <ol style="text-align:left;">
-              <li>Use the <strong>Parent Lookup</strong> modal to find your child's record.</li>
-              <li>Once you see the correct student, click <strong>✅ Fetch Results</strong>.</li>
-              <li>The results will appear below the lookup section.</li>
+              <li>Use the <strong>Parent Lookup</strong> modal</li>
+              <li>Click <strong>Fetch Results</strong></li>
+              <li>View results below</li>
             </ol>
           `,
           icon: "success",
-          confirmButtonText: "Got it!",
-          background: "#fffbe6",
-          color: "#333",
-          confirmButtonColor: "#3085d6"
+          confirmButtonText: "Got it!"
         });
+
       } else {
         Swal.fire({
           title: "Login Successful",
@@ -11846,11 +11938,6 @@ document.addEventListener("click", (e) => {
 });
 
 
-// ================= FEES SECTION TOGGLE =================
-document.getElementById("toggleFeesBtn").onclick = () => {
-  const section = document.getElementById("feesSection");
-  section.style.display = section.style.display === "none" ? "block" : "none";
-};
 
 
 // ================= LOAD GRADES & STUDENTS =================
@@ -12877,8 +12964,116 @@ function showFloatingNotification(msg) {
   setTimeout(() => div.remove(), 5000);
 }
 
+// ⏰ Date & Time
+function updateDateTime() {
+  const now = new Date();
+
+  document.getElementById("liveDate").textContent =
+    "📅 " + now.toDateString();
+
+  document.getElementById("liveTime").textContent =
+    "⏰ " + now.toLocaleTimeString();
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
 
 
+// 👋 Greeting based on time + username
+function updateGreeting(username = "User") {
+  const hour = new Date().getHours();
+  let greeting = "Hello";
+
+  if (hour < 12) greeting = "🌅 Good Morning";
+  else if (hour < 18) greeting = "☀️ Good Afternoon";
+  else greeting = "🌙 Good Evening";
+
+  document.getElementById("greetingText").textContent =
+    `${greeting}, ${username}!`;
+}
+
+
+// 🟢 School Open / Closed (customize time)
+function updateSchoolStatus() {
+  const now = new Date().getHours();
+  const status = document.getElementById("schoolStatus");
+
+  if (now >= 6 && now <= 18) {
+    status.textContent = "🟢 School Open";
+    status.style.background = "#e8f5e9";
+    status.style.color = "#2e7d32";
+  } else {
+    status.textContent = "🔴 School Closed";
+    status.style.background = "#ffebee";
+    status.style.color = "#c62828";
+  }
+}
+updateSchoolStatus();
+setInterval(updateSchoolStatus, 60000);
+window.onload = function () {
+  const savedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+  if (savedUser) {
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+
+    showUserBadge(savedUser.username, savedUser.role, savedUser.isAdmin);
+    updateGreeting(savedUser.username);
+
+    // Update profile name
+    document.getElementById("profileName").textContent = savedUser.username;
+  }
+};
+
+function logout() {
+  // 🧹 Clear storage
+  localStorage.removeItem("loggedInUser");
+
+  // 🧹 Reset UI sections
+  document.getElementById("loginSection").style.display = "block";
+  document.getElementById("mainContent").style.display = "none";
+
+  // 🧹 Reset badge
+  const badge = document.getElementById("userBadge");
+  if (badge) {
+    badge.textContent = "👤 Guest";
+    badge.className = "badge";
+  }
+
+  // 🧹 Reset greeting
+  const greet = document.getElementById("greetingText");
+  if (greet) greet.textContent = "👋 Welcome!";
+
+  // 🧹 Hide profile menu
+  const menu = document.getElementById("profileMenu");
+  if (menu) menu.style.display = "none";
+
+  // 🧹 Reset online status
+  setOfflineStatus();
+
+  // Optional reload for clean state
+  location.reload();
+}
+// 🟢 Set online
+function setOnlineStatus() {
+  const el = document.getElementById("onlineStatus");
+  if (!el) return;
+
+  el.classList.remove("offline");
+  el.textContent = "🟢 Online";
+}
+
+// 🔴 Set offline
+function setOfflineStatus() {
+  const el = document.getElementById("onlineStatus");
+  if (!el) return;
+
+  el.classList.add("offline");
+  el.textContent = "🔴 Offline";
+}
+
+// Auto detect connection
+window.addEventListener("online", setOnlineStatus);
+window.addEventListener("offline", setOfflineStatus);
 </script>
 </body>
 </html>

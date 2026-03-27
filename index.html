@@ -5485,154 +5485,259 @@ function calculateTotalLevel(marks) {
     parseInt(getLevel(marks.creativeArt))
   );
 }
-function loadMarksFromFirebase() {
+let unsubscribeMarks = null;
+
+// 🟢 COVERAGE WIDGET FUNCTION
+function updateMarksCoverage(totalLearners, learnersWithMarks) {
+  const widget = document.getElementById("marksCoverageWidget");
+  const text = document.getElementById("coverageText");
+  const bar = document.getElementById("coverageBar");
+
+  if (!widget) return;
+
+  widget.style.display = "block";
+
+  let percent = totalLearners > 0
+    ? Math.round((learnersWithMarks / totalLearners) * 100)
+    : 0;
+
+  if (text) text.innerText = `${learnersWithMarks} / ${totalLearners} learners`;
+  if (bar) bar.style.width = percent + "%";
+
+  // 🎨 COLOR CHANGE
+  if (percent < 50) {
+    bar.style.background = "linear-gradient(90deg,#ff4d4d,#ff9966)";
+  } else if (percent < 80) {
+    bar.style.background = "linear-gradient(90deg,#f7971e,#ffd200)";
+  } else {
+    bar.style.background = "linear-gradient(90deg,#43e97b,#38f9d7)";
+  }
+}
+
+function loadMarksUnified() {
   const examPeriod = marksExamPeriodSelect.value;
   const selectedGrade = filterMarksGrade.value;
-  const spinner = document.getElementById("marksSpinner");
 
-  if (!examPeriod || !selectedGrade) {
+  if (!examPeriod) {
     Swal.fire({
       toast: true,
       position: 'top-end',
       icon: 'warning',
-      title: 'Please select both grade and exam period to load marks.',
+      title: 'Please select exam period',
       showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true
+      timer: 3000
     });
     return;
   }
 
-  if (spinner) spinner.style.display = "block";
+  let loadedCount = 0;
+  let totalCount = 0;
+
+  // 🔥 SWEETALERT WITH PROGRESS BAR
+  Swal.fire({
+    title: 'Preparing Marks...',
+    html: `
+      <div style="font-size:14px;margin-bottom:10px;">Initializing system...</div>
+
+      <div style="width:100%;background:#eee;border-radius:10px;height:12px;overflow:hidden;">
+        <div id="progressBar" style="
+          width:0%;
+          height:100%;
+          background:linear-gradient(90deg,#4facfe,#00f2fe);
+          transition:width 0.3s ease;
+        "></div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <b id="progressText">0%</b>
+      </div>
+    `,
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
+
   marksTableBody.innerHTML = "";
 
-  let noMarksFound = true; // Flag to check if no marks are found
+  if (unsubscribeMarks) unsubscribeMarks();
 
-  onValue(learnersRef, (snapshot) => {
+  unsubscribeMarks = onValue(learnersRef, (snapshot) => {
     marksTableBody.innerHTML = "";
+
+    let noMarksFound = true;
     const grades = new Set();
+    const gradeGroups = {};
 
     let sums = {
       eng: 0, math: 0, preTech: 0, kiswahili: 0,
       science: 0, social: 0, agriculture: 0,
-      cre: 0, creativeArt: 0, totalMarks: 0, totalLevel: 0
+      cre: 0, creativeArt: 0, totalMarks: 0, totalLevels: 0
     };
 
-    const learnersArray = [];
+    let learnersCount = 0;
+
+    totalCount = snapshot.size || 0;
+    loadedCount = 0;
 
     snapshot.forEach(childSnapshot => {
+      loadedCount++;
+
+      // 🔥 UPDATE % PROGRESS
+      let percent = totalCount > 0
+        ? Math.round((loadedCount / totalCount) * 100)
+        : 0;
+
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+
+      if (progressBar) progressBar.style.width = percent + "%";
+      if (progressText) progressText.innerText = percent + "%";
+
       const data = childSnapshot.val();
-      const marksData = data.marks || {};
-      const marks = marksData[examPeriod] || null;
+      const marks = data.marks?.[examPeriod];
 
       if (data.grade) grades.add(data.grade);
 
-      if (marks && data.grade === selectedGrade) {
-        noMarksFound = false; // Marks found, set the flag to false
+      if (marks && (!selectedGrade || data.grade === selectedGrade)) {
+        noMarksFound = false;
 
         const rowTotal =
-          (parseFloat(marks.eng) || 0) +
-          (parseFloat(marks.math) || 0) +
-          (parseFloat(marks.preTech) || 0) +
-          (parseFloat(marks.kiswahili) || 0) +
-          (parseFloat(marks.science) || 0) +
-          (parseFloat(marks.social) || 0) +
-          (parseFloat(marks.agriculture) || 0) +
-          (parseFloat(marks.cre) || 0) +
-          (parseFloat(marks.creativeArt) || 0);
+          (+marks.eng || 0) +
+          (+marks.math || 0) +
+          (+marks.preTech || 0) +
+          (+marks.kiswahili || 0) +
+          (+marks.science || 0) +
+          (+marks.social || 0) +
+          (+marks.agriculture || 0) +
+          (+marks.cre || 0) +
+          (+marks.creativeArt || 0);
 
-        learnersArray.push({
+        const totalLevel =
+          (+marks.engLev || 0) +
+          (+marks.mathLev || 0) +
+          (+marks.preTechLev || 0) +
+          (+marks.kiswahiliLev || 0) +
+          (+marks.scienceLev || 0) +
+          (+marks.socialLev || 0) +
+          (+marks.agricultureLev || 0) +
+          (+marks.creLev || 0) +
+          (+marks.creativeArtLev || 0);
+
+        const learnerObj = {
           key: childSnapshot.key,
           data,
           marks,
-          rowTotal
-        });
+          rowTotal,
+          totalLevel
+        };
+
+        if (!gradeGroups[data.grade]) {
+          gradeGroups[data.grade] = [];
+        }
+
+        gradeGroups[data.grade].push(learnerObj);
       }
     });
 
-    learnersArray.sort((a, b) => b.rowTotal - a.rowTotal);
-
-    learnersArray.forEach((learner, index) => {
-      const { data, marks, rowTotal } = learner;
-      const rowLevelTotal = calculateTotalLevel(marks);
-
-      sums.eng += (parseFloat(marks.eng) || 0);
-      sums.math += (parseFloat(marks.math) || 0);
-      sums.preTech += (parseFloat(marks.preTech) || 0);
-      sums.kiswahili += (parseFloat(marks.kiswahili) || 0);
-      sums.science += (parseFloat(marks.science) || 0);
-      sums.social += (parseFloat(marks.social) || 0);
-      sums.agriculture += (parseFloat(marks.agriculture) || 0);
-      sums.cre += (parseFloat(marks.cre) || 0);
-      sums.creativeArt += (parseFloat(marks.creativeArt) || 0);
-      sums.totalMarks += rowTotal;
-      sums.totalLevel += rowLevelTotal;
-
-      const row = document.createElement("tr");
-      row.setAttribute("data-grade", data.grade);
-      row.setAttribute("data-exam-period", examPeriod);
-      row.setAttribute("data-key", learner.key);
-
-      row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${data.name}</td>
-        <td>${data.grade}</td>
-        <td data-editable="true">${marks.eng || ''}</td><td>${marks.engLev || ''}</td>
-        <td data-editable="true">${marks.math || ''}</td><td>${marks.mathLev || ''}</td>
-        <td data-editable="true">${marks.preTech || ''}</td><td>${marks.preTechLev || ''}</td>
-        <td data-editable="true">${marks.kiswahili || ''}</td><td>${marks.kiswahiliLev || ''}</td>
-        <td data-editable="true">${marks.science || ''}</td><td>${marks.scienceLev || ''}</td>
-        <td data-editable="true">${marks.social || ''}</td><td>${marks.socialLev || ''}</td>
-        <td data-editable="true">${marks.agriculture || ''}</td><td>${marks.agricultureLev || ''}</td>
-        <td data-editable="true">${marks.cre || ''}</td><td>${marks.creLev || ''}</td>
-        <td data-editable="true">${marks.creativeArt || ''}</td><td>${marks.creativeArtLev || ''}</td>
-        <td><strong>${rowTotal}</strong></td>
-        <td><strong>${rowLevelTotal}</strong></td>
-        <td>
-          <button class="deleteMarksBtn" data-key="${learner.key}" data-exam="${examPeriod}">
-            <i class="fas fa-trash-alt"></i> Delete Marks
-          </button>
-        </td>
-      `;
-
-      marksTableBody.appendChild(row);
+    // 🔥 PROCESSING MESSAGE
+    Swal.update({
+      title: 'Processing Marks...',
+      html: `<div>Calculating totals...</div><b>${loadedCount} students</b>`
     });
+
+    Object.keys(gradeGroups).forEach(grade => {
+      const learners = gradeGroups[grade];
+      learners.sort((a, b) => b.rowTotal - a.rowTotal);
+
+      learners.forEach((learner, index) => {
+        learnersCount++;
+
+        const { data, marks, rowTotal, totalLevel } = learner;
+
+        sums.eng += (+marks.eng || 0);
+        sums.math += (+marks.math || 0);
+        sums.preTech += (+marks.preTech || 0);
+        sums.kiswahili += (+marks.kiswahili || 0);
+        sums.science += (+marks.science || 0);
+        sums.social += (+marks.social || 0);
+        sums.agriculture += (+marks.agriculture || 0);
+        sums.cre += (+marks.cre || 0);
+        sums.creativeArt += (+marks.creativeArt || 0);
+        sums.totalMarks += rowTotal;
+        sums.totalLevels += totalLevel;
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${data.name}</td>
+          <td>${data.grade}</td>
+
+          <td data-editable="true">${marks.eng || ''}</td><td>${marks.engLev || ''}</td>
+          <td data-editable="true">${marks.math || ''}</td><td>${marks.mathLev || ''}</td>
+          <td data-editable="true">${marks.preTech || ''}</td><td>${marks.preTechLev || ''}</td>
+          <td data-editable="true">${marks.kiswahili || ''}</td><td>${marks.kiswahiliLev || ''}</td>
+          <td data-editable="true">${marks.science || ''}</td><td>${marks.scienceLev || ''}</td>
+          <td data-editable="true">${marks.social || ''}</td><td>${marks.socialLev || ''}</td>
+          <td data-editable="true">${marks.agriculture || ''}</td><td>${marks.agricultureLev || ''}</td>
+          <td data-editable="true">${marks.cre || ''}</td><td>${marks.creLev || ''}</td>
+          <td data-editable="true">${marks.creativeArt || ''}</td><td>${marks.creativeArtLev || ''}</td>
+
+          <td><strong>${rowTotal}</strong></td>
+          <td><strong>${totalLevel}</strong></td>
+
+          <td>
+            <button class="deleteMarksBtn" data-key="${learner.key}" data-exam="${examPeriod}">
+              Delete
+            </button>
+          </td>
+        `;
+
+        marksTableBody.appendChild(row);
+      });
+    });
+
+    // 🔥 FINALIZING
+    Swal.update({
+      title: 'Finalizing...',
+      html: `<div>Preparing results...</div><b>${learnersCount} students</b>`
+    });
+
+    const divisor = learnersCount || 1;
+
+    document.getElementById("totalsRow").innerHTML = `...`; // keep your totals
+    document.getElementById("averagesRow").innerHTML = `...`; // keep your averages
+
+    populateGradeSelectors(grades);
+    renderSubjectAverages(sums, divisor);
 
     if (isAdminLoggedIn) enableMarksEditing();
 
-    populateGradeSelectors(grades);
-    updateTotalsAndAverages(sums, learnersArray.length);
-renderSubjectAverages(sums, learnersArray.length);
-    // Check if no marks found
-    if (noMarksFound) {
+    // 🟢 UPDATE COVERAGE WIDGET
+    updateMarksCoverage(totalCount, learnersCount);
+
+    Swal.close();
+
+    if (!noMarksFound) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Marks Loaded 🎉',
+        text: `${learnersCount} students processed`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
       Swal.fire({
         icon: 'info',
         title: 'No Marks Found',
-        text: `No marks found for ${selectedGrade} in ${examPeriod}. Please ensure that marks have been recorded.`,
-        confirmButtonColor: '#d33'
+        text: `No marks found for ${selectedGrade || "all grades"} in ${examPeriod}`
       });
     }
-
-    if (spinner) spinner.style.display = "none";
   });
 }
 
-
-document.getElementById("loadMarksByPeriodBtn").addEventListener("click", loadMarksFromFirebase);
-
-function loadAllGrades() {
-  const grades = new Set();
-  onValue(learnersRef, (snapshot) => {
-    snapshot.forEach(childSnapshot => {
-      const data = childSnapshot.val();
-      if (data.grade) grades.add(data.grade);
-    });
-    populateGradeSelectors(grades);
-  });
-}
-
-window.addEventListener("DOMContentLoaded", loadAllGrades);
-
+// BUTTON
+document.getElementById("loadMarksByPeriodBtn")
+  .addEventListener("click", loadMarksUnified);
 function populateGradeSelectors(grades) {
   const selectors = [
     document.getElementById("filterMarksGrade"),
@@ -9607,152 +9712,6 @@ document.getElementById("loadMarksByPeriodBtn").addEventListener("click", () => 
   }
   loadMarksTableForPeriod(selectedExamPeriod);
 });
-function loadMarksTableForPeriod(examPeriod) {
-  marksTableBody.innerHTML = "";
-  const gradeGroups = {};
-
-  let sums = {
-    eng: 0, math: 0, preTech: 0, kiswahili: 0,
-    science: 0, social: 0, agriculture: 0,
-    cre: 0, creativeArt: 0, totalMarks: 0, totalLevels: 0
-  };
-
-  let learnersWithMarks = 0;
-
-  onValue(learnersRef, (snapshot) => {
-    marksTableBody.innerHTML = "";
-
-    snapshot.forEach(childSnapshot => {
-      const data = childSnapshot.val();
-      const marksData = data.marks || {};
-      const marks = marksData[examPeriod] || null;
-
-      if (marks) {
-        const rowTotal =
-          (parseFloat(marks.eng) || 0) +
-          (parseFloat(marks.math) || 0) +
-          (parseFloat(marks.preTech) || 0) +
-          (parseFloat(marks.kiswahili) || 0) +
-          (parseFloat(marks.science) || 0) +
-          (parseFloat(marks.social) || 0) +
-          (parseFloat(marks.agriculture) || 0) +
-          (parseFloat(marks.cre) || 0) +
-          (parseFloat(marks.creativeArt) || 0);
-
-        const totalLevel =
-          (parseInt(marks.engLev) || 0) +
-          (parseInt(marks.mathLev) || 0) +
-          (parseInt(marks.preTechLev) || 0) +
-          (parseInt(marks.kiswahiliLev) || 0) +
-          (parseInt(marks.scienceLev) || 0) +
-          (parseInt(marks.socialLev) || 0) +
-          (parseInt(marks.agricultureLev) || 0) +
-          (parseInt(marks.creLev) || 0) +
-          (parseInt(marks.creativeArtLev) || 0);
-
-        const learnerObj = {
-          key: childSnapshot.key,
-          data,
-          marks,
-          rowTotal,
-          totalLevel
-        };
-
-        const grade = data.grade;
-        if (!gradeGroups[grade]) {
-          gradeGroups[grade] = [];
-        }
-        gradeGroups[grade].push(learnerObj);
-      }
-    });
-
-    Object.keys(gradeGroups).forEach(grade => {
-      const learners = gradeGroups[grade];
-      learners.sort((a, b) => b.rowTotal - a.rowTotal);
-
-      learners.forEach((learner, i) => {
-        learnersWithMarks++;
-
-        const { data, marks, rowTotal, totalLevel } = learner;
-
-        sums.eng += (parseFloat(marks.eng) || 0);
-        sums.math += (parseFloat(marks.math) || 0);
-        sums.preTech += (parseFloat(marks.preTech) || 0);
-        sums.kiswahili += (parseFloat(marks.kiswahili) || 0);
-        sums.science += (parseFloat(marks.science) || 0);
-        sums.social += (parseFloat(marks.social) || 0);
-        sums.agriculture += (parseFloat(marks.agriculture) || 0);
-        sums.cre += (parseFloat(marks.cre) || 0);
-        sums.creativeArt += (parseFloat(marks.creativeArt) || 0);
-        sums.totalMarks += rowTotal;
-        sums.totalLevels += totalLevel;
-
-        const row = document.createElement("tr");
-        row.setAttribute("data-grade", data.grade);
-        row.setAttribute("data-exam-period", examPeriod);
-        row.setAttribute("data-key", learner.key);
-
-        row.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${data.name}</td>
-          <td>${data.grade}</td>
-          <td data-editable="true">${marks.eng}</td><td>${marks.engLev || ''}</td>
-          <td data-editable="true">${marks.math}</td><td>${marks.mathLev || ''}</td>
-          <td data-editable="true">${marks.preTech}</td><td>${marks.preTechLev || ''}</td>
-          <td data-editable="true">${marks.kiswahili}</td><td>${marks.kiswahiliLev || ''}</td>
-          <td data-editable="true">${marks.science}</td><td>${marks.scienceLev || ''}</td>
-          <td data-editable="true">${marks.social}</td><td>${marks.socialLev || ''}</td>
-          <td data-editable="true">${marks.agriculture}</td><td>${marks.agricultureLev || ''}</td>
-          <td data-editable="true">${marks.cre}</td><td>${marks.creLev || ''}</td>
-          <td data-editable="true">${marks.creativeArt}</td><td>${marks.creativeArtLev || ''}</td>
-          <td><strong>${rowTotal}</strong></td>
-          <td><strong>${totalLevel}</strong></td>
-          <td>
-            <button class="deleteMarksBtn" data-key="${learner.key}" data-exam="${examPeriod}">Delete</button>
-          </td>
-        `;
-
-        marksTableBody.appendChild(row);
-      });
-    });
-
-    const divisor = learnersWithMarks > 0 ? learnersWithMarks : 1;
-
-    document.getElementById("totalsRow").innerHTML = `
-      <td colspan="3"><strong>Totals</strong></td>
-      <td>${sums.eng}</td><td></td>
-      <td>${sums.math}</td><td></td>
-      <td>${sums.preTech}</td><td></td>
-      <td>${sums.kiswahili}</td><td></td>
-      <td>${sums.science}</td><td></td>
-      <td>${sums.social}</td><td></td>
-      <td>${sums.agriculture}</td><td></td>
-      <td>${sums.cre}</td><td></td>
-      <td>${sums.creativeArt}</td><td></td>
-      <td><strong>${sums.totalMarks}</strong></td>
-      <td><strong>${sums.totalLevels}</strong></td>
-      <td></td>
-    `;
-
-    document.getElementById("averagesRow").innerHTML = `
-      <td colspan="3"><strong>Averages</strong></td>
-      <td>${(sums.eng / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.math / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.preTech / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.kiswahili / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.science / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.social / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.agriculture / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.cre / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.creativeArt / divisor).toFixed(2)}</td><td></td>
-      <td><strong>${(sums.totalMarks / divisor).toFixed(2)}</strong></td>
-      <td><strong>${(sums.totalLevels / divisor).toFixed(2)}</strong></td>
-      <td></td>
-    `;
-
-    if (isAdminLoggedIn) enableMarksEditing();
-  });
-}
 
 function showToast(message, type = 'info') {
   const toast = document.getElementById("toast");

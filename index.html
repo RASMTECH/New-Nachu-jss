@@ -5756,9 +5756,17 @@ Swal.close();
   });
 }
 
-// BUTTON
 document.getElementById("loadMarksByPeriodBtn")
-  .addEventListener("click", loadMarksUnified);
+  .addEventListener("click", () => {
+    const selectedExamPeriod = document.getElementById("marksExamPeriodSelect").value;
+
+    if (!selectedExamPeriod) {
+      showToast("Please select an exam period to view marks.", "error");
+      return;
+    }
+
+    loadMarksUnified();
+  });
 
 function populateGradeSelectors(grades) {
 
@@ -9769,9 +9777,6 @@ function generateSubjectRanking(grade, subjectKey, period) {
     printWindow.print();
   });
 }
-
-
-
 document.getElementById("loadMarksByPeriodBtn").addEventListener("click", () => {
   const selectedExamPeriod = document.getElementById("marksExamPeriodSelect").value;
   if (!selectedExamPeriod) {
@@ -9780,6 +9785,154 @@ document.getElementById("loadMarksByPeriodBtn").addEventListener("click", () => 
   }
   loadMarksTableForPeriod(selectedExamPeriod);
 });
+function loadMarksTableForPeriod(examPeriod) {
+  marksTableBody.innerHTML = "";
+  const gradeGroups = {};
+
+  let sums = {
+    eng: 0, math: 0, preTech: 0, kiswahili: 0,
+    science: 0, social: 0, agriculture: 0,
+    cre: 0, creativeArt: 0, totalMarks: 0, totalLevels: 0
+  };
+
+  let learnersWithMarks = 0;
+
+  onValue(learnersRef, (snapshot) => {
+    marksTableBody.innerHTML = "";
+
+    snapshot.forEach(childSnapshot => {
+      const data = childSnapshot.val();
+      const marksData = data.marks || {};
+      const marks = marksData[examPeriod] || null;
+
+      if (marks) {
+        const rowTotal =
+          (parseFloat(marks.eng) || 0) +
+          (parseFloat(marks.math) || 0) +
+          (parseFloat(marks.preTech) || 0) +
+          (parseFloat(marks.kiswahili) || 0) +
+          (parseFloat(marks.science) || 0) +
+          (parseFloat(marks.social) || 0) +
+          (parseFloat(marks.agriculture) || 0) +
+          (parseFloat(marks.cre) || 0) +
+          (parseFloat(marks.creativeArt) || 0);
+
+        const totalLevel =
+          (parseInt(marks.engLev) || 0) +
+          (parseInt(marks.mathLev) || 0) +
+          (parseInt(marks.preTechLev) || 0) +
+          (parseInt(marks.kiswahiliLev) || 0) +
+          (parseInt(marks.scienceLev) || 0) +
+          (parseInt(marks.socialLev) || 0) +
+          (parseInt(marks.agricultureLev) || 0) +
+          (parseInt(marks.creLev) || 0) +
+          (parseInt(marks.creativeArtLev) || 0);
+
+        const learnerObj = {
+          key: childSnapshot.key,
+          data,
+          marks,
+          rowTotal,
+          totalLevel
+        };
+
+        const grade = data.grade;
+        if (!gradeGroups[grade]) {
+          gradeGroups[grade] = [];
+        }
+        gradeGroups[grade].push(learnerObj);
+      }
+    });
+
+    Object.keys(gradeGroups).forEach(grade => {
+      const learners = gradeGroups[grade];
+      learners.sort((a, b) => b.rowTotal - a.rowTotal);
+
+      learners.forEach((learner, i) => {
+        learnersWithMarks++;
+
+        const { data, marks, rowTotal, totalLevel } = learner;
+
+        sums.eng += (parseFloat(marks.eng) || 0);
+        sums.math += (parseFloat(marks.math) || 0);
+        sums.preTech += (parseFloat(marks.preTech) || 0);
+        sums.kiswahili += (parseFloat(marks.kiswahili) || 0);
+        sums.science += (parseFloat(marks.science) || 0);
+        sums.social += (parseFloat(marks.social) || 0);
+        sums.agriculture += (parseFloat(marks.agriculture) || 0);
+        sums.cre += (parseFloat(marks.cre) || 0);
+        sums.creativeArt += (parseFloat(marks.creativeArt) || 0);
+        sums.totalMarks += rowTotal;
+        sums.totalLevels += totalLevel;
+
+        const row = document.createElement("tr");
+        row.setAttribute("data-grade", data.grade);
+        row.setAttribute("data-exam-period", examPeriod);
+        row.setAttribute("data-key", learner.key);
+
+        row.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${data.name}</td>
+          <td>${data.grade}</td>
+          <td data-editable="true">${marks.eng}</td><td>${marks.engLev || ''}</td>
+          <td data-editable="true">${marks.math}</td><td>${marks.mathLev || ''}</td>
+          <td data-editable="true">${marks.preTech}</td><td>${marks.preTechLev || ''}</td>
+          <td data-editable="true">${marks.kiswahili}</td><td>${marks.kiswahiliLev || ''}</td>
+          <td data-editable="true">${marks.science}</td><td>${marks.scienceLev || ''}</td>
+          <td data-editable="true">${marks.social}</td><td>${marks.socialLev || ''}</td>
+          <td data-editable="true">${marks.agriculture}</td><td>${marks.agricultureLev || ''}</td>
+          <td data-editable="true">${marks.cre}</td><td>${marks.creLev || ''}</td>
+          <td data-editable="true">${marks.creativeArt}</td><td>${marks.creativeArtLev || ''}</td>
+          <td><strong>${rowTotal}</strong></td>
+          <td><strong>${totalLevel}</strong></td>
+          <td>
+            <button class="deleteMarksBtn" data-key="${learner.key}" data-exam="${examPeriod}">Delete</button>
+          </td>
+        `;
+
+        marksTableBody.appendChild(row);
+      });
+    });
+
+    const divisor = learnersWithMarks > 0 ? learnersWithMarks : 1;
+
+    document.getElementById("totalsRow").innerHTML = `
+      <td colspan="3"><strong>Totals</strong></td>
+      <td>${sums.eng}</td><td></td>
+      <td>${sums.math}</td><td></td>
+      <td>${sums.preTech}</td><td></td>
+      <td>${sums.kiswahili}</td><td></td>
+      <td>${sums.science}</td><td></td>
+      <td>${sums.social}</td><td></td>
+      <td>${sums.agriculture}</td><td></td>
+      <td>${sums.cre}</td><td></td>
+      <td>${sums.creativeArt}</td><td></td>
+      <td><strong>${sums.totalMarks}</strong></td>
+      <td><strong>${sums.totalLevels}</strong></td>
+      <td></td>
+    `;
+
+    document.getElementById("averagesRow").innerHTML = `
+      <td colspan="3"><strong>Averages</strong></td>
+      <td>${(sums.eng / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.math / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.preTech / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.kiswahili / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.science / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.social / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.agriculture / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.cre / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.creativeArt / divisor).toFixed(2)}</td><td></td>
+      <td><strong>${(sums.totalMarks / divisor).toFixed(2)}</strong></td>
+      <td><strong>${(sums.totalLevels / divisor).toFixed(2)}</strong></td>
+      <td></td>
+    `;
+
+    if (isAdminLoggedIn) enableMarksEditing();
+  });
+}
+
+
 
 function showToast(message, type = 'info') {
   const toast = document.getElementById("toast");
@@ -11635,7 +11788,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // =========================
-// NOTIFICATIONS SYSTEM (CLEAN + FAST)
+// NOTIFICATIONS SYSTEM (PRO VERSION)
 // =========================
 
 const notificationsBell = document.getElementById("notificationsBell");
@@ -11644,7 +11797,7 @@ const unreadCountEl = document.getElementById("unreadCount");
 let bellDropdown = document.getElementById("bellMessagesDropdown");
 
 // =========================
-// USER
+// GET CURRENT USER
 // =========================
 const currentUser = JSON.parse(localStorage.getItem("loggedInUser")) || {};
 const currentUsername = currentUser.username || "guest";
@@ -11680,9 +11833,95 @@ if (!bellDropdown && notificationsBell) {
 }
 
 // =========================
-// FIREBASE
+// FIREBASE REF (USER BASED)
 // =========================
 const notificationsRef = ref(db, "notifications");
+
+// =========================
+// FLOATING CONTAINER
+// =========================
+let floatingContainer = document.getElementById("floatingNotificationsContainer");
+
+if (!floatingContainer) {
+  floatingContainer = document.createElement("div");
+  floatingContainer.id = "floatingNotificationsContainer";
+
+  floatingContainer.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 320px;
+  `;
+
+  document.body.appendChild(floatingContainer);
+}
+
+// =========================
+// NOTIFICATION QUEUE (ANTI-SPAM)
+// =========================
+let queue = [];
+let isShowing = false;
+
+function processQueue() {
+  if (isShowing || queue.length === 0) return;
+
+  isShowing = true;
+  const msg = queue.shift();
+  createToast(msg);
+
+  setTimeout(() => {
+    isShowing = false;
+    processQueue();
+  }, 1200);
+}
+
+// =========================
+// CREATE FLOATING TOAST
+// =========================
+function createToast(msg) {
+  const box = document.createElement("div");
+
+  box.style.cssText = `
+    background: rgba(255,255,255,0.95);
+    border-left: 5px solid #1abc9c;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    animation: slideInRight 0.3s ease;
+    position: relative;
+  `;
+
+  box.innerHTML = `
+    <button style="
+      position:absolute;
+      top:5px;
+      right:8px;
+      border:none;
+      background:none;
+      cursor:pointer;
+    ">×</button>
+
+    <div style="font-weight:bold;">${msg.recipient}</div>
+    <div style="font-size:13px;">${msg.message}</div>
+    <div style="font-size:11px;color:#777;">${msg.time}</div>
+    <div class="progress-bar"></div>
+  `;
+
+  const remove = () => {
+    box.style.opacity = "0";
+    box.style.transform = "translateX(100%)";
+    setTimeout(() => box.remove(), 300);
+  };
+
+  box.querySelector("button").onclick = remove;
+  setTimeout(remove, 5000);
+
+  floatingContainer.appendChild(box);
+}
 
 // =========================
 // STYLES
@@ -11695,6 +11934,21 @@ if (!document.getElementById("notifStyles")) {
     @keyframes slideInRight {
       from { transform: translateX(100%); opacity:0; }
       to { transform: translateX(0); opacity:1; }
+    }
+
+    .progress-bar {
+      position:absolute;
+      bottom:0;
+      left:0;
+      height:3px;
+      width:100%;
+      background:linear-gradient(90deg,#1abc9c,#3498db);
+      animation: shrink 5s linear forwards;
+    }
+
+    @keyframes shrink {
+      from { width:100%; }
+      to { width:0%; }
     }
 
     .pulse {
@@ -11720,64 +11974,42 @@ function playNotificationSound() {
 }
 
 // =========================
-// FLOATING TOAST
+// LOCAL STORAGE (PREVENT REPEAT)
 // =========================
-function showToast(msg) {
-  const box = document.createElement("div");
-
-  box.style.cssText = `
-    position:fixed;
-    top:20px;
-    right:20px;
-    background:#ffdddd;
-    padding:12px;
-    border-left:5px solid #1abc9c;
-    border-radius:8px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.2);
-    z-index:99999;
-    animation:slideInRight 0.25s ease;
-  `;
-
-  box.innerHTML = `
-    <strong>${msg.recipient}</strong><br>
-    ${msg.message}
-  `;
-
-  document.body.appendChild(box);
-
-  setTimeout(() => {
-    box.style.opacity = "0";
-    box.style.transform = "translateX(100%)";
-    setTimeout(() => box.remove(), 3000);
-  }, 4000);
-}
+let lastSeen = Number(localStorage.getItem("lastSeenNotif")) || 0;
 
 // =========================
-// LISTENER (REAL-TIME FIXED)
+// MAIN LISTENER (SINGLE)
 // =========================
 onValue(notificationsRef, (snapshot) => {
   const data = snapshot.val() || {};
 
-  bellDropdown.innerHTML = "";
   let unread = 0;
+  bellDropdown.innerHTML = "";
 
   const messages = Object.entries(data)
     .map(([id, msg]) => ({ id, ...msg }))
-    .filter(msg =>
-      msg.recipient === currentUsername || msg.recipient === "All"
-    )
+    .filter(msg => msg.recipient === currentUsername || msg.recipient === "All")
     .sort((a, b) => b.timestamp - a.timestamp);
 
   messages.forEach(msg => {
     if (!msg.read) unread++;
 
-    const li = document.createElement("li");
+    // Floating notification (only new ones)
+    if (msg.timestamp > lastSeen) {
+      queue.push(msg);
+      processQueue();
+      playNotificationSound();
+      lastSeen = msg.timestamp;
+      localStorage.setItem("lastSeenNotif", lastSeen);
+    }
 
+    const li = document.createElement("li");
     li.style.cssText = `
-      padding:8px;
+      padding:6px;
       border-bottom:1px solid rgba(255,255,255,0.2);
+      background:${msg.read ? "transparent" : "rgba(255,255,255,0.15)"};
       cursor:pointer;
-      border-left:${msg.read ? "none" : "4px solid red"};
     `;
 
     li.innerHTML = `
@@ -11786,14 +12018,21 @@ onValue(notificationsRef, (snapshot) => {
     `;
 
     li.onclick = () => {
-      update(ref(db, `notifications/${msg.id}`), { read: true });
+      if (!msg.read) {
+        update(ref(db, `notifications/${msg.id}`), { read: true });
+      }
     };
 
     bellDropdown.appendChild(li);
   });
 
+  if (messages.length === 0) {
+    bellDropdown.innerHTML = "<li>No notifications</li>";
+  }
+
   unreadCountEl.textContent = unread;
 
+  // Bell animation
   if (unread > 0) {
     notificationsBell.classList.add("pulse");
     setTimeout(() => notificationsBell.classList.remove("pulse"), 600);
@@ -11801,7 +12040,7 @@ onValue(notificationsRef, (snapshot) => {
 });
 
 // =========================
-// SEND MESSAGE (INSTANT FIX)
+// SEND MESSAGE
 // =========================
 const sendBtn = document.getElementById("sendMessageBtn");
 
@@ -11812,21 +12051,17 @@ if (sendBtn) {
 
     if (!message) return alert("Type a message");
 
-    const newRef = push(ref(db, "notifications"));
+    const timestamp = Date.now();
 
-    await set(newRef, {
+    await set(ref(db, `notifications/${timestamp}`), {
       message,
       recipient,
       time: new Date().toLocaleString(),
       read: false,
-      timestamp: Date.now()
+      timestamp
     });
 
     document.getElementById("messageContent").value = "";
-
-    // instant feedback
-    showToast({ message, recipient });
-    playNotificationSound();
   };
 }
 
@@ -11866,7 +12101,109 @@ document.addEventListener("click", (e) => {
   });
 
 });
+// =========================
+// FIREBASE NOTIFICATIONS INTEGRATION
+// =========================
 
+// Track last shown notification (prevents duplicates on reload)
+let lastTimestamp = sessionStorage.getItem("lastNotifTimestamp") || 0;
+
+// =========================
+// RENDER DROPDOWN MESSAGES
+// =========================
+function renderBellMessages(data) {
+  if (!bellDropdown) return;
+
+  bellDropdown.innerHTML = "";
+  let unread = 0;
+
+  const messages = Object.entries(data || {})
+    .sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+  messages.forEach(([key, msg]) => {
+    if (!msg.read) unread++;
+
+    const li = document.createElement("li");
+
+    li.style.cssText = `
+      padding:8px;
+      border-bottom:1px solid rgba(255,255,255,0.2);
+      cursor:pointer;
+      background:${msg.read ? "transparent" : "rgba(255,255,255,0.15)"};
+    `;
+
+    li.innerHTML = `
+      <strong>${msg.time || ""}</strong><br>
+      <b>${msg.recipient || ""}</b><br>
+      ${msg.message || ""}
+    `;
+
+    // Mark as read when clicked
+    li.onclick = async () => {
+      if (!msg.read) {
+        await update(ref(db, `notifications/${key}`), { read: true });
+      }
+    };
+
+    bellDropdown.appendChild(li);
+  });
+
+  if (messages.length === 0) {
+    bellDropdown.innerHTML = "<li>No notifications</li>";
+  }
+
+  if (unreadCountEl) unreadCountEl.textContent = unread;
+}
+
+// =========================
+// REAL-TIME LISTENER
+// =========================
+onValue(notificationsRef, (snapshot) => {
+  const data = snapshot.val() || {};
+
+  // Render dropdown
+  renderBellMessages(data);
+
+  // Handle floating notification (ONLY newest)
+  const list = Object.values(data).sort((a, b) => a.timestamp - b.timestamp);
+  const latest = list[list.length - 1];
+
+  if (latest && latest.timestamp != lastTimestamp) {
+    showFloatingNotification(latest);
+    playNotificationSound?.(); // safe call if function exists
+
+    lastTimestamp = latest.timestamp;
+    sessionStorage.setItem("lastNotifTimestamp", lastTimestamp);
+  }
+});
+
+// =========================
+// SEND MESSAGE (OPTIONAL UI)
+// =========================
+const sendBtn = document.getElementById("sendMessageBtn");
+const recipientEl = document.getElementById("messageRecipient");
+const messageEl = document.getElementById("messageContent");
+
+if (sendBtn) {
+  sendBtn.addEventListener("click", async () => {
+    const message = messageEl.value.trim();
+    const recipient = recipientEl.value;
+
+    if (!message) return alert("Message cannot be empty");
+
+    const timestamp = Date.now();
+
+    await set(ref(db, `notifications/${timestamp}`), {
+      message,
+      recipient,
+      time: new Date().toLocaleString(),
+      read: false,
+      timestamp
+    });
+
+    messageEl.value = "";
+  });
+}
 
 // ================= LOAD GRADES & STUDENTS =================
 function loadFeeStudents() {

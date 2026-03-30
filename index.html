@@ -3144,7 +3144,7 @@ Rasm Does It All – Just Click and See It Done!.</span>
          style="font-weight: bold; color: red;">
          Filter by Exam Period
   </label>
-
+ ⚠ Important note: Kindly start here
   <select id="marksExamPeriodSelect">
         style="width: 100%; background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 6px; border-radius: 4px; color: #333;">
         <option value="">-- Select Exam Period --</option>
@@ -5946,67 +5946,106 @@ filterMarksGrade.addEventListener("change", () => {
 
 
 
+// ===============================
+// 🗑 DELETE MARKS (REAL-TIME FULL REFRESH FIXED)
+// ===============================
 document.addEventListener("click", function (e) {
+
   if (e.target.classList.contains("deleteMarksBtn")) {
+
     if (!isAdminLoggedIn) {
+
       Swal.fire({
         icon: "error",
         title: "Access Denied",
         text: "Only admins can delete learner marks.",
         confirmButtonColor: "#d33"
       });
+
       return;
     }
 
     const button = e.target;
-    const learnerKey = button.getAttribute("data-key");
-    const examPeriod = button.getAttribute("data-exam");
+
+    const learnerKey = button.dataset.key;
+    const examPeriod = button.dataset.exam;
 
     if (!learnerKey || !examPeriod) {
+
       console.warn("Missing learner key or exam period.");
+
       return;
     }
 
     Swal.fire({
+
       title: "Are you sure?",
       text: "You want to delete this learner's marks for this exam?",
       icon: "warning",
+
       showCancelButton: true,
+
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const learnerMarksRef = ref(database, `learners/${learnerKey}/marks/${examPeriod}`);
 
-        set(learnerMarksRef, null)
-          .then(() => {
-            Swal.fire({
-              toast: true,
-              position: 'top-end',
-              icon: 'success',
-              title: "Marks deleted successfully!",
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true
-            });
-            loadMarksFromFirebase(); // Refresh table
-          })
-          .catch(err => {
-            console.error("Error deleting marks: ", err);
-            Swal.fire({
-              toast: true,
-              position: 'top-end',
-              icon: 'error',
-              title: "Failed to delete marks.",
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true
-            });
+      confirmButtonText: "Yes, delete it!"
+
+    }).then(async (result) => {
+
+      if (result.isConfirmed) {
+
+        try {
+
+          const learnerMarksRef =
+            ref(db,
+              `learners/${learnerKey}/marks/${examPeriod}`
+            );
+
+          // delete marks
+          await set(learnerMarksRef, null);
+
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title: "Marks deleted successfully!",
+            showConfirmButton: false,
+            timer: 2000
           });
+
+          // =====================
+          // 🔄 REAL-TIME REFRESH
+          // =====================
+
+          // refresh marks table
+          loadMarksUnified();
+
+          // return learner to dropdown
+          filterLearnersWithMarks();
+
+        }
+
+        catch (err) {
+
+          console.error("Error deleting marks:", err);
+
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "error",
+            title: "Failed to delete marks.",
+            showConfirmButton: false,
+            timer: 3000
+          });
+
+        }
+
       }
+
     });
+
   }
+
 });
 
 // Subject Champions button event — optionally toast if no selection
@@ -8248,6 +8287,26 @@ onValue(learnersRef, (snapshot) => {
 });
 
 async function generateClassList(selectedGrade) {
+
+    if (!selectedGrade) {
+        Swal.fire({
+            icon: "warning",
+            title: "Select Grade",
+            text: "Please choose a grade first"
+        });
+        return;
+    }
+
+    // 🔵 Loading alert
+    Swal.fire({
+        title: "Generating Class List...",
+        html: "Please wait while we prepare the register",
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     try {
         const snapshot = await get(learnersRef);
         const boys = [];
@@ -8256,6 +8315,7 @@ async function generateClassList(selectedGrade) {
 
         snapshot.forEach(childSnapshot => {
             const learner = childSnapshot.val();
+
             if (learner.grade === selectedGrade) {
                 const studentData = {
                     name: learner.name || "",
@@ -8274,72 +8334,89 @@ async function generateClassList(selectedGrade) {
         boys.sort((a, b) => a.name.localeCompare(b.name));
         girls.sort((a, b) => a.name.localeCompare(b.name));
 
-        const logoUrl = "https://i.imgur.com/VSAh48K.jpeg"; // replace with your logo path or URL
+        const logoUrl = "https://i.imgur.com/VSAh48K.jpeg";
 
         // Header HTML
         const headerHtml = `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img src="${logoUrl}" alt="School Logo" style="height: 80px; margin-bottom: 10px;"><br>
-            <strong style="font-size: 22px;">NACHU PRIMARY AND JUNIOR SCHOOL</strong><br>
-            <strong style="font-size: 20px;">CLASS LIST REGISTER</strong><br>
-            <div style="margin-top: 5px; font-size: 14px;">
+        <div style="text-align:center;margin-bottom:20px;">
+            <img src="${logoUrl}" style="height:80px;margin-bottom:10px;"><br>
+
+            <strong style="font-size:22px;">NACHU PRIMARY SCHOOL</strong><br>
+            <strong style="font-size:20px;">CLASS LIST REGISTER</strong><br>
+
+            <div style="margin-top:5px;font-size:14px;">
                 ADDRESS: PO BOX 561-00902 KIKUYU, KENYA<br>
                 Phone: +254-700-123456<br>
-                School Motto: <em>"MY TALENT MY PASSION"</em><br>
-                Year: ${currentYear} / GRADE: <strong>${selectedGrade}</strong>
+                Motto: <em>"MY TALENT MY PASSION"</em><br>
+                Year: ${currentYear} | Grade: <strong>${selectedGrade}</strong>
             </div>
         </div>
         `;
 
         let html = `
         ${headerHtml}
-        <button class="print-button" onclick="printClassList()">Print Class List</button>
 
-        <div style="display: flex; gap: 30px; margin-top: 20px;">
+        <div style="margin-bottom:10px;">
+            <button class="print-button" onclick="printClassList()">Print Class List</button>
+            <button class="close-button" style="margin-left:10px;" onclick="
+                const container = document.getElementById('classListOutput');
+                container.style.transition = 'opacity 0.5s';
+                container.style.opacity = '0';
+                setTimeout(() => { container.innerHTML = ''; container.style.opacity='1'; }, 500);
+            ">
+                Close Class List
+            </button>
+        </div>
 
-            <div style="flex:1;">
-                <h4 style="font-size:20px; font-weight:bold;">Boys (${boys.length})</h4>
-                <table style="width:100%; border-collapse:collapse;">
+        <div style="display:flex;gap:30px;margin-top:20px; max-height:70vh;">
+
+            <!-- Boys Table Scrollable -->
+            <div style="flex:1; overflow-y:auto; border:1px solid #ddd; padding:10px; background:#fff;">
+                <h4 style="font-size:20px;font-weight:bold;">Boys (${boys.length})</h4>
+
+                <table style="width:100%;border-collapse:collapse;">
                     <thead>
                         <tr>
-                            <th style="border:1px solid black;padding:8px;">No.</th>
-                            <th style="border:1px solid black;padding:8px;">Name</th>
-                            <th style="border:1px solid black;padding:8px;">Age</th>
-                            <th style="border:1px solid black;padding:8px;">Signature</th>
+                            <th style="border:1px solid black;padding:8px; position:sticky; top:0; background:#f5f5f5;">No.</th>
+                            <th style="border:1px solid black;padding:8px; position:sticky; top:0; background:#f5f5f5;">Name</th>
+                            <th style="border:1px solid black;padding:8px; position:sticky; top:0; background:#f5f5f5;">Age</th>
+                            <th style="border:1px solid black;padding:8px; position:sticky; top:0; background:#f5f5f5;">Signature</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${boys.map((student, index) => `
-                            <tr>
-                                <td style="border:1px solid black;padding:8px;">${index + 1}</td>
-                                <td style="border:1px solid black;padding:8px;">${student.name}</td>
-                                <td style="border:1px solid black;padding:8px;">${student.age}</td>
-                                <td style="border:1px solid black;padding:8px;"></td>
-                            </tr>
+                        <tr>
+                            <td style="border:1px solid black;padding:8px;">${index+1}</td>
+                            <td style="border:1px solid black;padding:8px;">${student.name}</td>
+                            <td style="border:1px solid black;padding:8px;">${student.age}</td>
+                            <td style="border:1px solid black;padding:8px;"></td>
+                        </tr>
                         `).join("")}
                     </tbody>
                 </table>
             </div>
 
-            <div style="flex:1;">
-                <h4 style="font-size:20px; font-weight:bold;">Girls (${girls.length})</h4>
-                <table style="width:100%; border-collapse:collapse;">
+            <!-- Girls Table Scrollable -->
+            <div style="flex:1; overflow-y:auto; border:1px solid #ddd; padding:10px; background:#fff;">
+                <h4 style="font-size:20px;font-weight:bold;">Girls (${girls.length})</h4>
+
+                <table style="width:100%;border-collapse:collapse;">
                     <thead>
                         <tr>
-                            <th style="border:1px solid black;padding:8px;">No.</th>
-                            <th style="border:1px solid black;padding:8px;">Name</th>
-                            <th style="border:1px solid black;padding:8px;">Age</th>
-                            <th style="border:1px solid black;padding:8px;">Signature</th>
+                            <th style="border:1px solid black;padding:8px; position:sticky; top:0; background:#f5f5f5;">No.</th>
+                            <th style="border:1px solid black;padding:8px; position:sticky; top:0; background:#f5f5f5;">Name</th>
+                            <th style="border:1px solid black;padding:8px; position:sticky; top:0; background:#f5f5f5;">Age</th>
+                            <th style="border:1px solid black;padding:8px; position:sticky; top:0; background:#f5f5f5;">Signature</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${girls.map((student, index) => `
-                            <tr>
-                                <td style="border:1px solid black;padding:8px;">${index + 1}</td>
-                                <td style="border:1px solid black;padding:8px;">${student.name}</td>
-                                <td style="border:1px solid black;padding:8px;">${student.age}</td>
-                                <td style="border:1px solid black;padding:8px;"></td>
-                            </tr>
+                        <tr>
+                            <td style="border:1px solid black;padding:8px;">${index+1}</td>
+                            <td style="border:1px solid black;padding:8px;">${student.name}</td>
+                            <td style="border:1px solid black;padding:8px;">${student.age}</td>
+                            <td style="border:1px solid black;padding:8px;"></td>
+                        </tr>
                         `).join("")}
                     </tbody>
                 </table>
@@ -8350,8 +8427,23 @@ async function generateClassList(selectedGrade) {
 
         document.getElementById("classListOutput").innerHTML = html;
 
+        // 🟢 Success alert
+        Swal.fire({
+            icon: "success",
+            title: "Class List Ready",
+            text: `Register generated successfully for Grade ${selectedGrade}`,
+            timer: 1800,
+            showConfirmButton: false
+        });
+
     } catch (error) {
         console.error("Error fetching learners:", error);
+
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Failed to generate class list"
+        });
     }
 }
 window.printClassList = function () {

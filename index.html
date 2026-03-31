@@ -9414,179 +9414,588 @@ document.querySelectorAll('#marksInputs input[type="number"]').forEach(input => 
     input.addEventListener('blur', () => validateScoreFormat(input));
 });
 
-function countMarksStatusPerGrade() {
-  if (!isAdminLoggedIn) {
-    Swal.fire("Access Denied", "Only the admin can view this report.", "error");
-    return;
-  }
+/* =====================================================
+   CENTER POPUP SYSTEM
+===================================================== */
 
-  const selectedGrade = document.getElementById('filterMarksGrade').value.trim();
-  const selectedPeriod = document.getElementById('marksExamPeriodSelect').value.trim();
+function showReportPopup(html){
 
-  if (!selectedGrade || !selectedPeriod || selectedGrade.toLowerCase().includes("select") || selectedPeriod.toLowerCase().includes("select")) {
-    Swal.fire("Missing Filters", "Please select both grade and exam period to view summary.", "warning");
-    return;
-  }
+let overlay =
+document.getElementById("reportPopupOverlay");
 
-  const gradeCounts = {
-    [selectedGrade]: {
-      recorded: 0,
-      notRecorded: 0,
-      notRecordedNames: []
-    }
-  };
+if(!overlay){
 
-  onValue(learnersRef, (snapshot) => {
-    snapshot.forEach(childSnapshot => {
-      const learner = childSnapshot.val();
-      const grade = learner.grade?.trim();
-      const name = learner.name || "Unknown";
-      const marks = learner.marks || {};
+overlay = document.createElement("div");
 
-      if (grade !== selectedGrade) return;
+overlay.id="reportPopupOverlay";
 
-      const hasMarksForPeriod = marks.hasOwnProperty(selectedPeriod);
+overlay.style.cssText=`
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+`;
 
-      if (hasMarksForPeriod) {
-        gradeCounts[selectedGrade].recorded++;
-      } else {
-        gradeCounts[selectedGrade].notRecorded++;
-        gradeCounts[selectedGrade].notRecordedNames.push(name);
-      }
-    });
+overlay.innerHTML=`
 
-    const counts = gradeCounts[selectedGrade];
-    const total = counts.recorded + counts.notRecorded;
-    const remarks = counts.notRecorded === 0
-      ? "All marks recorded"
-      : counts.recorded === 0
-        ? "No marks recorded"
-        : "Partial marks recorded";
+<div id="reportPopupBox"
 
-    const learnersWithNoMarks = counts.notRecordedNames.join(", ") || "None";
+style="
+background:white;
+width:90%;
+max-width:900px;
+max-height:90vh;
+overflow:auto;
+border-radius:10px;
+padding:20px;
+position:relative;
+box-shadow:0 5px 25px rgba(0,0,0,0.3);
+">
 
-    let html = `
-      <h3 style="color: black;">Marks Recording Summary for ${selectedGrade} (${selectedPeriod})</h3>
-      <table id="marksSummaryTable" style="width: 100%; border-collapse: collapse; margin-top: 10px; color: black;">
-        <thead>
-          <tr style="background-color: #007bff; color: white;">
-            <th style="border: 3px solid black; padding: 8px;">No</th>
-            <th style="border: 3px solid black; padding: 8px;">Grade</th>
-            <th style="border: 3px solid black; padding: 8px;">Number of Learners</th>
-            <th style="border: 3px solid black; padding: 8px;">Recorded Marks</th>
-            <th style="border: 3px solid black; padding: 8px;">Not Recorded</th>
-            <th style="border: 3px solid black; padding: 8px;">Learners with No Marks</th>
-            <th style="border: 3px solid black; padding: 8px;">Remarks</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="border: 3px solid black; padding: 8px; text-align: center;">1</td>
-            <td style="border: 3px solid black; padding: 8px; text-align: center;">${selectedGrade}</td>
-            <td style="border: 3px solid black; padding: 8px; text-align: center;">${total}</td>
-            <td style="border: 3px solid black; padding: 8px; text-align: center;">${counts.recorded}</td>
-            <td style="border: 3px solid black; padding: 8px; text-align: center;">${counts.notRecorded}</td>
-            <td style="border: 3px solid black; padding: 8px; text-align: center;">${learnersWithNoMarks}</td>
-            <td style="border: 3px solid black; padding: 8px; text-align: center;">${remarks}</td>
-          </tr>
-        </tbody>
-      </table>
-      <button id="printMarksSummaryBtn" style="margin-top: 15px; padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer;">
-        <i class="fas fa-print"></i> Print Report
-      </button>
-    `;
+<button id="closePopupBtn"
 
-    const container = document.getElementById("marksStatusSummary");
-    container.innerHTML = html;
+style="
+position:absolute;
+top:10px;
+right:10px;
+background:#dc3545;
+color:white;
+border:none;
+border-radius:50%;
+width:35px;
+height:35px;
+cursor:pointer;
+font-size:18px;
+">
 
-    document.getElementById("printMarksSummaryBtn").addEventListener("click", () => {
-      const logoUrl = "https://i.imgur.com/VSAh48K.jpeg";
-      const year = new Date().getFullYear();
-      const tableHTML = document.getElementById("marksSummaryTable").outerHTML;
+×
+</button>
 
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <html>
-        <head>
-          <title>NACHU JUNIOR SCHOOL MARKS CAPTURE Report</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 40px; color: black; }
-            h2, p { text-align: center; margin: 5px 0; color: black; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; color: black; }
-            th, td { border: 3px solid black; padding: 8px; text-align: center; color: black; }
-            th { background-color: #007bff; color: white; }
-            img.logo { display: block; margin: 0 auto 15px; width: 100px; }
-            .stamp {
-              border: 2px solid blue;
-              color: blue;
-              text-align: center;
-              width: 200px;
-              height: 70px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin: 10px auto;
-              font-weight: bold;
-            }
-          </style>
-        </head>
-        <body>
-          <img src="${logoUrl}" alt="School Logo" class="logo">
-          <h2>NACHU JUNIOR SCHOOL MARKS CAPTURE Report</h2>
-          <p>ADDRESS: P.O. BOX 561-00902 Kikuyu KENYA</p>
-          <p>School Motto: "My Talent My Passion"</p>
-          <p>Year: ${year}</p>
-          ${tableHTML}
-          <div class="stamp">
-            Nachu Junior School<br>
-            Po Box 561-00902<br>
-            Kikuyu...Exam Department
-          </div>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    });
-  });
+<div id="reportPopupContent"></div>
+
+</div>
+`;
+
+document.body.appendChild(overlay);
+
+
+/* close popup */
+
+document
+.getElementById("closePopupBtn")
+
+.onclick = ()=>{
+
+overlay.style.display="none";
+
+};
+
+
+/* click outside closes popup */
+
+overlay.onclick=(e)=>{
+
+if(e.target.id==="reportPopupOverlay")
+
+overlay.style.display="none";
+
+};
+
 }
 
-document.getElementById("showMarksStatusBtn").addEventListener("click", () => {
-  if (!isAdminLoggedIn) {
-    Swal.fire("Access Denied", "Only the admin can view the marks recording status.", "error");
-    return;
-  }
 
-  const summaryDiv = document.getElementById("marksStatusSummary");
-  const toggleButton = document.getElementById("showMarksStatusBtn");
-  const toggleIcon = document.getElementById("toggleIcon");
+document
+.getElementById("reportPopupContent")
+.innerHTML=html;
 
-  const selectedGrade = document.getElementById('filterMarksGrade').value.trim();
-  const selectedPeriod = document.getElementById('marksExamPeriodSelect').value.trim();
+overlay.style.display="flex";
 
-  const invalidGrade = !selectedGrade || selectedGrade.toLowerCase().includes("select");
-  const invalidPeriod = !selectedPeriod || selectedPeriod.toLowerCase().includes("select");
+}
 
-  if (invalidGrade || invalidPeriod) {
-    Swal.fire("Missing Filters", "Please select both grade and exam period to view the summary.", "warning");
-    return;
-  }
 
-  if (summaryDiv.style.display === "none" || !summaryDiv.style.display) {
-    countMarksStatusPerGrade();
-    summaryDiv.style.display = "block";
-    toggleButton.textContent = " Hide Marks Recording Status Per Grade";
-    toggleButton.prepend(toggleIcon);
-    toggleIcon.className = "fas fa-eye-slash";
-  } else {
-    summaryDiv.style.display = "none";
-    toggleButton.textContent = " Show Marks Recording Status Per Grade";
-    toggleButton.prepend(toggleIcon);
-    toggleIcon.className = "fas fa-eye";
-  }
+
+/* =====================================================
+   MARKS STATUS REPORT
+===================================================== */
+
+async function countMarksStatusPerGrade(){
+
+if(!isAdminLoggedIn){
+
+Swal.fire(
+"Access Denied",
+"Only admin can view report",
+"error"
+);
+
+return;
+
+}
+
+
+const selectedGrade =
+document
+.getElementById("filterMarksGrade")
+.value.trim();
+
+
+const selectedPeriod =
+document
+.getElementById("marksExamPeriodSelect")
+.value.trim();
+
+
+
+if(
+
+!selectedGrade ||
+
+!selectedPeriod ||
+
+selectedGrade.toLowerCase().includes("select") ||
+
+selectedPeriod.toLowerCase().includes("select")
+
+){
+
+Swal.fire(
+
+"Missing Filters",
+
+"Please select grade and exam period",
+
+"warning"
+
+);
+
+return;
+
+}
+
+
+
+Swal.fire({
+
+title:"Analyzing marks...",
+
+allowOutsideClick:false,
+
+didOpen:()=>Swal.showLoading()
+
 });
+
+
+
+try{
+
+const snapshot =
+await get(learnersRef);
+
+
+let recorded=0;
+
+let notRecorded=0;
+
+let missingList=[];
+
+
+
+snapshot.forEach(child=>{
+
+const learner =
+child.val();
+
+
+
+if(
+learner.grade?.trim()
+!== selectedGrade
+) return;
+
+
+
+const name =
+learner.name || "Unknown";
+
+
+const marks =
+learner.marks || {};
+
+
+
+if(marks[selectedPeriod]){
+
+recorded++;
+
+}
+
+else{
+
+notRecorded++;
+
+missingList.push(name);
+
+}
+
+});
+
+
+
+missingList.sort();
+
+
+
+const total =
+recorded + notRecorded;
+
+
+
+const percent =
+total===0 ? 0 :
+
+Math.round(
+(recorded/total)*100
+);
+
+
+
+let remark="";
+
+
+if(percent===100)
+remark="Complete";
+
+else if(percent>=80)
+remark="Almost complete";
+
+else if(percent>=40)
+remark="In progress";
+
+else if(percent>0)
+remark="Few marks captured";
+
+else
+remark="No marks captured";
+
+
+
+const today =
+new Date()
+.toLocaleDateString();
+
+
+
+const html = `
+
+<h3>
+
+Marks Capture Status
+
+</h3>
+
+
+<p>
+
+<b>Grade:</b>
+${selectedGrade}
+
+<br>
+
+<b>Exam Period:</b>
+${selectedPeriod}
+
+<br>
+
+<b>Date:</b>
+${today}
+
+</p>
+
+
+
+<div style="
+background:#eee;
+border-radius:20px;
+overflow:hidden;
+margin:10px 0;
+">
+
+<div style="
+width:${percent}%;
+background:#28a745;
+color:white;
+padding:5px;
+text-align:center;
+font-weight:bold;
+">
+
+${percent}%
+
+</div>
+
+</div>
+
+
+
+
+<table
+id="marksSummaryTable"
+
+style="
+width:100%;
+border-collapse:collapse;
+">
+
+<tr style="
+background:#007bff;
+color:white;
+">
+
+<th>Total</th>
+
+<th>Recorded</th>
+
+<th>Missing</th>
+
+<th>Completion</th>
+
+<th>Remark</th>
+
+</tr>
+
+
+
+<tr>
+
+<td>${total}</td>
+
+<td>${recorded}</td>
+
+<td>${notRecorded}</td>
+
+<td>${percent}%</td>
+
+<td>${remark}</td>
+
+</tr>
+
+</table>
+
+
+
+<details style="margin-top:15px;">
+
+<summary style="
+cursor:pointer;
+font-weight:bold;
+">
+
+Learners Without Marks
+
+(${notRecorded})
+
+</summary>
+
+
+
+<div style="
+margin-top:10px;
+border:1px solid #ddd;
+padding:10px;
+max-height:200px;
+overflow:auto;
+">
+
+${missingList.join("<br>")
+|| "All learners captured"}
+
+</div>
+
+</details>
+
+
+
+
+<div style="margin-top:15px;">
+
+<button id="printBtn"
+
+style="
+background:#28a745;
+color:white;
+padding:8px 15px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+">
+
+Print
+
+</button>
+
+
+
+<button id="excelBtn"
+
+style="
+background:#17a2b8;
+color:white;
+padding:8px 15px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin-left:10px;
+">
+
+Export Excel
+
+</button>
+
+
+</div>
+
+`;
+
+
+
+Swal.close();
+
+
+
+showReportPopup(html);
+
+
+
+
+/* PRINT */
+
+document
+.getElementById("printBtn")
+
+.onclick=()=>{
+
+const tableHTML =
+document
+.getElementById("marksSummaryTable")
+.outerHTML;
+
+
+const win =
+window.open("");
+
+
+win.document.write(`
+
+<h2>
+Marks Capture Report
+</h2>
+
+<p>
+
+Grade:
+${selectedGrade}
+
+<br>
+
+Exam Period:
+${selectedPeriod}
+
+<br>
+
+Completion:
+${percent}%
+
+</p>
+
+${tableHTML}
+
+`);
+
+
+win.print();
+
+win.close();
+
+};
+
+
+
+
+/* EXPORT */
+
+document
+.getElementById("excelBtn")
+
+.onclick=()=>{
+
+let csv="Name\n";
+
+missingList.forEach(n=>{
+
+csv+=n+"\n";
+
+});
+
+
+const blob=
+new Blob(
+[csv],
+{type:"text/csv"}
+);
+
+
+const a=
+document.createElement("a");
+
+
+a.href=
+URL.createObjectURL(blob);
+
+
+a.download=
+`${selectedGrade}_${selectedPeriod}_missing_marks.csv`;
+
+
+a.click();
+
+};
+
+
+}
+
+
+catch(error){
+
+console.error(error);
+
+Swal.fire(
+"Error",
+"Failed to generate report",
+"error"
+);
+
+}
+
+}
+
+
+
+/* =====================================================
+   BUTTON CLICK
+===================================================== */
+
+document
+.getElementById("showMarksStatusBtn")
+.addEventListener(
+"click",
+countMarksStatusPerGrade
+);
 
 
 // Populate grade dropdown from registered learners in Firebase

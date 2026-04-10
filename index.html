@@ -13627,11 +13627,14 @@ let allFeeTypes = [];
 let filteredFeeData = {};
 
 // ================= LOAD FEE STATEMENT =================
+// ================= LOAD FEE STATEMENT (DYNAMIC TYPES) =================
 function loadFeeStatement() {
+
   const container = document.getElementById("feeStatement");
+
   const year = document.getElementById("feeYear").value;
   const grade = document.getElementById("feeGrade").value;
-  const studentId = document.getElementById("feeStudent").value; // selected student
+  const studentId = document.getElementById("feeStudent").value;
 
   if (!year) {
     container.innerHTML = "<p>Please select a year</p>";
@@ -13641,41 +13644,67 @@ function loadFeeStatement() {
   const feeRef = ref(db, "fees/" + year);
 
   onValue(feeRef, snapshot => {
+
     const data = snapshot.val();
 
     if (!data) {
-      container.innerHTML = "<p>No fee records found for this year</p>";
-      allFeeData = {};
+      container.innerHTML = "<p>No fee records found</p>";
       allFeeTypes = [];
+      allFeeData = {};
       return;
     }
 
     allFeeData = data;
 
-    // Collect fee types
+    // ===============================
+    // 🔥 DETECT ONLY RECORDED FEE TYPES
+    // ===============================
+
     const feeTypesSet = new Set();
+
     Object.values(data).forEach(student => {
-      if (student.fees) Object.keys(student.fees).forEach(type => feeTypesSet.add(type));
+
+      Object.entries(student.fees || {}).forEach(([type, amount]) => {
+
+        // only include if recorded
+        if (amount > 0) {
+          feeTypesSet.add(type);
+        }
+
+      });
+
     });
+
     allFeeTypes = Array.from(feeTypesSet);
 
-    // Filter by grade first
+
+    // ===============================
+    // FILTER DATA
+    // ===============================
+
     let filteredData = grade
       ? Object.fromEntries(
-          Object.entries(data).filter(([id, student]) => student.grade === grade)
+          Object.entries(data).filter(([id, s]) =>
+            s.grade === grade
+          )
         )
       : data;
-// After filtering
-if (studentId) {
-  filteredData = filteredData[studentId] ? { [studentId]: filteredData[studentId] } : {};
-}
 
-// ✅ SAVE FILTERED DATA HERE
-filteredFeeData = filteredData;
 
-renderFeeTable("", filteredData);
+    if (studentId) {
+
+      filteredData = filteredData[studentId]
+        ? { [studentId]: filteredData[studentId] }
+        : {};
+
+    }
+
+    filteredFeeData = filteredData;
+
+    renderFeeTable("", filteredData);
 
   });
+
 }
 document.getElementById("payFeeBtn").onclick = async () => {
   const studentId = document.getElementById("feeStudent").value;
@@ -13783,8 +13812,10 @@ function renderFeeTable(filterText = "", feeData = allFeeData) {
   let grandTotalPaid = 0;
   let grandTotalBalance = 0;
 
-  const expectedTotal = getExpectedTotal ? getExpectedTotal() :
-    Object.values(feeStructure).reduce((a, b) => a + b, 0);
+ // only calculate expected total from recorded fee types
+const expectedTotal = allFeeTypes.reduce((sum, type) => {
+  return sum + (feeStructure[type] || 0);
+}, 0);
 
   // ================= ROWS =================
   Object.entries(feeData).forEach(([id, student]) => {
@@ -14701,8 +14732,9 @@ function updateProgressRing(element, percent) {
 
 function loadFeeDashboard(feeData) {
 
-  const expectedPerStudent = Object.values(feeStructure || {})
-    .reduce((a, b) => a + b, 0);
+const expectedPerStudent = allFeeTypes.reduce((sum, type) => {
+  return sum + (feeStructure[type] || 0);
+}, 0);
 
   let studentCount = Object.keys(feeData || {}).length;
   let totalCollected = 0;

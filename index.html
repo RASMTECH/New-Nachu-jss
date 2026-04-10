@@ -2202,6 +2202,33 @@ button[onclick^="show"] {
   background-color: #fff3cd; /* light yellow */
   font-weight: bold;
 }
+#logoutBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 30px;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+#logoutBtn:hover {
+  background: #c0392b;
+  transform: scale(1.05);
+}
+
+.hidden {
+  display: none;
+}
 </style>
 
 </head>
@@ -2318,7 +2345,9 @@ button[onclick^="show"] {
   📊 School Dashboard
 </h2>
 
-
+<button id="logoutBtn" onclick="logout()" class="btn-red hidden">
+  <i class="fas fa-sign-out-alt"></i> Logout
+</button>
 
 <!-- ================= DASHBOARD CARDS ================= -->
 <div class="dashboard-container" style="display:grid; gap:20px; margin-bottom:40px;">
@@ -4001,31 +4030,29 @@ Accuracy and Efficiency in Every Click.</span>
 
   <h3 class="yellow-title">🏆 Top 5 Students Overall</h3>
 
-  <div 
-    id="topStudentsList"
-    class="dash-card"
-    style="
-      margin-top:10px;
-      background:
-        url('https://i.imgur.com/FideXgi.jpeg')
-        center/cover no-repeat;
-      border-left:6px solid #673ab7;
-      position:relative;
-      color:#fff;
-    ">
+ <div 
+  id="topStudentsList"
+  class="dash-card"
+  style="
+    margin-top:10px;
+    background:
+      url('https://i.imgur.com/cVewWR4.jpeg')
+      center/cover no-repeat;
+    border-left:6px solid #673ab7;
+    position:relative;
+  ">
 
-    <!-- Optional overlay for readability -->
-    <div style="
-      position:absolute;
-      inset:0;
-      background: rgba(0,0,0,0.25);
-      border-radius:12px;
-    "></div>
+  <div style="
+    position:absolute;
+    inset:0;
+    background: rgba(0,0,0,0.35);
+  "></div>
 
-    <!-- Card Content -->
-    <div style="position:relative; z-index:2; padding:15px;">
-      <!-- Top students list content will go here -->
-    </div>
+  <!-- ✅ THIS is where JS will inject -->
+  <div id="topStudentsContent" style="position:relative; z-index:2; padding:15px; color:#fff;">
+  </div>
+
+
 
   </div>
 
@@ -5000,62 +5027,72 @@ function generateTermComparison() {
     }
   });
 }
-let topStudentsGlobal = []; // 🌍 store globally
-let currentExamPeriod = ""; // 🌍 GLOBAL
+let topStudentsGlobal = [];
+let currentExamPeriod = "";
+
 function calculateTopStudents() {
 
   const studentTotals = [];
 
   allLearners.forEach(l => {
-    if (!l.marks) return;
 
-    let grandTotal = 0;
-    let count = 0;
+    const exam = l.marks?.[currentExamPeriod];
+    if (!exam) return;
 
-    Object.values(l.marks).forEach(exam => {
+    const total =
+      (parseFloat(exam.eng) || 0) +
+      (parseFloat(exam.math) || 0) +
+      (parseFloat(exam.preTech) || 0) +
+      (parseFloat(exam.kiswahili) || 0) +
+      (parseFloat(exam.science) || 0) +
+      (parseFloat(exam.social) || 0) +
+      (parseFloat(exam.agriculture) || 0) +
+      (parseFloat(exam.cre) || 0) +
+      (parseFloat(exam.creativeArt) || 0);
 
-      const total =
-        (parseFloat(exam.eng) || 0) +
-        (parseFloat(exam.math) || 0) +
-        (parseFloat(exam.preTech) || 0) +
-        (parseFloat(exam.kiswahili) || 0) +
-        (parseFloat(exam.science) || 0) +
-        (parseFloat(exam.social) || 0) +
-        (parseFloat(exam.agriculture) || 0) +
-        (parseFloat(exam.cre) || 0) +
-        (parseFloat(exam.creativeArt) || 0);
-
-      grandTotal += total;
-      count++;
+    studentTotals.push({
+      name: l.name,
+      grade: l.grade,
+      total: total,
+      level: getPerformanceLevel(total)
     });
 
-   if (count > 0) {
-      const avg = grandTotal / count;
-
-      studentTotals.push({
-        name: l.name,
-        grade: l.grade,
-        average: avg,
-        level: getPerformanceLevel(avg) // ✅ FIXED HERE
-      });
-    }
   });
 
-
-  studentTotals.sort((a, b) => b.average - a.average);
+  // sort highest first
+  studentTotals.sort((a, b) => b.total - a.total);
 
   const top5 = studentTotals.slice(0, 5);
 
-  topStudentsGlobal = top5; // ✅ SAVE HERE
+  topStudentsGlobal = top5;
 
-  const container = document.getElementById("topStudentsList");
+  const container = document.getElementById("topStudentsContent");
   if (!container) return;
 
+  const colors = [
+    "#4CAF50", // 1st - green
+    "#2196F3", // 2nd - blue
+    "#FF9800", // 3rd - orange
+    "#9C27B0", // 4th - purple
+    "#F44336"  // 5th - red
+  ];
+
  container.innerHTML = top5.length
-  ? top5.map((s, i) =>
-      `${i + 1}. ${s.name} (${s.grade}) - ${s.average.toFixed(1)} (${s.level})`
-    ).join("<br>")
-  : "No Exam Data Available";
+  ? top5.map((s, i) => `
+      <div style="
+        padding:10px;
+        margin:6px 0;
+        border-left:6px solid ${colors[i] || "#607D8B"};
+        background: rgba(255,255,255,0.9);
+        border-radius:8px;
+        font-weight:600;
+        color:#000;
+        box-shadow:0 2px 6px rgba(0,0,0,0.15);
+      ">
+        ${i + 1}. ${s.name} (${s.grade}) - ${s.total} (${s.level})
+      </div>
+    `).join("")
+  : "<span style='color:#fff;'>No Exam Data Available</span>";
 }
 window.generateCertificates = function () {
 
@@ -5338,91 +5375,94 @@ window.generateCertificates = function () {
     </div>
   `;
 
-  topStudentsGlobal.forEach((s, i) => {
+ topStudentsGlobal.forEach((s, i) => {
 
-    const position = i + 1;
-    const yearNow = new Date().getFullYear();
+  const position = i + 1;
+  const yearNow = new Date().getFullYear();
 
-    const serial = `CERT-${yearNow}-${String(i + 1).padStart(3, '0')}-${Date.now().toString().slice(-4)}`;
+  const serial = `CERT-${yearNow}-${String(i + 1).padStart(3, '0')}-${Date.now().toString().slice(-4)}`;
 
-    const qrData = encodeURIComponent(
-      `NAME:${s.name}|GRADE:${s.grade}|POS:${position}|SERIAL:${serial}|SCHOOL:${schoolName}`
-    );
+  const qrData = encodeURIComponent(
+    `NAME:${s.name}|GRADE:${s.grade}|POS:${position}|SERIAL:${serial}|SCHOOL:${schoolName}`
+  );
 
-    content += `
-      <div class="page">
-        <div class="cert">
+  content += `
+    <div class="page">
+      <div class="cert">
 
-          <div class="watermark"></div>
+        <div class="watermark"></div>
 
-          <div class="excellence-watermark">
-            EXCELLENCE EXCELLENCE EXCELLENCE EXCELLENCE EXCELLENCE
+        <div class="excellence-watermark">
+          EXCELLENCE EXCELLENCE EXCELLENCE EXCELLENCE EXCELLENCE
+        </div>
+
+        <div class="content">
+
+          <div class="top-logos">
+            <img src="https://i.imgur.com/VSAh48K.jpeg">
+
+            <div class="rank-center rank-${position}">
+              🏅 ${position === 1 ? "1ST (GOLD)" :
+                  position === 2 ? "2ND (SILVER)" :
+                  position === 3 ? "3RD (BRONZE)" :
+                  position + "TH POSITION"}
+            </div>
+
+            <img src="https://i.imgur.com/91hfOYL.png">
           </div>
 
-          <div class="content">
+          <div class="school">${schoolName}</div>
 
-            <div class="top-logos">
-              <img src="https://i.imgur.com/VSAh48K.jpeg">
+          <h1>Certificate of Excellence</h1>
 
-              <div class="rank-center rank-${position}">
-                🏅 ${position === 1 ? "1ST (GOLD)" :
-                    position === 2 ? "2ND (SILVER)" :
-                    position === 3 ? "3RD (BRONZE)" :
-                    position + "TH POSITION"}
-              </div>
+          <div class="details">This certificate is proudly presented to</div>
 
-              <img src="https://i.imgur.com/91hfOYL.png">
-            </div>
+          <div class="name">${s.name}</div>
 
-            <div class="school">${schoolName}</div>
-
-            <h1>Certificate of Excellence</h1>
-
-            <div class="details">This certificate is proudly presented to</div>
-
-            <div class="name">${s.name}</div>
-
-            <div class="details">
-              Grade ${s.grade}<br><br>
-              Position: <b>${position}</b><br>
-              Average Score: <b>${s.average.toFixed(1)}</b><br>
-Performance Level: <b>${s.level || getPerformanceLevel(s.average)}</b><br><br>
-              ${examPeriod}
-            </div>
-
-            <div class="serial">🧾 Serial No: ${serial}</div>
-
-            <div class="qr">
-              <img src="https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${qrData}">
-            </div>
-
-            <div class="seal">🏅 OFFICIAL SEAL</div>
-
-      <div class="footer">
-  <div>____________________<br>Class Teacher</div>
-  <div>____________________<br>Principal</div>
-</div>
-
-<div class="congrats-banner">
-  CONGRATULATIONS
-</div>
-
-<div class="system-footer">
-  Generated by RASM School Management System Kenya
-</div>
-
+          <div class="details">
+            Grade ${s.grade}<br><br>
+            Position: <b>${position}</b><br>
+            Total Score: <b>${s.total}</b><br>
+            Performance Level: <b>${s.level || getPerformanceLevel(s.total)}</b><br><br>
+            ${examPeriod}
           </div>
+
+          <div class="serial">🧾 Serial No: ${serial}</div>
+
+          <div class="qr">
+            <img src="https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${qrData}">
+          </div>
+
+          <div class="seal">🏅 OFFICIAL SEAL</div>
+
+          <div class="footer">
+            <div>____________________<br>Class Teacher</div>
+            <div>____________________<br>Principal</div>
+          </div>
+
+          <div class="congrats-banner">
+            CONGRATULATIONS
+          </div>
+
+          <div class="system-footer">
+            Generated by RASM School Management System Kenya
+          </div>
+
         </div>
       </div>
-    `;
-  });
+    </div>
+  `;
+});
 
   content += `</body></html>`;
 
   win.document.write(content);
   win.document.close();
 };
+let topGradeGlobal = null;
+
 function calculateTopGrade() {
+
   const selectedExam = document.getElementById("marksExamPeriodSelect")?.value;
   const container = document.getElementById("topGrade");
   if (!container) return;
@@ -5448,7 +5488,9 @@ function calculateTopGrade() {
 
   allLearners.forEach(l => {
     if (!l.marks || !l.marks[selectedExam]) return;
+
     const exam = l.marks[selectedExam];
+
     const total =
       (parseFloat(exam.eng) || 0) +
       (parseFloat(exam.math) || 0) +
@@ -5461,6 +5503,7 @@ function calculateTopGrade() {
       (parseFloat(exam.creativeArt) || 0);
 
     const grade = l.grade;
+
     gradeTotals[grade] = (gradeTotals[grade] || 0) + total;
     gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
   });
@@ -5477,21 +5520,23 @@ function calculateTopGrade() {
     };
   });
 
-  gradeAverages.sort((a, b) => b.average - a.average);
-
   if (!gradeAverages.length) {
     container.innerHTML = "<em>No Exam Data</em>";
     return;
   }
 
+  gradeAverages.sort((a, b) => b.average - a.average);
+
+  // 🏆 STORE TOP GRADE
+  topGradeGlobal = gradeAverages[0];
+
   const maxAvg = gradeAverages[0].average;
 
-  container.innerHTML = gradeAverages.map((g, index) => {
-    let badgeColor = "#bbb";
-    if (index === 0) badgeColor = "#FFD700"; // Gold
-    else if (index === 1) badgeColor = "#C0C0C0"; // Silver
-    else if (index === 2) badgeColor = "#CD7F32"; // Bronze
+  const colors = ["#FFD700", "#C0C0C0", "#CD7F32"];
 
+  container.innerHTML = gradeAverages.map((g, index) => {
+
+    const badgeColor = colors[index] || "#bbb";
     const progressWidth = ((g.average / maxAvg) * 100).toFixed(1);
 
     return `
@@ -5518,11 +5563,13 @@ function calculateTopGrade() {
             font-weight:bold;
             color:#fff;
           ">${index + 1}</div>
+
           <div>
             <strong>${g.grade}</strong> - ${g.average.toFixed(1)} Avg<br>
             <small style="color:#555;">${g.level} - ${g.description}</small>
           </div>
         </div>
+
         <div style="
           flex:1;
           height:10px;
@@ -5540,8 +5587,300 @@ function calculateTopGrade() {
         </div>
       </div>
     `;
-  }).join("");
+  }).join("") + `
+
+  <!-- 🏆 CERTIFICATE BUTTON -->
+  <div style="text-align:center; margin-top:15px;">
+    <button onclick="generateGradeCertificate()" style="
+      padding:12px 20px;
+      background: linear-gradient(45deg, #b8860b, #ffd700);
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      font-weight:bold;
+      cursor:pointer;
+      box-shadow:0 3px 8px rgba(0,0,0,0.2);
+    ">
+      🏆 Generate Top Grade Certificate
+    </button>
+  </div>
+  `;
 }
+ 
+window.generateGradeCertificate = function () {
+
+  if (!topGradeGlobal) {
+    Swal.fire({
+      icon: "warning",
+      title: "No Grade Data",
+      text: "Please calculate top grade first."
+    });
+    return;
+  }
+
+  const schoolName = document.getElementById("schoolName")?.value || "NACHU JUNIOR SCHOOL";
+  const examPeriod = document.getElementById("marksExamPeriodSelect")?.value || "Exam Period";
+
+  const win = window.open("", "_blank");
+  if (!win) {
+    alert("Popup blocked!");
+    return;
+  }
+
+  const yearNow = new Date().getFullYear();
+  const serial = `GRADE-CERT-${yearNow}-${Date.now().toString().slice(-5)}`;
+
+  let content = `
+  <html>
+  <head>
+    <title>Top Grade Certificate</title>
+
+    <style>
+      @page { size: A4; margin: 0; }
+
+      body {
+        margin: 0;
+        font-family: Georgia, serif;
+        background: #fff;
+      }
+
+      .toolbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: #111;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+        z-index: 999;
+      }
+
+      .toolbar button {
+        padding: 10px 15px;
+        margin: 0 5px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .print-btn { background: #28a745; color: white; }
+      .close-btn { background: #dc3545; color: white; }
+
+      .page {
+        width: 210mm;
+        height: 297mm;
+        padding: 25mm;
+        box-sizing: border-box;
+        position: relative;
+      }
+
+      .cert {
+        width: 100%;
+        height: 100%;
+        border: 12px solid #b8860b;
+        border-radius: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* 🏛️ WATERMARK */
+      .watermark {
+        position: absolute;
+        inset: 0;
+        background:
+          url('https://i.imgur.com/91hfOYL.png') center no-repeat;
+        background-size: 400px;
+        opacity: 0.08;
+        z-index: 0;
+      }
+
+      /* HEADER */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 30px;
+      }
+
+      .header img {
+        width: 90px;
+      }
+
+      .school-title {
+        text-align: center;
+        flex: 1;
+        font-size: 22px;
+        font-weight: bold;
+        color: #003366;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .school-sub {
+        font-size: 12px;
+        color: #666;
+        margin-top: 4px;
+        font-weight: normal;
+      }
+
+      .content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #b8860b;
+        font-size: 38px;
+        margin: 15px 0;
+      }
+
+      .grade {
+        font-size: 42px;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+
+      .details {
+        font-size: 18px;
+        line-height: 1.6;
+      }
+
+      .seal {
+        position: absolute;
+        bottom: 120px;
+        right: 40px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffd700, #b8860b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .serial {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #444;
+      }
+
+      .footer {
+        margin-top: 60px;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 40px;
+        font-size: 16px;
+      }
+
+      /* 🎉 CONGRATULATIONS */
+      .congrats {
+        margin-top: 35px;
+        text-align: center;
+        font-size: 32px;
+        font-weight: 900;
+        color: #b8860b;
+        letter-spacing: 3px;
+      }
+
+      .congrats-line {
+        width: 60%;
+        height: 3px;
+        margin: 10px auto;
+        background: linear-gradient(90deg, transparent, #b8860b, transparent);
+      }
+
+      .congrats-sub {
+        font-size: 14px;
+        color: #555;
+        margin-top: 5px;
+      }
+
+      @media print {
+        .toolbar { display: none; }
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <div class="toolbar">
+      <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+      <button class="close-btn" onclick="window.close()">❌ Close</button>
+    </div>
+  `;
+
+  content += `
+  <div class="page">
+    <div class="cert">
+
+      <div class="watermark"></div>
+
+      <!-- 🏫 HEADER -->
+      <div class="header">
+        <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo">
+
+        <div>
+          <div class="school-title">${schoolName}</div>
+          <div class="school-sub">Excellence • Discipline • Achievement</div>
+        </div>
+
+        <img src="https://i.imgur.com/91hfOYL.png" alt="Government Logo">
+      </div>
+
+      <div class="content">
+
+        <h1>TOP GRADE AWARD</h1>
+
+        <div>This certificate is proudly awarded to</div>
+
+        <div class="grade">${topGradeGlobal.grade}</div>
+
+        <div class="details">
+          Average Score: <b>${topGradeGlobal.average.toFixed(1)}</b><br>
+          Level: <b>${topGradeGlobal.level}</b><br><br>
+          ${topGradeGlobal.description}
+        </div>
+
+        <div style="margin-top:20px;">
+          For outstanding academic performance in<br>
+          <b>${schoolName}</b><br>
+          ${examPeriod}
+        </div>
+
+        <div class="serial">🧾 Serial: ${serial}</div>
+
+        <!-- 🎉 CONGRATULATIONS -->
+        <div class="congrats">🎉 CONGRATULATIONS 🎉</div>
+        <div class="congrats-line"></div>
+        <div class="congrats-sub">Your Excellence Has Been Officially Recognized</div>
+
+      </div>
+
+      <div class="seal">OFFICIAL SEAL</div>
+
+      <div class="footer">
+        <div>____________________<br>Class Teacher</div>
+        <div>____________________<br>Principal</div>
+      </div>
+
+    </div>
+  </div>
+  `;
+
+  content += `
+  </body>
+  </html>
+  `;
+
+  win.document.write(content);
+  win.document.close();
+};
 // ================= LOADING SPINNER =================
 function hideLoadingSpinner() {
   if (!spinnerContainer) return;
@@ -6422,7 +6761,7 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
     populateGradeSelectors(grades);
 
     if (isAdminLoggedIn) enableMarksEditing();
-
+ calculateTopStudents();
     updateMarksCoverage(totalCount, learnersCount);
 
     Swal.close();
@@ -12075,18 +12414,20 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
     if (profileNameEl) {
       profileNameEl.textContent = usernameToShow;
     }
+// ==============================
+// 💾 SAVE LOGIN (SESSION + EXPIRY)
+// ==============================
+const userData = {
+  username: usernameToShow,
+  role: role,
+  isAdmin: isAdmin
+};
 
-    // ==============================
-    // 💾 SAVE LOGIN (LOCAL STORAGE)
-    // ==============================
-    localStorage.setItem("loggedInUser", JSON.stringify({
-      username: usernameToShow,
-      role: role,
-      isAdmin: isAdmin
-    }));
+// Save using session function (with expiry)
+saveLoginSession(userData);
 
-    // Admin flag
-    if (isAdmin) isAdminLoggedIn = true;
+// Admin flag
+if (isAdmin) isAdminLoggedIn = true;
 
     // Hide login form, show main content
     document.getElementById("loginSection").style.display = "none";
@@ -14826,28 +15167,85 @@ function updateSchoolStatus() {
 }
 updateSchoolStatus();
 setInterval(updateSchoolStatus, 60000);
+// ===============================
+// 🔐 PAGE LOAD (SESSION CHECK)
+// ===============================
 window.onload = function () {
-  const savedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+  const savedSession = JSON.parse(localStorage.getItem("loggedInUser"));
+  const logoutBtn = document.getElementById("logoutBtn");
 
-  if (savedUser) {
+  // ✅ Check if session exists
+  if (savedSession && savedSession.user && savedSession.expires) {
+
+    // ⏰ Check expiry
+    if (Date.now() > savedSession.expires) {
+      logout();
+      return;
+    }
+
+    const user = savedSession.user;
+
+    // ✅ Show main content
     document.getElementById("loginSection").style.display = "none";
     document.getElementById("mainContent").style.display = "block";
 
-    showUserBadge(savedUser.username, savedUser.role, savedUser.isAdmin);
-    updateGreeting(savedUser.username);
+    // ✅ Show floating logout button
+    if (logoutBtn) logoutBtn.classList.remove("hidden");
 
-    // Update profile name
-    document.getElementById("profileName").textContent = savedUser.username;
+    // ✅ Restore user info
+    showUserBadge(user.username, user.role, user.isAdmin);
+    updateGreeting(user.username);
+
+    document.getElementById("profileName").textContent = user.username;
+
+    // ⏳ Auto logout after remaining time
+    const remainingTime = savedSession.expires - Date.now();
+    setTimeout(() => {
+      logout();
+    }, remainingTime);
+
+  } else {
+    // ❌ No session → force login
+    document.getElementById("loginSection").style.display = "block";
+    document.getElementById("mainContent").style.display = "none";
+
+    // ❌ Hide logout button
+    if (logoutBtn) logoutBtn.classList.add("hidden");
   }
 };
 
+
+// ===============================
+// 🔓 LOGIN (SAVE SESSION)
+// ===============================
+function saveLoginSession(userData) {
+  const session = {
+    user: userData,
+    expires: Date.now() + (60 * 1000) // ⏰ 1 minute expiry
+  };
+
+  localStorage.setItem("loggedInUser", JSON.stringify(session));
+
+  // ✅ Show logout button immediately after login
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) logoutBtn.classList.remove("hidden");
+}
+
+
+// ===============================
+// 🚪 LOGOUT FUNCTION
+// ===============================
 function logout() {
-  // 🧹 Clear storage
+  // 🧹 Clear session
   localStorage.removeItem("loggedInUser");
 
-  // 🧹 Reset UI sections
+  // 🧹 Reset UI
   document.getElementById("loginSection").style.display = "block";
   document.getElementById("mainContent").style.display = "none";
+
+  // ❌ Hide floating logout button
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) logoutBtn.classList.add("hidden");
 
   // 🧹 Reset badge
   const badge = document.getElementById("userBadge");
@@ -14864,11 +15262,26 @@ function logout() {
   const menu = document.getElementById("profileMenu");
   if (menu) menu.style.display = "none";
 
-  // 🧹 Reset online status
-  setOfflineStatus();
+  // 🧹 Offline status
+  if (typeof setOfflineStatus === "function") {
+    setOfflineStatus();
+  }
 
-  // Optional reload for clean state
-  location.reload();
+  // 🔔 Optional alert
+  if (typeof Swal !== "undefined") {
+    Swal.fire({
+      icon: "success",
+      title: "Logged Out",
+      text: "Session ended.",
+      timer: 1500,
+      showConfirmButton: false
+    });
+  }
+
+  // 🔄 Clean reload
+  setTimeout(() => {
+    location.reload();
+  }, 1500);
 }
 // 🟢 Set online
 function setOnlineStatus() {

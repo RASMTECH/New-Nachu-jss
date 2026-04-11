@@ -2757,9 +2757,7 @@ button[onclick^="show"] {
       🖨 Print Statement
     </button>
 
-    <button onclick="showOutstanding()" class="action-btn warning">
-      ⚠ Outstanding
-    </button>
+  
   </div>
 
   <!-- DASHBOARD -->
@@ -4934,36 +4932,48 @@ const PAGE_SIZE = 250;
 let countdownInterval = null;
 let seconds = 0;
 
-// ================= LOADING SPINNER (SWEETALERT2) =================
+// ================= MODERN LOADING SPINNER (DOTS + OK BUTTON) =================
 function showLoadingSpinner() {
-  let seconds = 0;
 
   Swal.fire({
-    title: "💃Rasm Technologies Kenya 💃...",
-    html: `Please wait <b>${seconds}</b>s`,
+    title: "Rasm Technologies Kenya",
+    html: `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+
+        <div style="display:flex;gap:6px;margin-top:10px;">
+          <span style="width:10px;height:10px;background:#4285f4;border-radius:50%;animation:bounce 1s infinite;"></span>
+          <span style="width:10px;height:10px;background:#34a853;border-radius:50%;animation:bounce 1s infinite 0.2s;"></span>
+          <span style="width:10px;height:10px;background:#fbbc05;border-radius:50%;animation:bounce 1s infinite 0.4s;"></span>
+          <span style="width:10px;height:10px;background:#ea4335;border-radius:50%;animation:bounce 1s infinite 0.6s;"></span>
+        </div>
+
+        <div style="font-size:14px;color:#555;">
+          Please wait...
+        </div>
+
+      </div>
+
+      <style>
+        @keyframes bounce {
+          0%, 80%, 100% { transform: scale(0.7); opacity:0.5; }
+          40% { transform: scale(1.3); opacity:1; }
+        }
+      </style>
+    `,
+
     allowOutsideClick: false,
     allowEscapeKey: false,
-    didOpen: () => {
-      Swal.showLoading();
 
+    // ✅ ADD OK BUTTON
+    showConfirmButton: true,
+    confirmButtonText: "OK",
+    confirmButtonColor: "#3085d6",
+
+    didOpen: () => {
       // clear table if needed
       if (typeof tableBody !== "undefined") {
         tableBody.innerHTML = "";
       }
-
-      // start timer
-      const timer = setInterval(() => {
-        seconds++;
-        Swal.update({
-          html: `Please wait <b>${seconds}</b>s`
-        });
-      }, 1000);
-
-      // store interval globally so you can stop it later
-      window.loadingInterval = timer;
-    },
-    willClose: () => {
-      clearInterval(window.loadingInterval);
     }
   });
 }
@@ -5097,26 +5107,42 @@ function calculateTopStudents() {
 window.generateCertificates = function () {
 
   if (!topStudentsGlobal || topStudentsGlobal.length === 0) {
+
     Swal.fire({
       icon: "warning",
       title: "Generate Report First",
       text: "You need to generate top students report before creating certificates.",
-      background: "#fff",
-      color: "#333",
       confirmButtonColor: "#b8860b"
     });
-    return; // ✅ IMPORTANT FIX (prevents function continuing)
+
+    return;
   }
 
+  // ==============================
+  // 🔹 LOADING ALERT (NEW)
+  // ==============================
+  Swal.fire({
+    title: "Generating Certificates...",
+    text: "Please wait while we prepare all certificates.",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
 
   const schoolName = document.getElementById("schoolName")?.value || "NACHU JUNIOR  SCHOOL";
   const examPeriod = currentExamPeriod || "Exam Period";
 
-
   const win = window.open("", "_blank");
 
   if (!win) {
-    alert("🚫 Popup blocked! Please allow popups.");
+
+    Swal.fire({
+      icon: "error",
+      title: "Popup Blocked!",
+      text: "Please allow popups to generate certificates."
+    });
+
     return;
   }
 
@@ -5199,7 +5225,6 @@ window.generateCertificates = function () {
         pointer-events: none;
       }
 
-      /* 🏛️ WATERMARK */
       .watermark {
         position: absolute;
         inset: 0;
@@ -5333,37 +5358,35 @@ window.generateCertificates = function () {
         body { margin: 0 !important; }
         .page { box-shadow: none; }
       }
-/* 🎉 CONGRATULATIONS BANNER */
-.congrats-banner {
-  margin-top: 25px;
-  text-align: center;
-  font-size: 28px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  color: #b8860b;
-  text-transform: uppercase;
-  position: relative;
-}
 
-/* decorative lines */
-.congrats-banner::before,
-.congrats-banner::after {
-  content: "";
-  display: inline-block;
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, #b8860b, transparent);
-  margin: 0 12px;
-  vertical-align: middle;
-}
-.system-footer {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 12px;
-  color: #666;
-  font-style: italic;
-  letter-spacing: 1px;
-}
+      .congrats-banner {
+        margin-top: 25px;
+        text-align: center;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 3px;
+        color: #b8860b;
+        text-transform: uppercase;
+      }
+
+      .congrats-banner::before,
+      .congrats-banner::after {
+        content: "";
+        display: inline-block;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #b8860b, transparent);
+        margin: 0 12px;
+        vertical-align: middle;
+      }
+
+      .system-footer {
+        margin-top: 18px;
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+        font-style: italic;
+      }
     </style>
   </head>
 
@@ -5375,89 +5398,101 @@ window.generateCertificates = function () {
     </div>
   `;
 
- topStudentsGlobal.forEach((s, i) => {
+  topStudentsGlobal.forEach((s, i) => {
 
-  const position = i + 1;
-  const yearNow = new Date().getFullYear();
+    const position = i + 1;
+    const yearNow = new Date().getFullYear();
 
-  const serial = `CERT-${yearNow}-${String(i + 1).padStart(3, '0')}-${Date.now().toString().slice(-4)}`;
+    const serial = `CERT-${yearNow}-${String(i + 1).padStart(3, '0')}-${Date.now().toString().slice(-4)}`;
 
-  const qrData = encodeURIComponent(
-    `NAME:${s.name}|GRADE:${s.grade}|POS:${position}|SERIAL:${serial}|SCHOOL:${schoolName}`
-  );
+    const qrData = encodeURIComponent(
+      `NAME:${s.name}|GRADE:${s.grade}|POS:${position}|SERIAL:${serial}|SCHOOL:${schoolName}`
+    );
 
-  content += `
-    <div class="page">
-      <div class="cert">
+    content += `
+      <div class="page">
+        <div class="cert">
 
-        <div class="watermark"></div>
+          <div class="watermark"></div>
 
-        <div class="excellence-watermark">
-          EXCELLENCE EXCELLENCE EXCELLENCE EXCELLENCE EXCELLENCE
-        </div>
+          <div class="excellence-watermark">
+            EXCELLENCE EXCELLENCE EXCELLENCE EXCELLENCE EXCELLENCE
+          </div>
 
-        <div class="content">
+          <div class="content">
 
-          <div class="top-logos">
-            <img src="https://i.imgur.com/VSAh48K.jpeg">
+            <div class="top-logos">
+              <img src="https://i.imgur.com/VSAh48K.jpeg">
 
-            <div class="rank-center rank-${position}">
-              🏅 ${position === 1 ? "1ST (GOLD)" :
-                  position === 2 ? "2ND (SILVER)" :
-                  position === 3 ? "3RD (BRONZE)" :
-                  position + "TH POSITION"}
+              <div class="rank-center rank-${position}">
+                🏅 ${position === 1 ? "1ST (GOLD)" :
+                    position === 2 ? "2ND (SILVER)" :
+                    position === 3 ? "3RD (BRONZE)" :
+                    position + "TH POSITION"}
+              </div>
+
+              <img src="https://i.imgur.com/91hfOYL.png">
             </div>
 
-            <img src="https://i.imgur.com/91hfOYL.png">
+            <div class="school">${schoolName}</div>
+
+            <h1>Certificate of Excellence</h1>
+
+            <div class="details">This certificate is proudly presented to</div>
+
+            <div class="name">${s.name}</div>
+
+            <div class="details">
+              Grade ${s.grade}<br><br>
+              Position: <b>${position}</b><br>
+              Total Score: <b>${s.total}</b><br>
+              Performance Level: <b>${s.level || getPerformanceLevel(s.total)}</b><br><br>
+              ${examPeriod}
+            </div>
+
+            <div class="serial">🧾 Serial No: ${serial}</div>
+
+            <div class="qr">
+              <img src="https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${qrData}">
+            </div>
+
+            <div class="seal">🏅 OFFICIAL SEAL</div>
+
+            <div class="footer">
+              <div>____________________<br>Class Teacher</div>
+              <div>____________________<br>Principal</div>
+            </div>
+
+            <div class="congrats-banner">
+              CONGRATULATIONS
+            </div>
+
+            <div class="system-footer">
+              Generated by RASM School Management System Kenya
+            </div>
+
           </div>
-
-          <div class="school">${schoolName}</div>
-
-          <h1>Certificate of Excellence</h1>
-
-          <div class="details">This certificate is proudly presented to</div>
-
-          <div class="name">${s.name}</div>
-
-          <div class="details">
-            Grade ${s.grade}<br><br>
-            Position: <b>${position}</b><br>
-            Total Score: <b>${s.total}</b><br>
-            Performance Level: <b>${s.level || getPerformanceLevel(s.total)}</b><br><br>
-            ${examPeriod}
-          </div>
-
-          <div class="serial">🧾 Serial No: ${serial}</div>
-
-          <div class="qr">
-            <img src="https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${qrData}">
-          </div>
-
-          <div class="seal">🏅 OFFICIAL SEAL</div>
-
-          <div class="footer">
-            <div>____________________<br>Class Teacher</div>
-            <div>____________________<br>Principal</div>
-          </div>
-
-          <div class="congrats-banner">
-            CONGRATULATIONS
-          </div>
-
-          <div class="system-footer">
-            Generated by RASM School Management System Kenya
-          </div>
-
         </div>
       </div>
-    </div>
-  `;
-});
+    `;
+  });
 
   content += `</body></html>`;
 
   win.document.write(content);
   win.document.close();
+
+  // ==============================
+  // 🔹 SUCCESS ALERT (NEW)
+  // ==============================
+  Swal.fire({
+    icon: "success",
+    title: "Certificates Ready",
+    text: "All certificates have been generated successfully!",
+    timer: 4000,
+    showConfirmButton: false
+  });
+
 };
 let topGradeGlobal = null;
 
@@ -5618,268 +5653,281 @@ window.generateGradeCertificate = function () {
     return;
   }
 
+  // ==============================
+  // 🔹 LOADING ALERT (NEW)
+  // ==============================
+  Swal.fire({
+    title: "Generating Certificate...",
+    text: "Please wait while we prepare the document.",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
   const schoolName = document.getElementById("schoolName")?.value || "NACHU JUNIOR SCHOOL";
   const examPeriod = document.getElementById("marksExamPeriodSelect")?.value || "Exam Period";
 
-  const win = window.open("", "_blank");
-  if (!win) {
-    alert("Popup blocked!");
-    return;
-  }
+  setTimeout(() => {
 
-  const yearNow = new Date().getFullYear();
-  const serial = `GRADE-CERT-${yearNow}-${Date.now().toString().slice(-5)}`;
+    const win = window.open("", "_blank");
 
-  let content = `
-  <html>
-  <head>
-    <title>Top Grade Certificate</title>
+    if (!win) {
+      Swal.fire({
+        icon: "error",
+        title: "Popup Blocked",
+        text: "Please allow popups to generate certificate."
+      });
+      return;
+    }
 
-    <style>
-      @page { size: A4; margin: 0; }
+    const yearNow = new Date().getFullYear();
+    const serial = `GRADE-CERT-${yearNow}-${Date.now().toString().slice(-5)}`;
 
-      body {
-        margin: 0;
-        font-family: Georgia, serif;
-        background: #fff;
-      }
+    let content = `
+    <html>
+    <head>
+      <title>Top Grade Certificate</title>
 
-      .toolbar {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        background: #111;
-        color: #fff;
-        padding: 10px;
-        text-align: center;
-        z-index: 999;
-      }
+      <style>
+        @page { size: A4; margin: 0; }
 
-      .toolbar button {
-        padding: 10px 15px;
-        margin: 0 5px;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-      }
+        body {
+          margin: 0;
+          font-family: Georgia, serif;
+          background: #fff;
+        }
 
-      .print-btn { background: #28a745; color: white; }
-      .close-btn { background: #dc3545; color: white; }
+        .toolbar {
+          position: fixed;
+          top: 0;
+          width: 100%;
+          background: #111;
+          color: #fff;
+          padding: 10px;
+          text-align: center;
+          z-index: 999;
+        }
 
-      .page {
-        width: 210mm;
-        height: 297mm;
-        padding: 25mm;
-        box-sizing: border-box;
-        position: relative;
-      }
+        .toolbar button {
+          padding: 10px 15px;
+          margin: 0 5px;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+        }
 
-      .cert {
-        width: 100%;
-        height: 100%;
-        border: 12px solid #b8860b;
-        border-radius: 18px;
-        position: relative;
-        overflow: hidden;
-      }
+        .print-btn { background: #28a745; color: white; }
+        .close-btn { background: #dc3545; color: white; }
 
-      /* 🏛️ WATERMARK */
-      .watermark {
-        position: absolute;
-        inset: 0;
-        background:
-          url('https://i.imgur.com/91hfOYL.png') center no-repeat;
-        background-size: 400px;
-        opacity: 0.08;
-        z-index: 0;
-      }
+        .page {
+          width: 210mm;
+          height: 297mm;
+          padding: 25mm;
+          box-sizing: border-box;
+          position: relative;
+        }
 
-      /* HEADER */
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 30px;
-      }
+        .cert {
+          width: 100%;
+          height: 100%;
+          border: 12px solid #b8860b;
+          border-radius: 18px;
+          position: relative;
+          overflow: hidden;
+        }
 
-      .header img {
-        width: 90px;
-      }
+        .watermark {
+          position: absolute;
+          inset: 0;
+          background: url('https://i.imgur.com/91hfOYL.png') center no-repeat;
+          background-size: 400px;
+          opacity: 0.08;
+          z-index: 0;
+        }
 
-      .school-title {
-        text-align: center;
-        flex: 1;
-        font-size: 22px;
-        font-weight: bold;
-        color: #003366;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-      }
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 30px;
+        }
 
-      .school-sub {
-        font-size: 12px;
-        color: #666;
-        margin-top: 4px;
-        font-weight: normal;
-      }
+        .header img { width: 90px; }
 
-      .content {
-        position: relative;
-        z-index: 2;
-        text-align: center;
-        padding: 20px;
-      }
+        .school-title {
+          text-align: center;
+          flex: 1;
+          font-size: 22px;
+          font-weight: bold;
+          color: #003366;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
 
-      h1 {
-        color: #b8860b;
-        font-size: 38px;
-        margin: 15px 0;
-      }
+        .school-sub {
+          font-size: 12px;
+          color: #666;
+          margin-top: 4px;
+        }
 
-      .grade {
-        font-size: 42px;
-        font-weight: bold;
-        margin: 20px 0;
-      }
+        .content {
+          position: relative;
+          z-index: 2;
+          text-align: center;
+          padding: 20px;
+        }
 
-      .details {
-        font-size: 18px;
-        line-height: 1.6;
-      }
+        h1 {
+          color: #b8860b;
+          font-size: 38px;
+          margin: 15px 0;
+        }
 
-      .seal {
-        position: absolute;
-        bottom: 120px;
-        right: 40px;
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: radial-gradient(circle, #ffd700, #b8860b);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 12px;
-        font-weight: bold;
-      }
+        .grade {
+          font-size: 42px;
+          font-weight: bold;
+          margin: 20px 0;
+        }
 
-      .serial {
-        margin-top: 15px;
-        font-size: 12px;
-        color: #444;
-      }
+        .details {
+          font-size: 18px;
+          line-height: 1.6;
+        }
 
-      .footer {
-        margin-top: 60px;
-        display: flex;
-        justify-content: space-between;
-        padding: 0 40px;
-        font-size: 16px;
-      }
+        .seal {
+          position: absolute;
+          bottom: 120px;
+          right: 40px;
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
+          background: radial-gradient(circle, #ffd700, #b8860b);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 12px;
+          font-weight: bold;
+        }
 
-      /* 🎉 CONGRATULATIONS */
-      .congrats {
-        margin-top: 35px;
-        text-align: center;
-        font-size: 32px;
-        font-weight: 900;
-        color: #b8860b;
-        letter-spacing: 3px;
-      }
+        .serial {
+          margin-top: 15px;
+          font-size: 12px;
+          color: #444;
+        }
 
-      .congrats-line {
-        width: 60%;
-        height: 3px;
-        margin: 10px auto;
-        background: linear-gradient(90deg, transparent, #b8860b, transparent);
-      }
+        .footer {
+          margin-top: 60px;
+          display: flex;
+          justify-content: space-between;
+          padding: 0 40px;
+          font-size: 16px;
+        }
 
-      .congrats-sub {
-        font-size: 14px;
-        color: #555;
-        margin-top: 5px;
-      }
+        .congrats {
+          margin-top: 35px;
+          text-align: center;
+          font-size: 32px;
+          font-weight: 900;
+          color: #b8860b;
+        }
 
-      @media print {
-        .toolbar { display: none; }
-      }
+        .congrats-line {
+          width: 60%;
+          height: 3px;
+          margin: 10px auto;
+          background: linear-gradient(90deg, transparent, #b8860b, transparent);
+        }
 
-    </style>
-  </head>
+        .congrats-sub {
+          font-size: 14px;
+          color: #555;
+        }
 
-  <body>
+        @media print {
+          .toolbar { display: none; }
+        }
+      </style>
+    </head>
 
-    <div class="toolbar">
-      <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
-      <button class="close-btn" onclick="window.close()">❌ Close</button>
-    </div>
-  `;
+    <body>
 
-  content += `
-  <div class="page">
-    <div class="cert">
-
-      <div class="watermark"></div>
-
-      <!-- 🏫 HEADER -->
-      <div class="header">
-        <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo">
-
-        <div>
-          <div class="school-title">${schoolName}</div>
-          <div class="school-sub">Excellence • Discipline • Achievement</div>
-        </div>
-
-        <img src="https://i.imgur.com/91hfOYL.png" alt="Government Logo">
+      <div class="toolbar">
+        <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="close-btn" onclick="window.close()">❌ Close</button>
       </div>
 
-      <div class="content">
+      <div class="page">
+        <div class="cert">
 
-        <h1>TOP GRADE AWARD</h1>
+          <div class="watermark"></div>
 
-        <div>This certificate is proudly awarded to</div>
+          <div class="header">
+            <img src="https://i.imgur.com/VSAh48K.jpeg">
+            <div>
+              <div class="school-title">${schoolName}</div>
+              <div class="school-sub">Excellence • Discipline • Achievement</div>
+            </div>
+            <img src="https://i.imgur.com/91hfOYL.png">
+          </div>
 
-        <div class="grade">${topGradeGlobal.grade}</div>
+          <div class="content">
 
-        <div class="details">
-          Average Score: <b>${topGradeGlobal.average.toFixed(1)}</b><br>
-          Level: <b>${topGradeGlobal.level}</b><br><br>
-          ${topGradeGlobal.description}
+            <h1>TOP GRADE AWARD</h1>
+
+            <div>Certificate awarded to</div>
+
+            <div class="grade">${topGradeGlobal.grade}</div>
+
+            <div class="details">
+              Average Score: <b>${topGradeGlobal.average.toFixed(1)}</b><br>
+              Level: <b>${topGradeGlobal.level}</b><br><br>
+              ${topGradeGlobal.description}
+            </div>
+
+            <div style="margin-top:20px;">
+              <b>${schoolName}</b><br>
+              ${examPeriod}
+            </div>
+
+            <div class="serial">🧾 Serial: ${serial}</div>
+
+            <div class="congrats">🎉 CONGRATULATIONS 🎉</div>
+            <div class="congrats-line"></div>
+            <div class="congrats-sub">Official Academic Recognition</div>
+
+          </div>
+
+          <div class="seal">OFFICIAL SEAL</div>
+
+          <div class="footer">
+            <div>____________________<br>Class Teacher</div>
+            <div>____________________<br>Principal</div>
+          </div>
+
         </div>
-
-        <div style="margin-top:20px;">
-          For outstanding academic performance in<br>
-          <b>${schoolName}</b><br>
-          ${examPeriod}
-        </div>
-
-        <div class="serial">🧾 Serial: ${serial}</div>
-
-        <!-- 🎉 CONGRATULATIONS -->
-        <div class="congrats">🎉 CONGRATULATIONS 🎉</div>
-        <div class="congrats-line"></div>
-        <div class="congrats-sub">Your Excellence Has Been Officially Recognized</div>
-
       </div>
 
-      <div class="seal">OFFICIAL SEAL</div>
+    </body>
+    </html>
+    `;
 
-      <div class="footer">
-        <div>____________________<br>Class Teacher</div>
-        <div>____________________<br>Principal</div>
-      </div>
+    win.document.write(content);
+    win.document.close();
 
-    </div>
-  </div>
-  `;
+    // ==============================
+    // 🔹 SUCCESS ALERT (NEW)
+    // ==============================
+    Swal.fire({
+      icon: "success",
+      title: "Certificate Ready",
+      text: "Your certificate has been generated successfully!",
+      timer: 4000,
+      showConfirmButton: false
+    });
 
-  content += `
-  </body>
-  </html>
-  `;
-
-  win.document.write(content);
-  win.document.close();
+  }, 800); // small delay for better UX
 };
 // ================= LOADING SPINNER =================
 function hideLoadingSpinner() {
@@ -6547,10 +6595,9 @@ function updateMarksCoverage(totalLearners, learnersWithMarks) {
     bar.style.background = "linear-gradient(90deg,#43e97b,#38f9d7)";
   }
 }
-
 function loadMarksUnified() {
   const examPeriod = marksExamPeriodSelect.value;
-currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
+  currentExamPeriod = examPeriod;
   const selectedGrade = filterMarksGrade.value;
 
   if (!examPeriod) {
@@ -6560,7 +6607,7 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
       icon: 'warning',
       title: 'Please select exam period',
       showConfirmButton: false,
-      timer: 3000
+      timer: 2000
     });
     return;
   }
@@ -6568,36 +6615,54 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
   let loadedCount = 0;
   let totalCount = 0;
 
-  // 🔥 Loader
+  // ==============================
+  // 🔥 MODERN LOADING UI (DOTS)
+  // ==============================
   Swal.fire({
-    title: 'Preparing Marks...',
+    title: 'Loading Marks...',
     html: `
-      <div style="font-size:14px;margin-bottom:10px;">Initializing system...</div>
-      <div style="width:100%;background:#eee;border-radius:10px;height:12px;overflow:hidden;">
-        <div id="progressBar" style="
-          width:0%;
-          height:100%;
-          background:linear-gradient(90deg,#4facfe,#00f2fe);
-          transition:width 0.3s ease;
-        "></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+
+        <div style="display:flex;gap:6px;margin-top:10px;">
+          <span style="width:10px;height:10px;background:#4285f4;border-radius:50%;animation:bounce 1s infinite;"></span>
+          <span style="width:10px;height:10px;background:#34a853;border-radius:50%;animation:bounce 1s infinite 0.2s;"></span>
+          <span style="width:10px;height:10px;background:#fbbc05;border-radius:50%;animation:bounce 1s infinite 0.4s;"></span>
+          <span style="width:10px;height:10px;background:#ea4335;border-radius:50%;animation:bounce 1s infinite 0.6s;"></span>
+        </div>
+
+        <div id="statusText" style="font-size:14px;color:#555;">
+          Initializing...
+        </div>
+
+        <div id="countText" style="font-size:12px;color:#777;">
+          Preparing data...
+        </div>
+
       </div>
-      <div style="margin-top:8px;">
-        <b id="progressText">0%</b>
-      </div>
+
+      <style>
+        @keyframes bounce {
+          0%, 80%, 100% { transform: scale(0.7); opacity:0.5; }
+          40% { transform: scale(1.3); opacity:1; }
+        }
+      </style>
     `,
     allowOutsideClick: false,
-    didOpen: () => Swal.showLoading()
+    showConfirmButton: false
   });
 
   marksTableBody.innerHTML = "";
 
   if (unsubscribeMarks) unsubscribeMarks();
 
+  // ==============================
+  // 🔥 FIREBASE LISTENER
+  // ==============================
   unsubscribeMarks = onValue(learnersRef, (snapshot) => {
 
     marksTableBody.innerHTML = "";
 
-    const tempStorage = []; // ✅ optimized storage
+    const tempStorage = [];
     const grades = new Set();
     const gradeGroups = {};
     let noMarksFound = true;
@@ -6610,22 +6675,38 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
 
     let learnersCount = 0;
 
-    totalCount = snapshot.size || 0;
+    totalCount = snapshot.numChildren ? snapshot.numChildren() : snapshot.size || 0;
     loadedCount = 0;
 
     snapshot.forEach(childSnapshot => {
+
       loadedCount++;
 
-      // 🔥 Progress update
-      let percent = totalCount > 0
-        ? Math.round((loadedCount / totalCount) * 100)
-        : 0;
+      // ==============================
+      // 🔥 LIVE STATUS UPDATE
+      // ==============================
+      Swal.update({
+        html: `
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
 
-      const progressBar = document.getElementById("progressBar");
-      const progressText = document.getElementById("progressText");
+            <div style="display:flex;gap:6px;margin-top:10px;">
+              <span style="width:10px;height:10px;background:#4285f4;border-radius:50%;animation:bounce 1s infinite;"></span>
+              <span style="width:10px;height:10px;background:#34a853;border-radius:50%;animation:bounce 1s infinite 0.2s;"></span>
+              <span style="width:10px;height:10px;background:#fbbc05;border-radius:50%;animation:bounce 1s infinite 0.4s;"></span>
+              <span style="width:10px;height:10px;background:#ea4335;border-radius:50%;animation:bounce 1s infinite 0.6s;"></span>
+            </div>
 
-      if (progressBar) progressBar.style.width = percent + "%";
-      if (progressText) progressText.innerText = percent + "%";
+            <div id="statusText" style="font-size:14px;color:#555;">
+              Processing marks...
+            </div>
+
+            <div id="countText" style="font-size:12px;color:#777;">
+              ${loadedCount} / ${totalCount} students
+            </div>
+
+          </div>
+        `
+      });
 
       const data = childSnapshot.val();
       const marks = data.marks?.[examPeriod];
@@ -6633,6 +6714,7 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
       if (data.grade) grades.add(data.grade);
 
       if (marks && (!selectedGrade || data.grade === selectedGrade)) {
+
         noMarksFound = false;
 
         const rowTotal =
@@ -6665,7 +6747,6 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
           totalLevel
         };
 
-        // ✅ LIGHT STORAGE (FAST)
         tempStorage.push({
           key: childSnapshot.key,
           name: data.name,
@@ -6682,22 +6763,17 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
       }
     });
 
-    // ✅ SAVE ONCE (VERY FAST)
     window.loadedMarksLearners = tempStorage;
 
-    Swal.update({
-      title: 'Processing Marks...',
-      html: `<div>Calculating totals...</div><b>${loadedCount} students</b>`
-    });
-
-    // 🔥 FAST DOM BUILD
     const fragment = document.createDocumentFragment();
 
     Object.keys(gradeGroups).forEach(grade => {
+
       const learners = gradeGroups[grade];
       learners.sort((a, b) => b.rowTotal - a.rowTotal);
 
       learners.forEach((learner, index) => {
+
         learnersCount++;
 
         const { data, marks, rowTotal, totalLevel } = learner;
@@ -6720,57 +6796,50 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
           <td>${index + 1}</td>
           <td>${data.name}</td>
           <td>${data.grade}</td>
-
-          <td data-editable="true">${marks.eng || ''}</td><td>${marks.engLev || ''}</td>
-          <td data-editable="true">${marks.math || ''}</td><td>${marks.mathLev || ''}</td>
-          <td data-editable="true">${marks.preTech || ''}</td><td>${marks.preTechLev || ''}</td>
-          <td data-editable="true">${marks.kiswahili || ''}</td><td>${marks.kiswahiliLev || ''}</td>
-          <td data-editable="true">${marks.science || ''}</td><td>${marks.scienceLev || ''}</td>
-          <td data-editable="true">${marks.social || ''}</td><td>${marks.socialLev || ''}</td>
-          <td data-editable="true">${marks.agriculture || ''}</td><td>${marks.agricultureLev || ''}</td>
-          <td data-editable="true">${marks.cre || ''}</td><td>${marks.creLev || ''}</td>
-          <td data-editable="true">${marks.creativeArt || ''}</td><td>${marks.creativeArtLev || ''}</td>
-
-          <td><strong>${rowTotal}</strong></td>
-          <td><strong>${totalLevel}</strong></td>
-
-          <td>
-            <button class="deleteMarksBtn" data-key="${learner.key}" data-exam="${examPeriod}">
-              Delete
-            </button>
-          </td>
         `;
 
         fragment.appendChild(row);
       });
     });
 
-    // ✅ APPEND ONCE (VERY FAST)
     marksTableBody.appendChild(fragment);
 
-    // 🔥 Finalizing
-    Swal.update({
-      title: 'Finalizing...',
-      html: `<div>Preparing results...</div><b>${learnersCount} students</b>`
-    });
-
-    sums.totalLevel = sums.totalLevels;
+    // ==============================
+    // FINAL COMPLETE STATE
+    // ==============================
+    setTimeout(() => {
+      Swal.update({
+        title: 'Finalizing...',
+        html: `
+          <div style="text-align:center;">
+            <div>Preparing results...</div>
+            <b>${learnersCount} students</b>
+          </div>
+        `
+      });
+    }, 300);
 
     updateTotalsAndAverages(sums, learnersCount);
     renderSubjectAverages(sums, learnersCount);
     populateGradeSelectors(grades);
 
     if (isAdminLoggedIn) enableMarksEditing();
- calculateTopStudents();
+
+    calculateTopStudents();
     updateMarksCoverage(totalCount, learnersCount);
 
-    Swal.close();
+    setTimeout(() => {
+      Swal.close();
+    }, 600);
 
+    // ==============================
+    // FINAL ALERT
+    // ==============================
     if (!noMarksFound) {
       Swal.fire({
         icon: 'success',
-        title: 'Marks Loaded 🎉',
-        text: `${learnersCount} students processed`,
+        title: 'Marks Ready 🎉',
+        text: `${learnersCount} students processed successfully`,
         timer: 2500,
         showConfirmButton: false
       });
@@ -6781,6 +6850,7 @@ currentExamPeriod = examPeriod; // ✅ SAVE GLOBALLY
         text: `No marks found for ${selectedGrade || "all grades"} in ${examPeriod}`
       });
     }
+
   });
 }
 
@@ -7271,7 +7341,7 @@ window.sendLoadedResults = function () {
 
   // ✅ CONFIRMATION
   Swal.fire({
-    title: "Send Results?",
+    title: "🚁Send Results🚀",
     text: `Results will be sent to ${window.loadedMarksLearners.length} learners`,
     icon: "question",
     showCancelButton: true,
@@ -10374,7 +10444,6 @@ html += `<div class="stamp print-only">
         });
     }
 }
-
 document.addEventListener("DOMContentLoaded", function () {
 
   // ===============================
@@ -10410,48 +10479,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  mainButtons.forEach(btn => {
-    const targetId = btn.dataset.target;
-
-    btn.addEventListener("click", () => {
-      const section = document.getElementById(targetId);
-      if (!section) return;
-
-      const isOpen = section.style.display === "block";
-
-      closeAllMainSections();
-
-      if (!isOpen) {
-        section.style.display = "block";
-        section.classList.add("active");
-
-        const icon = btn.querySelector("i");
-        if (icon) { 
-          icon.classList.remove("fa-chevron-down"); 
-          icon.classList.add("fa-chevron-up"); 
-        }
-
-        // ✅ AUTO SCROLL
-        smoothScrollTo(section);
-      }
-    });
-  });
-
   // ===============================
-  // 🔹 SUB-ACCORDION (Dynamic Nested)
+  // 🔹 SUB-ACCORDION
   // ===============================
-const subSections = [
-  { btnId: "toggleFormBtn", sectionId: "registrationContainer" },
-  { btnId: "toggleTableBtn", sectionId: "tableContainer" },
-  { btnId: "togglePerformanceReportsBtn", sectionId: "performanceReportsSection" },
-  { btnId: "toggleMarksSectionBtn", sectionId: "marksSection" },
-  { btnId: "toggleRecordMarksBtn", sectionId: "recordMarksSection" },
-  { btnId: "toggleAttendanceBtn", sectionId: "attendanceSection" },
-
-  // ✅ NEW ADDITIONS
-  { btnId: "feesBtn", sectionId: "feesSection" },
-  { btnId: "communicationBtn", sectionId: "communicationCenter" }
-];
+  const subSections = [
+    { btnId: "toggleFormBtn", sectionId: "registrationContainer" },
+    { btnId: "toggleTableBtn", sectionId: "tableContainer" },
+    { btnId: "togglePerformanceReportsBtn", sectionId: "performanceReportsSection" },
+    { btnId: "toggleMarksSectionBtn", sectionId: "marksSection" },
+    { btnId: "toggleRecordMarksBtn", sectionId: "recordMarksSection" },
+    { btnId: "toggleAttendanceBtn", sectionId: "attendanceSection" },
+    { btnId: "feesBtn", sectionId: "feesSection" },
+    { btnId: "communicationBtn", sectionId: "communicationCenter" }
+  ];
 
   function closeAllSubSections() {
     subSections.forEach(item => {
@@ -10469,33 +10509,8 @@ const subSections = [
     });
   }
 
-  subSections.forEach(item => {
-    const btn = document.getElementById(item.btnId);
-    const section = document.getElementById(item.sectionId);
-    if (!btn || !section) return;
-
-    btn.addEventListener("click", () => {
-      const isOpen = section.style.display === "block";
-
-      closeAllSubSections();
-
-      if (!isOpen) {
-        section.style.display = "block";
-
-        const icon = btn.querySelector("i");
-        if (icon) {
-          icon.classList.remove("fa-chevron-down");
-          icon.classList.add("fa-chevron-up");
-        }
-
-        // ✅ AUTO SCROLL
-        smoothScrollTo(section);
-      }
-    });
-  });
-
   // ===============================
-  // 🔹 MARKS SECTION NESTED SUB-SECTIONS
+  // 🔹 MARKS CHILD SECTIONS
   // ===============================
   const marksSubSections = [
     { btnId: "marksTableBtn", sectionId: "marksList" },
@@ -10507,6 +10522,95 @@ const subSections = [
     { btnId: "liveTermlyPerformanceBtn", sectionId: "subjectAveragesContainer" }
   ];
 
+  function closeAllMarksSubSections() {
+    marksSubSections.forEach(item => {
+      const section = document.getElementById(item.sectionId);
+      if (section) section.style.display = "none";
+    });
+  }
+
+  // ===============================
+  // 🔹 GLOBAL RESET
+  // ===============================
+  function closeEverything() {
+    closeAllMainSections();
+    closeAllSubSections();
+
+  }
+
+  // ===============================
+  // 🔹 MAIN SECTION CLICK
+  // ===============================
+  mainButtons.forEach(btn => {
+    const targetId = btn.dataset.target;
+
+    btn.addEventListener("click", () => {
+      const section = document.getElementById(targetId);
+      if (!section) return;
+
+      const isOpen = section.style.display === "block";
+
+      closeEverything();
+
+      if (!isOpen) {
+        section.style.display = "block";
+        section.classList.add("active");
+
+        const icon = btn.querySelector("i");
+        if (icon) { 
+          icon.classList.remove("fa-chevron-down"); 
+          icon.classList.add("fa-chevron-up"); 
+        }
+
+        smoothScrollTo(section);
+      }
+    });
+  });
+
+  // ===============================
+  // 🔹 SUB SECTION CLICK
+  // ===============================
+  subSections.forEach(item => {
+    const btn = document.getElementById(item.btnId);
+    const section = document.getElementById(item.sectionId);
+    if (!btn || !section) return;
+
+    btn.addEventListener("click", () => {
+      const isOpen = section.style.display === "block";
+
+      closeAllSubSections();
+
+      // only reset marks children if NOT opening marks container
+      if (item.sectionId !== "marksSection") {
+        closeAllMarksSubSections();
+      }
+
+      if (!isOpen) {
+        section.style.display = "block";
+
+        const icon = btn.querySelector("i");
+        if (icon) {
+          icon.classList.remove("fa-chevron-down");
+          icon.classList.add("fa-chevron-up");
+        }
+
+        smoothScrollTo(section);
+
+        // auto show cards when marks opens
+        if (item.sectionId === "marksSection") {
+          const classMean = document.getElementById("classMeanCard");
+          const totalLearners = document.getElementById("totalLearnersCard");
+
+          if (classMean) classMean.style.display = "block";
+          if (totalLearners) totalLearners.style.display = "block";
+        }
+      }
+    });
+  });
+
+  // ===============================
+  // 🔹 MARKS CHILD CLICK
+  // ===============================
   marksSubSections.forEach(item => {
     const btn = document.getElementById(item.btnId);
     const section = document.getElementById(item.sectionId);
@@ -10515,15 +10619,10 @@ const subSections = [
     btn.addEventListener("click", () => {
       const isOpen = section.style.display === "block";
 
-      marksSubSections.forEach(i => {
-        const s = document.getElementById(i.sectionId);
-        if (s) s.style.display = "none";
-      });
+      closeAllMarksSubSections();
 
       if (!isOpen) {
         section.style.display = "block";
-
-        // ✅ AUTO SCROLL
         smoothScrollTo(section);
       }
     });
@@ -10538,17 +10637,21 @@ const subSections = [
   const reportsBtn = document.getElementById('masterReportsBtn');
 
   masterBtn?.addEventListener('click', () => {
+
+    closeEverything();
+
     const hidden = learnersWrapper.style.display === 'none';
 
     learnersWrapper.style.display = hidden ? 'flex' : 'none';
 
-    masterBtn.innerHTML = `<i class="fas fa-db" style="margin-right: 8px;"></i> Learners Database `;
-
-    if (!hidden) closeAllSubSections();
+    masterBtn.innerHTML =
+      `<i class="fas fa-db" style="margin-right: 8px;"></i> Learners Database`;
 
     if (reportsWrapper) reportsWrapper.style.display = 'none';
+
     if (reportsBtn?.querySelector('.btn-label')) {
-      reportsBtn.querySelector('.btn-label').textContent = 'Exam & Marks Controls';
+      reportsBtn.querySelector('.btn-label').textContent =
+        'Exam & Marks Controls';
     }
   });
 
@@ -10560,18 +10663,20 @@ const subSections = [
   );
 
   function setupToggle(masterBtnId, wrapperId, showText, hideText) {
+
     const btn = document.getElementById(masterBtnId);
     const wrapper = document.getElementById(wrapperId);
     const label = btn?.querySelector('.btn-label');
+
     if (!btn || !wrapper) return;
 
     wrapper.style.display = wrapper.style.display || 'none';
 
     btn.addEventListener('click', () => {
 
-      const isHidden = wrapper.style.display === 'none';
+      closeEverything();
 
-      closeAllMainSections();
+      const isHidden = wrapper.style.display === 'none';
 
       wrapper.style.display = isHidden ? 'block' : 'none';
 
@@ -10580,22 +10685,29 @@ const subSections = [
       }
 
       if (wrapperId === 'reportsControls') {
+
         if (learnersWrapper) learnersWrapper.style.display = 'none';
-        if (masterBtn) masterBtn.innerHTML = `<i class="fas fa-db" style="margin-right: 8px;"></i> Learners Database`;
-        closeAllSubSections();
+
+        if (masterBtn) {
+          masterBtn.innerHTML =
+            `<i class="fas fa-db" style="margin-right: 8px;"></i> Learners Database`;
+        }
       }
 
       if (wrapperId === 'learnersButtons') {
+
         if (reportsWrapper) reportsWrapper.style.display = 'none';
+
         if (reportsBtn?.querySelector('.btn-label')) {
-          reportsBtn.querySelector('.btn-label').textContent = 'Exam & Marks Controls';
+          reportsBtn.querySelector('.btn-label').textContent =
+            'Exam & Marks Controls';
         }
-        closeAllSubSections();
       }
     });
   }
 
 });
+
 document.getElementById("printFilteredMarksBtn").addEventListener("click", () => {
 
   const gradeSelect = document.getElementById("filterMarksGrade");
@@ -13325,9 +13437,9 @@ function populateExamPeriods() {
   }
 }
 populateExamPeriods();
-
 // ================= Fetch and Display Results =================
 document.getElementById("fetchParentResults").addEventListener("click", () => {
+
   const learnerKey = parentLearnerSelect.value;
   const examPeriod = parentExamSelect.value;
 
@@ -13341,101 +13453,311 @@ document.getElementById("fetchParentResults").addEventListener("click", () => {
     return;
   }
 
+  // ================= SHOW MODERN PROGRESS =================
+  resultsPopup.style.display = "block";
+
+  resultsContent.innerHTML = `
+    <div style="
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:40px;
+      font-family:Arial;
+    ">
+
+      <div style="display:flex; gap:8px; margin-bottom:15px;">
+        <span style="width:12px;height:12px;background:#4285f4;border-radius:50%;animation:bounce 1s infinite"></span>
+        <span style="width:12px;height:12px;background:#34a853;border-radius:50%;animation:bounce 1s infinite 0.2s"></span>
+        <span style="width:12px;height:12px;background:#fbbc05;border-radius:50%;animation:bounce 1s infinite 0.4s"></span>
+        <span style="width:12px;height:12px;background:#ea4335;border-radius:50%;animation:bounce 1s infinite 0.6s"></span>
+      </div>
+
+      <div style="font-size:18px; font-weight:bold; color:#444;">
+        Fetching Results...
+      </div>
+
+      <div style="font-size:13px; color:#777; margin-top:5px;">
+        Please wait
+      </div>
+
+    </div>
+
+    <style>
+      @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0.7); opacity:0.6; }
+        40% { transform: scale(1.2); opacity:1; }
+      }
+    </style>
+  `;
+
+  // ================= FETCH DATA =================
   onValue(learnersRef, snapshot => {
+
     const allLearners = [];
+
     snapshot.forEach(child => {
+
       const data = child.val();
       const marks = data.marks?.[examPeriod];
+
       if (marks) {
+
         let total = 0;
+
         Object.keys(marks).forEach(s => {
-          if (s.endsWith("Lev")) total += parseFloat(marks[s]) || 0;
+
+          if (s.endsWith("Lev"))
+            total += parseFloat(marks[s]) || 0;
+
         });
-        allLearners.push({ key: child.key, total });
+
+        allLearners.push({
+          key: child.key,
+          total
+        });
+
       }
+
     });
 
     allLearners.sort((a,b) => b.total - a.total);
-    const position = allLearners.findIndex(l => l.key === learnerKey) + 1;
 
-    onValue(ref(db, `learners/${learnerKey}/marks/${examPeriod}`), snap => {
-      if (!snap.exists()) {
-        Swal.fire({
-          icon: "info",
-          title: "No Results",
-          text: `No results found for ${examPeriod}`,
-          confirmButtonColor: "#d33"
+    const position =
+      allLearners.findIndex(l => l.key === learnerKey) + 1;
+
+    onValue(
+      ref(db, `learners/${learnerKey}/marks/${examPeriod}`),
+
+      snap => {
+
+        if (!snap.exists()) {
+
+          Swal.fire({
+            icon: "info",
+            title: "No Results",
+            text: `No results found for ${examPeriod}`,
+            confirmButtonColor: "#d33"
+          });
+
+          return;
+
+        }
+
+        const marks = snap.val();
+
+        let totalMarks = 0;
+        let totalPoints = 0;
+
+        let tableRows = "";
+
+        Object.keys(marks).forEach(subject => {
+
+          if (!subject.endsWith("Lev")) {
+
+            const mark =
+              marks[subject] || 0;
+
+            const level =
+              parseFloat(marks[subject + "Lev"]) || 0;
+
+            totalMarks += parseFloat(mark);
+
+            totalPoints += level;
+
+            tableRows += `
+              <tr>
+
+                <td style="padding:6px; border:1px solid #ccc;">
+                  ${subject.toUpperCase()}
+                </td>
+
+                <td style="padding:6px; border:1px solid #ccc;">
+                  ${mark}
+                </td>
+
+                <td style="padding:6px; border:1px solid #ccc;">
+                  ${level}
+                </td>
+
+              </tr>
+            `;
+
+          }
+
         });
-        return;
+
+        const learnerName =
+          parentLearnerSelect.options[
+            parentLearnerSelect.selectedIndex
+          ].text;
+
+        // ================= SHOW RESULTS =================
+        resultsContent.innerHTML = `
+
+          <div style="
+            position:relative;
+            padding:25px;
+            background:#fff;
+            overflow:hidden;
+          ">
+
+            <!-- WATERMARK -->
+            <img
+              src="https://i.imgur.com/91hfOYL.png"
+
+              style="
+                position:absolute;
+                top:50%;
+                left:50%;
+                transform:translate(-50%, -50%);
+                width:280px;
+                opacity:0.07;
+                z-index:0;
+              "
+            >
+
+            <!-- HEADER -->
+            <div style="
+              position:relative;
+              z-index:2;
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+              margin-bottom:20px;
+            ">
+
+              <img src="https://i.imgur.com/91hfOYL.png" style="height:60px;">
+
+              <div style="text-align:center;">
+
+                <h2 style="margin:0;">
+                  Nachu Junior School
+                </h2>
+
+                <h4 style="
+                  margin:2px 0;
+                  font-weight:normal;
+                ">
+                  ${examPeriod}
+                </h4>
+
+                <h3 style="margin:5px 0;">
+                  ${learnerName}
+                </h3>
+
+              </div>
+
+              <img src="https://i.imgur.com/VSAh48K.jpeg" style="height:60px;">
+
+            </div>
+
+            <!-- SUMMARY -->
+            <div style="
+              position:relative;
+              z-index:2;
+              display:flex;
+              justify-content:space-between;
+              margin-bottom:15px;
+              font-weight:bold;
+            ">
+
+              <div>
+                Position: ${position}
+              </div>
+
+              <div>
+                Total Marks: ${totalMarks}
+              </div>
+
+              <div>
+                Total Points: ${totalPoints}
+              </div>
+
+            </div>
+
+            <!-- TABLE -->
+            <table style="
+              position:relative;
+              z-index:2;
+              border-collapse:collapse;
+              width:100%;
+              margin-bottom:15px;
+            ">
+
+              <thead>
+
+                <tr style="background:#f0f0f0;">
+
+                  <th style="
+                    padding:8px;
+                    border:1px solid #ccc;
+                  ">
+                    Subject
+                  </th>
+
+                  <th style="
+                    padding:8px;
+                    border:1px solid #ccc;
+                  ">
+                    Mark
+                  </th>
+
+                  <th style="
+                    padding:8px;
+                    border:1px solid #ccc;
+                  ">
+                    Level
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                ${tableRows}
+
+                <tr style="
+                  font-weight:bold;
+                  background:#f9f9f9;
+                ">
+
+                  <td>Total / Average</td>
+
+                  <td>${totalMarks}</td>
+
+                  <td>${totalPoints}</td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+            <div style="
+              position:relative;
+              z-index:2;
+              text-align:center;
+              margin-top:20px;
+              font-size:12px;
+              color:#555;
+            ">
+
+              Generated by Nachu Junior School Academic Portal
+
+            </div>
+
+          </div>
+        `;
+
       }
 
-      const marks = snap.val();
-      let totalMarks = 0, totalPoints = 0;
-      let tableRows = "";
+    );
 
-      Object.keys(marks).forEach(subject => {
-        if (!subject.endsWith("Lev")) {
-          const mark = marks[subject] || 0;
-          const level = parseFloat(marks[subject + "Lev"]) || 0;
-          totalMarks += parseFloat(mark);
-          totalPoints += level;
-          tableRows += `<tr>
-                          <td style="padding:6px; border:1px solid #ccc;">${subject.toUpperCase()}</td>
-                          <td style="padding:6px; border:1px solid #ccc;">${mark}</td>
-                          <td style="padding:6px; border:1px solid #ccc;">${level}</td>
-                        </tr>`;
-        }
-      });
-
-      const learnerName = parentLearnerSelect.options[parentLearnerSelect.selectedIndex].text;
-      const subjectCount = Object.keys(marks).filter(s => !s.endsWith("Lev")).length;
-
-      // Display results with logos
-      resultsContent.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-          <img src="https://i.imgur.com/91hfOYL.png" alt="Government Logo" style="height:60px;">
-          <div style="text-align:center;">
-            <h2 style="margin:0;">Nachu Junior School</h2>
-            <h4 style="margin:2px 0; font-weight:normal;">${examPeriod}</h4>
-            <h3 style="margin:5px 0;">${learnerName}</h3>
-          </div>
-          <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="height:60px;">
-        </div>
-
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold;">
-          <div>Position: ${position}</div>
-          <div>Total Marks: ${totalMarks}</div>
-          <div>Total Points: ${totalPoints}</div>
-        </div>
-
-        <table style="border-collapse:collapse; width:100%; margin-bottom:15px;">
-          <thead>
-            <tr style="background:#f0f0f0;">
-              <th style="padding:8px; border:1px solid #ccc;">Subject</th>
-              <th style="padding:8px; border:1px solid #ccc;">Mark</th>
-              <th style="padding:8px; border:1px solid #ccc;">Level</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tableRows}
-            <tr style="font-weight:bold; background:#f9f9f9;">
-              <td>Total / Average</td>
-              <td>${totalMarks}</td>
-              <td>${totalPoints}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style="text-align:center; margin-top:20px; font-size:12px; color:#555;">
-          Generated by Nachu Junior School Academic Portal
-        </div>
-      `;
-
-      resultsPopup.style.display = "block";
-    });
   });
-});
 
+});
 // ================= Close Popup =================
 closePopupBtn.addEventListener("click", () => resultsPopup.style.display = "none");
 window.addEventListener("click", e => {

@@ -7037,6 +7037,187 @@ filterMarksGrade.addEventListener("change", () => {
   renderSubjectAverages(sums, filteredCount);
 });
 
+document.getElementById("loadMarksByPeriodBtn").addEventListener("click", () => {
+  const selectedExamPeriod = document.getElementById("marksExamPeriodSelect").value;
+  if (!selectedExamPeriod) {
+    showToast("Please select an exam period to view marks.", "error");
+    return;
+  }
+  loadMarksTableForPeriod(selectedExamPeriod);
+});
+function loadMarksTableForPeriod(examPeriod) {
+
+  // ===============================
+  // 🔹 AUTO SCROLL HELPER
+  // ===============================
+  function smoothScrollTo(el) {
+    setTimeout(() => {
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+      // 🔥 Optional highlight effect
+      el.style.transition = "all 0.4s ease";
+      el.style.boxShadow = "0 0 15px rgba(0,123,255,0.7)";
+      setTimeout(() => {
+        el.style.boxShadow = "none";
+      }, 2000);
+
+    }, 300); // delay for Firebase rendering
+  }
+
+  marksTableBody.innerHTML = "";
+  const gradeGroups = {};
+
+  let sums = {
+    eng: 0, math: 0, preTech: 0, kiswahili: 0,
+    science: 0, social: 0, agriculture: 0,
+    cre: 0, creativeArt: 0, totalMarks: 0, totalLevels: 0
+  };
+
+  let learnersWithMarks = 0;
+
+  onValue(learnersRef, (snapshot) => {
+    marksTableBody.innerHTML = "";
+
+    snapshot.forEach(childSnapshot => {
+      const data = childSnapshot.val();
+      const marksData = data.marks || {};
+      const marks = marksData[examPeriod] || null;
+
+      if (marks) {
+        const rowTotal =
+          (parseFloat(marks.eng) || 0) +
+          (parseFloat(marks.math) || 0) +
+          (parseFloat(marks.preTech) || 0) +
+          (parseFloat(marks.kiswahili) || 0) +
+          (parseFloat(marks.science) || 0) +
+          (parseFloat(marks.social) || 0) +
+          (parseFloat(marks.agriculture) || 0) +
+          (parseFloat(marks.cre) || 0) +
+          (parseFloat(marks.creativeArt) || 0);
+
+        const totalLevel =
+          (parseInt(marks.engLev) || 0) +
+          (parseInt(marks.mathLev) || 0) +
+          (parseInt(marks.preTechLev) || 0) +
+          (parseInt(marks.kiswahiliLev) || 0) +
+          (parseInt(marks.scienceLev) || 0) +
+          (parseInt(marks.socialLev) || 0) +
+          (parseInt(marks.agricultureLev) || 0) +
+          (parseInt(marks.creLev) || 0) +
+          (parseInt(marks.creativeArtLev) || 0);
+
+        const learnerObj = {
+          key: childSnapshot.key,
+          data,
+          marks,
+          rowTotal,
+          totalLevel
+        };
+        const grade = data.grade;
+        if (!gradeGroups[grade]) {
+          gradeGroups[grade] = [];
+        }
+        gradeGroups[grade].push(learnerObj);
+      }
+    });
+
+    Object.keys(gradeGroups).forEach(grade => {
+      const learners = gradeGroups[grade];
+      learners.sort((a, b) => b.rowTotal - a.rowTotal);
+
+      learners.forEach((learner, i) => {
+        learnersWithMarks++;
+
+        const { data, marks, rowTotal, totalLevel } = learner;
+
+        sums.eng += (parseFloat(marks.eng) || 0);
+        sums.math += (parseFloat(marks.math) || 0);
+        sums.preTech += (parseFloat(marks.preTech) || 0);
+        sums.kiswahili += (parseFloat(marks.kiswahili) || 0);
+        sums.science += (parseFloat(marks.science) || 0);
+        sums.social += (parseFloat(marks.social) || 0);
+        sums.agriculture += (parseFloat(marks.agriculture) || 0);
+        sums.cre += (parseFloat(marks.cre) || 0);
+        sums.creativeArt += (parseFloat(marks.creativeArt) || 0);
+        sums.totalMarks += rowTotal;
+        sums.totalLevels += totalLevel;
+
+        const row = document.createElement("tr");
+        row.setAttribute("data-grade", data.grade);
+        row.setAttribute("data-exam-period", examPeriod);
+        row.setAttribute("data-key", learner.key);
+
+        row.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${data.name}</td>
+          <td>${data.grade}</td>
+          <td data-editable="true">${marks.eng}</td><td>${marks.engLev || ''}</td>
+          <td data-editable="true">${marks.math}</td><td>${marks.mathLev || ''}</td>
+          <td data-editable="true">${marks.preTech}</td><td>${marks.preTechLev || ''}</td>
+          <td data-editable="true">${marks.kiswahili}</td><td>${marks.kiswahiliLev || ''}</td>
+          <td data-editable="true">${marks.science}</td><td>${marks.scienceLev || ''}</td>
+          <td data-editable="true">${marks.social}</td><td>${marks.socialLev || ''}</td>
+          <td data-editable="true">${marks.agriculture}</td><td>${marks.agricultureLev || ''}</td>
+          <td data-editable="true">${marks.cre}</td><td>${marks.creLev || ''}</td>
+          <td data-editable="true">${marks.creativeArt}</td><td>${marks.creativeArtLev || ''}</td>
+          <td><strong>${rowTotal}</strong></td>
+          <td><strong>${totalLevel}</strong></td>
+          <td>
+            <button class="deleteMarksBtn" data-key="${learner.key}" data-exam="${examPeriod}">Delete</button>
+          </td>
+        `;
+
+        marksTableBody.appendChild(row);
+      });
+    });
+
+    const divisor = learnersWithMarks > 0 ? learnersWithMarks : 1;
+
+    document.getElementById("totalsRow").innerHTML = `
+      <td colspan="3"><strong>Totals</strong></td>
+      <td>${sums.eng}</td><td></td>
+      <td>${sums.math}</td><td></td>
+      <td>${sums.preTech}</td><td></td>
+      <td>${sums.kiswahili}</td><td></td>
+      <td>${sums.science}</td><td></td>
+      <td>${sums.social}</td><td></td>
+      <td>${sums.agriculture}</td><td></td>
+      <td>${sums.cre}</td><td></td>
+      <td>${sums.creativeArt}</td><td></td>
+      <td><strong>${sums.totalMarks}</strong></td>
+      <td><strong>${sums.totalLevels}</strong></td>
+      <td></td>
+    `;
+
+    document.getElementById("averagesRow").innerHTML = `
+      <td colspan="3"><strong>Averages</strong></td>
+      <td>${(sums.eng / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.math / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.preTech / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.kiswahili / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.science / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.social / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.agriculture / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.cre / divisor).toFixed(2)}</td><td></td>
+      <td>${(sums.creativeArt / divisor).toFixed(2)}</td><td></td>
+      <td><strong>${(sums.totalMarks / divisor).toFixed(2)}</strong></td>
+      <td><strong>${(sums.totalLevels / divisor).toFixed(2)}</strong></td>
+      <td></td>
+    `;
+
+   if (isAdminLoggedIn) enableMarksEditing();
+
+    // ===============================
+    // ✅ AUTO SCROLL AFTER LOAD
+    // ===============================
+    smoothScrollTo(document.getElementById("marksList"));
+
+  });
+}
+
 
 
 // ===============================
@@ -7615,7 +7796,6 @@ function generateSubjectChampionsReport(selectedGrade, selectedExamPeriod) {
     // ✅ AUTO SCROLL TRIGGER
     // ===============================
     smoothScrollTo(reportOutput);
-
     // 🌀 Create animated style (once)
     if (!document.getElementById("celebrationStyles")) {
         const style = document.createElement("style");
@@ -8419,136 +8599,7 @@ const subjects = [
     }
 }
 
-function generateReport(reportType, selectedGrade, examPeriod) {
-    const reportOutput = document.getElementById("reportOutput");
-    reportOutput.innerHTML = ""; // Clear any existing content
 
-    const subjects = [
-        'English', 'Mathematics', 'Pre-Technical Studies',
-        'Kiswahili', 'Integrated Science', 'Social Studies',
-        'Agriculture', 'Religious Education', 'Creative Art'
-    ];
-
-    const levels = ['8', '7', '6', '5', '5', '4', '3', '2' ,'1'];
-
-    const summary = {};
-
-    // Initialize summary counters (if applicable for this report type)
-    if (reportType === 'subjectChampions' || reportType === 'levelSummary') {
-        subjects.forEach(subject => {
-            summary[subject] = {};
-            levels.forEach(level => summary[subject][level] = 0);
-        });
-    }
-
-    // Process rows (e.g., marks table or db rows)
-    marksTableBody.querySelectorAll("tr").forEach(row => {
-        if (selectedGrade && row.getAttribute("data-grade") !== selectedGrade) return;
-        if (examPeriod && row.getAttribute("data-period") !== examPeriod) return;
-
-        // Example: Populate summary based on report type
-        if (reportType === 'levelSummary') {
-            subjects.forEach((subject, i) => {
-                const level = row.querySelector(`td:nth-child(${4 + i * 2 + 1})`)?.textContent;
-                if (levels.includes(level)) {
-                    summary[subject][level]++;
-                }
-            });
-        }
-
-        // Add other report-specific data processing logic here
-    });
-
-    // Generate HTML
-    const year = new Date().getFullYear();
-    let html = `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="display: block; margin: 0 auto 10px; max-width: 80px; height: auto;">
-            <h2 style="margin: 0;">NACHU JUNIOR SCHOOL REPORT</h2>
-            <p style="margin: 5px 0;">Address: P.O. Box 561-00902, Kikuyu, Kenya</p>
-            <p style="margin: 5px 0;">School Motto: "My Talent My Passion"</p>
-            <p style="margin: 5px 0;">Year: ${year}</p>
-            <p style="margin: 5px 0;">Grade: ${selectedGrade || 'All'}</p>
-            <p style="margin: 5px 0;">Exam Period: ${examPeriod || 'All'}</p>
-        </div>`;
-
-    // Add table for level summary
-    if (reportType === 'levelSummary') {
-        html += `<table style="width: 100%; border-collapse: collapse; margin-top: 15px; background-color: white; color: black; font-size: 16px;">
-            <thead>
-                <tr style="background: #f2f2f2;">
-                    <th style="border: 1px solid black; padding: 10px;">Subject</th>`;
-        levels.forEach(level => {
-            html += `<th style="border: 1px solid black; padding: 10px;">${level}</th>`;
-        });
-        html += `</tr></thead><tbody>`;
-
-        subjects.forEach(subject => {
-            html += `<tr>
-                <td style="border: 1px solid black; padding: 10px;">${subject}</td>`;
-            levels.forEach(level => {
-                html += `<td style="border: 1px solid black; padding: 10px;">${summary[subject][level]}</td>`;
-            });
-            html += `</tr>`;
-        });
-
-        html += `</tbody></table>`;
-    }
-
-    // Add other report-specific HTML here (e.g., charts, summaries, etc.)
-
-    reportOutput.innerHTML = html;
-
-    // Add Print Button
-    let printButton = document.getElementById("printReportBtn");
-    if (!printButton) {
-        printButton = document.createElement("button");
-        printButton.id = "printReportBtn";
-        printButton.className = "print-button";
-        printButton.innerHTML = '<i class="fas fa-print"></i> Print Report';
-        reportOutput.appendChild(printButton);
-
-        printButton.addEventListener("click", () => {
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>${reportType} Report</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; margin: 20px; }
-                            table { width: 100%; border-collapse: collapse; }
-                            table, th, td { border: 1px solid black; padding: 8px; }
-                            th { background-color: #f4f4f4; }
-                            img { max-width: 100px; }
-                            .stamp {
-                                border: 2px solid blue;
-                                color: blue;
-                                text-align: center;
-                                width: 200px;
-                                height: 70px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                margin: 20px auto;
-                                font-weight: bold;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        ${reportOutput.innerHTML}
-                        <div class="stamp">
-                            Nachu Junior School<br>
-                            P.O. Box 561-00902<br>
-                            Kikuyu...Exam Department
-                        </div>
-                    </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-        });
-    }
-   }
 function generateGenderPerformance(selectedGrade, selectedExamPeriod) {
 // ===============================
     // 🔹 AUTO SCROLL HELPER
@@ -10444,6 +10495,7 @@ html += `<div class="stamp print-only">
         });
     }
 }
+
 document.addEventListener("DOMContentLoaded", function () {
 
   // ===============================
@@ -10461,8 +10513,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // ===============================
   // 🔹 MAIN SECTIONS (ACCORDION)
   // ===============================
-  const mainSections = document.querySelectorAll(".main-section"); 
-  const mainButtons = document.querySelectorAll(".main-section-btn"); 
+  const mainSections = document.querySelectorAll(".main-section");
+  const mainButtons = document.querySelectorAll(".main-section-btn");
 
   function closeAllMainSections() {
     mainSections.forEach(section => {
@@ -10472,9 +10524,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     mainButtons.forEach(btn => {
       const icon = btn.querySelector("i");
-      if (icon) { 
-        icon.classList.remove("fa-chevron-up"); 
-        icon.classList.add("fa-chevron-down"); 
+      if (icon) {
+        icon.classList.remove("fa-chevron-up");
+        icon.classList.add("fa-chevron-down");
       }
     });
   }
@@ -10530,12 +10582,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // ===============================
-  // 🔹 GLOBAL RESET
+  // 🔥 SAFE GLOBAL RESET (FIXED)
   // ===============================
-  function closeEverything() {
+  function closeEverything(preserveMarks = false) {
     closeAllMainSections();
     closeAllSubSections();
 
+    // IMPORTANT: do NOT destroy marks UI when switching reports
+    if (!preserveMarks) {
+      closeAllMarksSubSections();
+    }
   }
 
   // ===============================
@@ -10550,16 +10606,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const isOpen = section.style.display === "block";
 
-      closeEverything();
+      closeEverything(false);
 
       if (!isOpen) {
         section.style.display = "block";
         section.classList.add("active");
 
         const icon = btn.querySelector("i");
-        if (icon) { 
-          icon.classList.remove("fa-chevron-down"); 
-          icon.classList.add("fa-chevron-up"); 
+        if (icon) {
+          icon.classList.remove("fa-chevron-down");
+          icon.classList.add("fa-chevron-up");
         }
 
         smoothScrollTo(section);
@@ -10576,12 +10632,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!btn || !section) return;
 
     btn.addEventListener("click", () => {
+
       const isOpen = section.style.display === "block";
+
+      const isMarksArea =
+        item.sectionId === "marksSection" ||
+        item.sectionId === "performanceReportsSection";
 
       closeAllSubSections();
 
-      // only reset marks children if NOT opening marks container
-      if (item.sectionId !== "marksSection") {
+      if (!isMarksArea) {
         closeAllMarksSubSections();
       }
 
@@ -10596,7 +10656,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         smoothScrollTo(section);
 
-        // auto show cards when marks opens
         if (item.sectionId === "marksSection") {
           const classMean = document.getElementById("classMeanCard");
           const totalLearners = document.getElementById("totalLearnersCard");
@@ -10672,9 +10731,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     wrapper.style.display = wrapper.style.display || 'none';
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener("click", () => {
 
-      closeEverything();
+      // 🔥 IMPORTANT FIX: preserve marks when switching reports
+      closeEverything(true);
 
       const isHidden = wrapper.style.display === 'none';
 
@@ -10707,6 +10767,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
+
+
 
 document.getElementById("printFilteredMarksBtn").addEventListener("click", () => {
 
@@ -12038,187 +12100,6 @@ function generateSubjectRanking(grade, subjectKey, period) {
     printWindow.print();
   });
 }
-document.getElementById("loadMarksByPeriodBtn").addEventListener("click", () => {
-  const selectedExamPeriod = document.getElementById("marksExamPeriodSelect").value;
-  if (!selectedExamPeriod) {
-    showToast("Please select an exam period to view marks.", "error");
-    return;
-  }
-  loadMarksTableForPeriod(selectedExamPeriod);
-});
-function loadMarksTableForPeriod(examPeriod) {
-
-  // ===============================
-  // 🔹 AUTO SCROLL HELPER
-  // ===============================
-  function smoothScrollTo(el) {
-    setTimeout(() => {
-      el.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-      // 🔥 Optional highlight effect
-      el.style.transition = "all 0.4s ease";
-      el.style.boxShadow = "0 0 15px rgba(0,123,255,0.7)";
-      setTimeout(() => {
-        el.style.boxShadow = "none";
-      }, 2000);
-
-    }, 300); // delay for Firebase rendering
-  }
-
-  marksTableBody.innerHTML = "";
-  const gradeGroups = {};
-
-  let sums = {
-    eng: 0, math: 0, preTech: 0, kiswahili: 0,
-    science: 0, social: 0, agriculture: 0,
-    cre: 0, creativeArt: 0, totalMarks: 0, totalLevels: 0
-  };
-
-  let learnersWithMarks = 0;
-
-  onValue(learnersRef, (snapshot) => {
-    marksTableBody.innerHTML = "";
-
-    snapshot.forEach(childSnapshot => {
-      const data = childSnapshot.val();
-      const marksData = data.marks || {};
-      const marks = marksData[examPeriod] || null;
-
-      if (marks) {
-        const rowTotal =
-          (parseFloat(marks.eng) || 0) +
-          (parseFloat(marks.math) || 0) +
-          (parseFloat(marks.preTech) || 0) +
-          (parseFloat(marks.kiswahili) || 0) +
-          (parseFloat(marks.science) || 0) +
-          (parseFloat(marks.social) || 0) +
-          (parseFloat(marks.agriculture) || 0) +
-          (parseFloat(marks.cre) || 0) +
-          (parseFloat(marks.creativeArt) || 0);
-
-        const totalLevel =
-          (parseInt(marks.engLev) || 0) +
-          (parseInt(marks.mathLev) || 0) +
-          (parseInt(marks.preTechLev) || 0) +
-          (parseInt(marks.kiswahiliLev) || 0) +
-          (parseInt(marks.scienceLev) || 0) +
-          (parseInt(marks.socialLev) || 0) +
-          (parseInt(marks.agricultureLev) || 0) +
-          (parseInt(marks.creLev) || 0) +
-          (parseInt(marks.creativeArtLev) || 0);
-
-        const learnerObj = {
-          key: childSnapshot.key,
-          data,
-          marks,
-          rowTotal,
-          totalLevel
-        };
-        const grade = data.grade;
-        if (!gradeGroups[grade]) {
-          gradeGroups[grade] = [];
-        }
-        gradeGroups[grade].push(learnerObj);
-      }
-    });
-
-    Object.keys(gradeGroups).forEach(grade => {
-      const learners = gradeGroups[grade];
-      learners.sort((a, b) => b.rowTotal - a.rowTotal);
-
-      learners.forEach((learner, i) => {
-        learnersWithMarks++;
-
-        const { data, marks, rowTotal, totalLevel } = learner;
-
-        sums.eng += (parseFloat(marks.eng) || 0);
-        sums.math += (parseFloat(marks.math) || 0);
-        sums.preTech += (parseFloat(marks.preTech) || 0);
-        sums.kiswahili += (parseFloat(marks.kiswahili) || 0);
-        sums.science += (parseFloat(marks.science) || 0);
-        sums.social += (parseFloat(marks.social) || 0);
-        sums.agriculture += (parseFloat(marks.agriculture) || 0);
-        sums.cre += (parseFloat(marks.cre) || 0);
-        sums.creativeArt += (parseFloat(marks.creativeArt) || 0);
-        sums.totalMarks += rowTotal;
-        sums.totalLevels += totalLevel;
-
-        const row = document.createElement("tr");
-        row.setAttribute("data-grade", data.grade);
-        row.setAttribute("data-exam-period", examPeriod);
-        row.setAttribute("data-key", learner.key);
-
-        row.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${data.name}</td>
-          <td>${data.grade}</td>
-          <td data-editable="true">${marks.eng}</td><td>${marks.engLev || ''}</td>
-          <td data-editable="true">${marks.math}</td><td>${marks.mathLev || ''}</td>
-          <td data-editable="true">${marks.preTech}</td><td>${marks.preTechLev || ''}</td>
-          <td data-editable="true">${marks.kiswahili}</td><td>${marks.kiswahiliLev || ''}</td>
-          <td data-editable="true">${marks.science}</td><td>${marks.scienceLev || ''}</td>
-          <td data-editable="true">${marks.social}</td><td>${marks.socialLev || ''}</td>
-          <td data-editable="true">${marks.agriculture}</td><td>${marks.agricultureLev || ''}</td>
-          <td data-editable="true">${marks.cre}</td><td>${marks.creLev || ''}</td>
-          <td data-editable="true">${marks.creativeArt}</td><td>${marks.creativeArtLev || ''}</td>
-          <td><strong>${rowTotal}</strong></td>
-          <td><strong>${totalLevel}</strong></td>
-          <td>
-            <button class="deleteMarksBtn" data-key="${learner.key}" data-exam="${examPeriod}">Delete</button>
-          </td>
-        `;
-
-        marksTableBody.appendChild(row);
-      });
-    });
-
-    const divisor = learnersWithMarks > 0 ? learnersWithMarks : 1;
-
-    document.getElementById("totalsRow").innerHTML = `
-      <td colspan="3"><strong>Totals</strong></td>
-      <td>${sums.eng}</td><td></td>
-      <td>${sums.math}</td><td></td>
-      <td>${sums.preTech}</td><td></td>
-      <td>${sums.kiswahili}</td><td></td>
-      <td>${sums.science}</td><td></td>
-      <td>${sums.social}</td><td></td>
-      <td>${sums.agriculture}</td><td></td>
-      <td>${sums.cre}</td><td></td>
-      <td>${sums.creativeArt}</td><td></td>
-      <td><strong>${sums.totalMarks}</strong></td>
-      <td><strong>${sums.totalLevels}</strong></td>
-      <td></td>
-    `;
-
-    document.getElementById("averagesRow").innerHTML = `
-      <td colspan="3"><strong>Averages</strong></td>
-      <td>${(sums.eng / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.math / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.preTech / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.kiswahili / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.science / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.social / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.agriculture / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.cre / divisor).toFixed(2)}</td><td></td>
-      <td>${(sums.creativeArt / divisor).toFixed(2)}</td><td></td>
-      <td><strong>${(sums.totalMarks / divisor).toFixed(2)}</strong></td>
-      <td><strong>${(sums.totalLevels / divisor).toFixed(2)}</strong></td>
-      <td></td>
-    `;
-
-   if (isAdminLoggedIn) enableMarksEditing();
-
-    // ===============================
-    // ✅ AUTO SCROLL AFTER LOAD
-    // ===============================
-    smoothScrollTo(document.getElementById("marksList"));
-
-  });
-}
-
 
 
 function showToast(message, type = 'info') {

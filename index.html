@@ -2229,6 +2229,143 @@ button[onclick^="show"] {
 .hidden {
   display: none;
 }
+/* ===============================
+   📱 SMALL PHONES
+=============================== */
+@media (max-width: 480px) {
+
+  #schoolHeader {
+    padding: 12px;
+  }
+
+  .school-left h1 {
+    font-size: 16px;
+  }
+
+  .tagline {
+    font-size: 12px;
+  }
+
+  #liveDate,
+  #liveTime {
+    font-size: 12px;
+  }
+
+  .status-badge {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+#schoolHeader {
+  background: linear-gradient(135deg, #b30000, #ff1a1a);
+  border: 6px solid #7a0000;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+/* ===============================
+   HEADER BASE (RED BACKGROUND SAFE OVERRIDE)
+=============================== */
+#schoolHeader {
+  color: white;
+}
+
+/* ===============================
+   MAIN TITLE
+=============================== */
+#schoolHeader h1 {
+  color: #ffffff;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* ===============================
+   TAGLINE (YELLOW HIGHLIGHT)
+=============================== */
+#schoolHeader .tagline {
+  color: #ffeb3b;
+  font-weight: 600;
+  margin: 2px 0;
+}
+
+/* ===============================
+   GREETING TEXT
+=============================== */
+#schoolHeader #greetingText {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* ===============================
+   ONLINE STATUS BADGE
+=============================== */
+#onlineStatus {
+  color: #c00000;
+  background: #ffffff;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* ===============================
+   SCHOOL STATUS BADGE
+=============================== */
+#schoolStatus {
+  color: #ffeb3b;
+  background: rgba(255, 235, 59, 0.15);
+  border: 1px solid #ffeb3b;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 25px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ===============================
+   🟡 ROUND LOGOS (LEFT + RIGHT FIX)
+=============================== */
+.school-logo,
+.school-right-logo img {
+  width: 70px;
+  height: 70px;
+
+  object-fit: cover;   /* ensures proper circular crop */
+  border-radius: 50%;   /* 🔥 makes it ROUND */
+
+  background: white;
+  padding: 3px;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+/* RIGHT LOGO SMALLER BUT SAME STYLE */
+.school-right-logo img {
+  width: 60px;
+  height: 60px;
+}
+
+/* ===============================
+   REMOVE OVER-GLOBAL COLOR BUG
+=============================== */
+#schoolHeader div {
+  color: inherit;
+}
+
+/* ===============================
+   MOBILE FIXES
+=============================== */
+@media (max-width: 768px) {
+  #onlineStatus {
+    margin-top: 10px;
+  }
+
+  .school-right-logo img {
+    width: 50px;
+    height: 50px;
+  }
+}
 </style>
 
 </head>
@@ -2264,46 +2401,41 @@ button[onclick^="show"] {
   <button onclick="showLoginForm()" style="background: #FF5722; color: white; border: none; border-radius: 4px; padding: 10px 14px; cursor: pointer;">Back to Login</button>
 </div>
 
-
 <!-- MAIN CONTENT SECTION -->
 <div id="mainContent" style="display: none; padding: 20px;">
-<div id="schoolHeader">
 
-  <!-- 🎈 Floating Glow -->
-  <div class="floating-bg"></div>
+  <div id="schoolHeader">
 
-  <!-- 🏫 Left -->
-  <div class="school-left">
-    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png" class="school-logo">
+    <!-- 🎈 Floating Glow -->
+    <div class="floating-bg"></div>
 
-    <div>
-      <h1>NACHU JUNIOR SCHOOL</h1>
-      <p class="tagline">🌟 Learn • Grow • Shine</p>
-      <p id="greetingText">👋 Welcome!</p>
+    <!-- 🏫 LEFT LOGO + TEXT -->
+    <div class="school-left">
+      <img src="https://i.imgur.com/VSAh48K.jpeg" class="school-logo">
+
+      <div>
+        <h1>NACHU JUNIOR  SCHOOL</h1>
+        <p class="tagline">🌟 Learn • Grow • Shine</p>
+        <p id="greetingText">👋 Welcome!</p>
+      </div>
     </div>
+
+    <!-- 🟢 ONLINE STATUS -->
+    <div id="onlineStatus" class="online-dot">
+      🟢 Online
+    </div>
+
+    <!-- 🟢 SCHOOL STATUS -->
+    <div id="schoolStatus" class="status-badge">
+      🟢 School Open
+    </div>
+
+    <!-- 🏫 RIGHT LOGO -->
+    <div class="school-right-logo">
+      <img src="https://i.imgur.com/UrySmf2.png" alt="School Logo Right">
+    </div>
+
   </div>
-<div id="onlineStatus" class="online-dot">
-  🟢 Online
-</div>
-  <!-- ⏰ Right -->
-  <div class="school-right">
-    <div id="liveDate"></div>
-    <div id="liveTime"></div>
-
-    <!-- 🟢 School Status -->
-    <div id="schoolStatus" class="status-badge">🟢 School Open</div>
-  </div>
-
-
-
-
-  
-  <!-- Logo and Date/Time -->
-  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
-    <img src=" https://i.imgur.com/VSAh48K.jpeg" alt="School Logo" style="height:50px; object-fit:contain;">
-    <span id="dateTime" style="font-size:16px; color:#673AB7; font-weight:bold;"></span>
-  </div>
-</div>
 <div id="userBadgeContainer">
   <span id="userBadge" class="badge">👤 Guest</span>
 </div>

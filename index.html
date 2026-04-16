@@ -12396,64 +12396,98 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
     // 🔰 UI UPDATES
     // ==============================
 
-    // Show badge
     showUserBadge(usernameToShow, role, isAdmin);
-
-    // Update greeting
     updateGreeting(usernameToShow);
 
-    // Update profile name (dropdown)
     const profileNameEl = document.getElementById("profileName");
     if (profileNameEl) {
       profileNameEl.textContent = usernameToShow;
     }
-// ==============================
-// 💾 SAVE LOGIN (SESSION + EXPIRY)
-// ==============================
-const userData = {
-  username: usernameToShow,
-  role: role,
-  isAdmin: isAdmin
-};
 
-// Save using session function (with expiry)
-saveLoginSession(userData);
+    // ==============================
+    // 💾 SAVE LOGIN
+    // ==============================
+    const userData = {
+      username: usernameToShow,
+      role: role,
+      isAdmin: isAdmin
+    };
 
-// Admin flag
-if (isAdmin) isAdminLoggedIn = true;
+    saveLoginSession(userData);
 
-    // Hide login form, show main content
+    if (isAdmin) isAdminLoggedIn = true;
+
+    // Hide login, show main UI
     document.getElementById("loginSection").style.display = "none";
     document.getElementById("mainContent").style.display = "block";
     document.getElementById("loginError").style.display = "none";
 
-    // Show buttons based on role
-    const allButtons = document.querySelectorAll("#mainContent button");
-    allButtons.forEach(btn => {
-      if (isAdmin) {
-        btn.style.display = "inline-block";
-      } else if (currentUser.role === "parent") {
-        if (btn.id === "toggleParentLookupBtn" || btn.id === "fetchParentResults") {
-          btn.style.display = "inline-block";
-        } else {
-          btn.style.display = "none";
-        }
-      } else {
-        btn.style.display = "inline-block";
-      }
-    });
+    // ==============================
+    // 🔐 BUTTON ACCESS CONTROL
+    // ==============================
+   const allButtons = document.querySelectorAll("#mainContent button");
 
-    // Admin-only buttons
+allButtons.forEach(btn => {
+
+  // ==============================
+  // 🔐 ADMIN ONLY BUTTONS (EXPLICIT LOCKS)
+  // ==============================
+
+  const adminOnlyButtons = [
+    "masterToggleBtn",              // Learners Database
+    "togglePerformanceReportsBtn"   // Exam Reports
+  ];
+
+  if (adminOnlyButtons.includes(btn.id)) {
+    btn.style.display = isAdmin ? "inline-block" : "none";
+    return; // stop further processing
+  }
+
+  // ==============================
+  // ADMIN → sees everything
+  // ==============================
+  if (isAdmin) {
+    btn.style.display = "inline-block";
+  }
+
+  // ==============================
+  // PARENT → limited buttons
+  // ==============================
+  else if (currentUser.role === "parent") {
+    if (
+      btn.id === "toggleParentLookupBtn" ||
+      btn.id === "fetchParentResults"
+    ) {
+      btn.style.display = "inline-block";
+    } else {
+      btn.style.display = "none";
+    }
+  }
+
+  // ==============================
+  // TEACHER → most buttons
+  // ==============================
+  else {
+    btn.style.display = "inline-block";
+  }
+
+});
+    // ==============================
+    // 🔹 ADMIN-ONLY BUTTONS
+    // ==============================
     if (isAdmin) {
-      const adminBtns = document.querySelectorAll(".admin-only");
-      adminBtns.forEach(btn => btn.style.display = "inline-block");
+      document.querySelectorAll(".admin-only")
+        .forEach(btn => btn.style.display = "inline-block");
 
       const saveBtn = document.getElementById("saveEditedMarksBtn");
       if (saveBtn) saveBtn.style.display = "inline-block";
     }
 
-    // SweetAlert notifications
+    // ==============================
+    // 🔔 SWEETALERTS
+    // ==============================
     if (typeof Swal !== "undefined") {
+
       if (isAdmin) {
         Swal.fire({
           icon: 'success',
@@ -12472,9 +12506,9 @@ if (isAdmin) isAdminLoggedIn = true;
             <p>🎉 Login Successful!</p>
             <p>Here's how to fetch your child's results:</p>
             <ol style="text-align:left;">
-              <li>Use the <strong>Parent Lookup</strong> modal</li>
-              <li>Click <strong>Fetch Results</strong></li>
-              <li>View results below</li>
+              <li>Use Parent Lookup</li>
+              <li>Click Fetch Results</li>
+              <li>View results</li>
             </ol>
           `,
           icon: "success",
@@ -12492,37 +12526,38 @@ if (isAdmin) isAdminLoggedIn = true;
     }
 
   } else {
-    // Failed login
+
     const loginError = document.getElementById("loginError");
     if (loginError) loginError.style.display = "block";
 
-    if (typeof Swal !== "undefined") {
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Failed',
-        text: 'Incorrect username or password'
-      });
-    } else {
-      alert("Login failed: incorrect username or password.");
-    }
+    Swal?.fire({
+      icon: 'error',
+      title: 'Login Failed',
+      text: 'Incorrect username or password'
+    }) || alert("Login failed");
   }
 });
 
+// ==============================
+// 🔹 USER BADGE
+// ==============================
 function showUserBadge(username, role, isAdmin) {
   const badge = document.getElementById("userBadge");
 
-  // Reset classes
   badge.className = "badge";
 
   if (isAdmin) {
     badge.textContent = `👑 Admin: ${username}`;
     badge.classList.add("badge-admin");
+
   } else if (role === "teacher") {
     badge.textContent = `👨‍🏫 Teacher: ${username}`;
     badge.classList.add("badge-teacher");
+
   } else if (role === "parent") {
     badge.textContent = `👨‍👩‍👧 Parent: ${username}`;
     badge.classList.add("badge-parent");
+
   } else {
     badge.textContent = `👤 User: ${username}`;
   }

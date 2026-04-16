@@ -2679,14 +2679,79 @@ button[onclick^="show"] {
     </button>
 
   </div>
+<div style="
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap:12px;
+  margin-top:15px;
+">
 
+  <!-- TOTAL COLLECTED -->
+  <div style="
+    background:#2a9d8f;
+    color:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+  ">
+    <div style="font-size:13px; opacity:0.9;">Total Collected</div>
+    <div style="font-size:20px; font-weight:bold;">
+      KES <span id="yearTotalCollected">0</span>
+    </div>
+  </div>
+
+  <!-- CASH -->
+  <div style="
+    background:#457b9d;
+    color:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+  ">
+    <div style="font-size:13px; opacity:0.9;">Cash Payments</div>
+    <div style="font-size:20px; font-weight:bold;">
+      KES <span id="cashCollected">0</span>
+    </div>
+  </div>
+
+  <!-- BANK -->
+  <div style="
+    background:#1d3557;
+    color:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+  ">
+    <div style="font-size:13px; opacity:0.9;">Bank Payments</div>
+    <div style="font-size:20px; font-weight:bold;">
+      KES <span id="bankCollected">0</span>
+    </div>
+  </div>
+
+  <!-- REFUNDS -->
+  <div style="
+    background:#e63946;
+    color:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+  ">
+    <div style="font-size:13px; opacity:0.9;">Refunds</div>
+    <div style="font-size:20px; font-weight:bold;">
+      KES <span id="refundTotal">0</span>
+    </div>
+  </div>
+
+</div>
   <!-- ACTION BAR -->
   <div class="fees-actions">
     <button onclick="printFilteredFees()" class="action-btn print">
       🖨 Print Statement
     </button>
 
-  
+    <button id="bankPayBtn" class="print-button">
+  🏦 Record Bank Payment
+</button>
   </div>
 
   <!-- DASHBOARD -->
@@ -2785,6 +2850,7 @@ button[onclick^="show"] {
 
   <div id="historyContent"></div>
 </div>
+
 
 
 <div id="communicationCenter"
@@ -13794,69 +13860,124 @@ studentSelect.innerHTML += `
     loadLastPaymentDetails();
   };
 }
+let isProcessingPayment = false;
+
 document.getElementById("payFeeBtn").onclick = async () => {
+
+  if (isProcessingPayment) return; // 🔒 prevent double click
+  isProcessingPayment = true;
+
   const studentId = document.getElementById("feeStudent").value;
   const amount = Number(document.getElementById("feeAmount").value);
   const feeType = document.getElementById("feeType").value;
   const year = document.getElementById("feeYear").value;
 
   if (!studentId || !amount || !feeType || !year) {
-    alert("Fill all fields including Year and Fee Type");
+    isProcessingPayment = false;
+    Swal.fire({
+      icon: "warning",
+      title: "Missing Fields",
+      text: "Fill all fields including Year and Fee Type"
+    });
+    return;
+  }
+
+  if (amount <= 0) {
+    isProcessingPayment = false;
+    Swal.fire({
+      icon: "error",
+      title: "Invalid Amount",
+      text: "Amount must be greater than zero"
+    });
     return;
   }
 
   try {
+
     const learner = allLearners.find(l => l.key === studentId);
 
-    // ✅ YEAR-BASED PATH
+    // ==========================
+    // 🔥 DB PATHS
+    // ==========================
     const feeRef = ref(db, "fees/" + year + "/" + studentId);
     const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
 
     const snapshot = await get(feeRef);
     let existingData = snapshot.val();
 
-    // initialize structure if empty
     let fees = existingData?.fees || {};
 
-    // add to existing category or create new
-    if (!fees[feeType]) {
-      fees[feeType] = 0;
-    }
+    // ==========================
+    // 💰 SAFE ADDITION
+    // ==========================
+    fees[feeType] = Number(fees[feeType] || 0) + Number(amount);
 
-    fees[feeType] += amount;
+    // ==========================
+    // 🧾 RECEIPT / REFERENCE ID
+    // ==========================
+    const reference = "RCPT-" + Date.now();
 
     const updatedPayment = {
-      studentId: studentId,
-      name: learner ? learner.name : "",
-      grade: learner ? learner.grade : "",
-      year: year, // ✅ store year
-      fees: fees,
+      studentId,
+      name: learner?.name || "",
+      grade: learner?.grade || "",
+      year,
+      fees,
       lastUpdated: new Date().toLocaleString()
     };
 
-    // ✅ Save summary under year
+    // ==========================
+    // 💾 SAVE MAIN RECORD
+    // ==========================
     await set(feeRef, updatedPayment);
 
-    // ✅ Save history under year
+    // ==========================
+    // 📜 SAVE HISTORY (LOCKED)
+    // ==========================
     await push(historyRef, {
-      feeType: feeType,
-      amount: amount,
-      date: new Date().toLocaleString(),
-      type: "PAYMENT"
+      feeType,
+      amount,
+      type: "PAYMENT",
+      method: "CASH",
+      reference, // 🔥 important for anti-fake system
+      date: new Date().toLocaleString()
     });
 
-    alert("Payment Recorded & Saved to History ✅");
+    // ==========================
+    // ✅ SUCCESS
+    // ==========================
+    await Swal.fire({
+      icon: "success",
+      title: "Payment Recorded",
+      html: `
+        <b>Student:</b> ${learner?.name || ""}<br>
+        <b>Fee Type:</b> ${feeType}<br>
+        <b>Amount:</b> KES ${amount}<br>
+        <b>Ref:</b> ${reference}
+      `,
+      timer: 3000,
+      showConfirmButton: false
+    });
 
-    // reset inputs
+    // ==========================
+    // RESET INPUTS
+    // ==========================
     document.getElementById("feeAmount").value = "";
     document.getElementById("feeType").value = "";
 
-    // reload table
     loadFeeStatement();
 
   } catch (err) {
     console.error(err);
-    alert("Error saving payment: " + err.message);
+
+    Swal.fire({
+      icon: "error",
+      title: "Payment Failed",
+      text: err.message
+    });
+
+  } finally {
+    isProcessingPayment = false; // 🔒 unlock button
   }
 };
 
@@ -13972,7 +14093,7 @@ document.getElementById("payFeeBtn").onclick = async () => {
 
     if (!fees[feeType]) fees[feeType] = 0;
 
-    fees[feeType] += amount;
+    fees[feeType] = Number(fees[feeType] || 0) + Number(amount);
 
     const updatedPayment = {
       studentId: studentId,
@@ -14350,17 +14471,41 @@ window.closeHistoryModal = function() {
 window.deleteLearnerFees = async function(studentId) {
 
   const result = await Swal.fire({
-    title: 'Are you sure?',
-    text: "This will permanently delete the learner's fee record!",
-    icon: 'warning',
+    title: "⚠️ DANGER ZONE",
+    html: `
+      <div style="font-size:14px; line-height:1.4; margin:0;">
+        <b style="color:#e63946;">Permanently delete</b> this learner’s fee record.<br>
+        This action <b>cannot be undone</b>.<br><br>
+
+        Type <b>DELETE</b> to confirm.
+      </div>
+    `,
+    icon: "error",
+    input: "text",
+    inputPlaceholder: "Type DELETE",
     showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'Cancel'
+
+    confirmButtonText: "Delete",
+    cancelButtonText: "Cancel",
+
+    confirmButtonColor: "#d00000",
+    cancelButtonColor: "#3085d6",
+
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+
+    width: 420, // ✅ reduces overall modal width/height feel
+
+    preConfirm: (value) => {
+      if (value !== "DELETE") {
+        Swal.showValidationMessage("Type DELETE to confirm");
+        return false;
+      }
+    }
   });
 
   if (!result.isConfirmed) return;
+
 
   try {
     const year = document.getElementById("feeYear").value;
@@ -14391,28 +14536,128 @@ window.printReceipt = function(studentId) {
   const student = allFeeData[studentId];
   if (!student) return;
 
+  const receiptNo = generateReceiptNumber();
+  const date = new Date().toLocaleString();
+
   let total = 0;
-  let breakdown = "";
 
-  Object.entries(student.fees || {}).forEach(([type, amount]) => {
+  let rows = Object.entries(student.fees || {}).map(([type, amount], i) => {
     total += amount;
-    breakdown += `<p>${type}: ${amount}</p>`;
-  });
+    return `
+      <tr>
+        <td style="padding:6px; border:1px solid #000; text-align:center;">${i + 1}</td>
+        <td style="padding:6px; border:1px solid #000;">${type}</td>
+        <td style="padding:6px; border:1px solid #000; text-align:right;">${amount}</td>
+      </tr>
+    `;
+  }).join("");
 
-  const win = window.open("", "", "width=600,height=600");
+  const win = window.open("", "_blank", "width=800,height=700");
 
   win.document.write(`
-    <h2 style="text-align:center;">SCHOOL RECEIPT</h2>
-    <hr/>
-    <p><strong>Name:</strong> ${student.name}</p>
-    <p><strong>Grade:</strong> ${student.grade}</p>
-    <hr/>
-    ${breakdown}
-    <hr/>
-    <h3>Total Paid: ${total}</h3>
-    <p>Date: ${new Date().toLocaleString()}</p>
+    <html>
+    <head>
+      <title>Receipt</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; color:#000; }
+        .header { text-align:center; margin-bottom:10px; }
+        .school-name { font-size:20px; font-weight:bold; }
+        .sub { font-size:13px; }
+        hr { border:1px solid #000; margin:10px 0; }
+
+        table { width:100%; border-collapse:collapse; margin-top:10px; }
+        th { background:#f2f2f2; border:1px solid #000; padding:8px; }
+        td { border:1px solid #000; }
+
+        .right { text-align:right; }
+        .bold { font-weight:bold; }
+
+        .footer {
+          margin-top:40px;
+          display:flex;
+          justify-content:space-between;
+        }
+
+        .box {
+          width:45%;
+          text-align:center;
+        }
+
+        .stamp {
+          border:1px dashed #000;
+          padding:10px;
+          height:80px;
+        }
+      </style>
+    </head>
+
+    <body>
+
+      <div class="header">
+        <div class="school-name">NACHU PRIMARY AND JUNIOR SCHOOL</div>
+        <div class="sub">P.O BOX 561-00902 KIKUYU, KENYA</div>
+        <div class="sub">Tel: +254-700-123456</div>
+        <div class="sub"><b>OFFICIAL FEE RECEIPT</b></div>
+      </div>
+
+      <hr>
+
+      <div style="display:flex; justify-content:space-between; font-size:14px;">
+        <div>
+          <b>Receipt No:</b> ${receiptNo}<br>
+          <b>Date:</b> ${date}<br>
+          <b>Year:</b> ${document.getElementById("feeYear").value}
+        </div>
+
+        <div style="text-align:right;">
+          <b>Student:</b> ${student.name}<br>
+          <b>Grade:</b> ${student.grade}
+        </div>
+      </div>
+
+      <hr>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:10%;">No</th>
+            <th>Fee Type</th>
+            <th style="width:25%;">Amount (KES)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td colspan="2" class="bold right">TOTAL</td>
+            <td class="bold right">${total}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="footer">
+
+        <div class="box">
+          <div class="stamp">Cashier Signature</div>
+        </div>
+
+        <div class="box">
+          <div class="stamp">School Stamp</div>
+        </div>
+
+      </div>
+
+      <p style="text-align:center; margin-top:20px; font-size:12px;">
+        This is a computer generated receipt and does not require a signature.
+      </p>
+
+    </body>
+    </html>
   `);
 
+  win.document.close();
   win.print();
 };
 
@@ -14496,12 +14741,11 @@ feeStudentSelect.addEventListener("change", () => {
 });
 
 async function loadLastPaymentDetails() {
+
   const studentId = document.getElementById("feeStudent").value;
   const year = document.getElementById("feeYear").value;
-
   const infoBox = document.getElementById("lastPaymentInfo");
 
-  // Clear if nothing selected
   if (!studentId || !year) {
     infoBox.innerHTML = "";
     return;
@@ -14514,172 +14758,347 @@ async function loadLastPaymentDetails() {
     const data = snapshot.val();
 
     if (!data) {
-      infoBox.innerHTML = "";
-
-      Swal.fire({
-        icon: 'info',
-        title: 'No History',
-        text: 'No payment history found for this student'
-      });
-
+      infoBox.innerHTML = `
+        <div style="padding:10px; color:#888;">
+          No payment history found
+        </div>
+      `;
       return;
     }
 
-    // Convert to array and sort latest first
+    // Convert & sort safely
     const records = Object.values(data).sort((a, b) => {
-      return new Date(b.date) - new Date(a.date);
+      return new Date(b.date || 0) - new Date(a.date || 0);
     });
 
-    const lastPayment = records.find(r => r.type === "PAYMENT");
+const payments = records.filter(r =>
+  ["PAYMENT", "BANK PAYMENT", "ADJUSTMENT (+)", "ADJUSTMENT (-)"].includes(r.type)
+);
 
-    if (lastPayment) {
-      // ✅ DISPLAY LAST PAYMENT INFO IN UI
+    if (payments.length === 0) {
       infoBox.innerHTML = `
-        <strong>Last Payment:</strong><br>
-        Fee Type: ${lastPayment.feeType}<br>
-        Amount: ${lastPayment.amount}<br>
-        Date: ${lastPayment.date}
+        <div style="padding:10px; color:#888;">
+          No payments recorded yet
+        </div>
       `;
-
-      // Autofill inputs
-      document.getElementById("feeType").value = lastPayment.feeType || "";
-      document.getElementById("feeAmount").value = lastPayment.amount || "";
-
-      // Optional toast notification
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Last payment loaded',
-        showConfirmButton: false,
-        timer: 1500
-      });
-
-    } else {
-      infoBox.innerHTML = "";
-
-      Swal.fire({
-        icon: 'info',
-        title: 'No Payments',
-        text: 'No previous payments found for this student'
-      });
+      return;
     }
+
+    const lastPayment = payments[0];
+
+    // Last 3 payments preview
+    const last3 = payments.slice(0, 3);
+
+    let historyHtml = last3.map(p => `
+      <div style="
+        padding:6px;
+        border-bottom:1px solid #eee;
+        font-size:13px;
+      ">
+        <b>${p.feeType}</b> - ${p.amount}<br>
+        <span style="color:#666;">
+          ${p.type} | ${p.date}
+        </span>
+      </div>
+    `).join("");
+
+    infoBox.innerHTML = `
+      <div style="
+        border:1px solid #ddd;
+        border-radius:8px;
+        padding:10px;
+        background:#f9f9f9;
+      ">
+
+        <h4 style="margin:0 0 8px 0;">🧾 Last Payment</h4>
+
+        <div style="font-size:14px;">
+          <b>Fee Type:</b> ${lastPayment.feeType}<br>
+          <b>Amount:</b> KES ${lastPayment.amount}<br>
+          <b>Method:</b> ${lastPayment.type || "CASH"}<br>
+          <b>Date:</b> ${lastPayment.date}
+        </div>
+
+        <hr>
+
+        <h5 style="margin:8px 0;">Recent Payments</h5>
+        ${historyHtml}
+
+      </div>
+    `;
+
+    // Autofill form
+    document.getElementById("feeType").value = lastPayment.feeType || "";
+    document.getElementById("feeAmount").value = lastPayment.amount || "";
+
+    // Only ONE toast (not spammy)
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Last payment loaded',
+      showConfirmButton: false,
+      timer: 1200
+    });
 
   } catch (err) {
     console.error(err);
 
-    infoBox.innerHTML = "";
+    infoBox.innerHTML = `
+      <div style="color:red;">
+        Error loading payment data
+      </div>
+    `;
 
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: 'Error loading payment info'
+      text: err.message
     });
   }
 }
 window.editFees = async function(studentId) {
+
   const student = allFeeData[studentId];
   if (!student) return;
 
-  try {
-    const { value: feeType } = await Swal.fire({
-      title: "Edit Fee",
-      input: "text",
-      inputLabel: "Enter fee type (exact name)",
-      inputPlaceholder: "e.g. Tuition Fees",
-      showCancelButton: true
-    });
-
-    if (!feeType) return;
-
-    const { value: newAmount } = await Swal.fire({
-      title: "Enter New Amount",
-      input: "number",
-      inputLabel: "New Amount",
-      inputPlaceholder: "Enter amount",
-      showCancelButton: true
-    });
-
-    if (!newAmount) return;
-
-    const year = document.getElementById("feeYear").value;
-    const feeRef = ref(db, "fees/" + year + "/" + studentId + "/fees/" + feeType);
-
-    await set(feeRef, Number(newAmount));
-
-    await Swal.fire({
-      icon: "success",
-      title: "Updated!",
-      text: "Fee updated successfully ✅"
-    });
-
-    loadFeeStatement();
-
-  } catch (err) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: err.message
-    });
+  const year = document.getElementById("feeYear").value;
+  if (!year) {
+    Swal.fire("Select year first");
+    return;
   }
+
+  const feeData = student.fees || {};
+
+  // ==============================
+  // 1. SELECT FEE TYPE
+  // ==============================
+  const { value: feeType } = await Swal.fire({
+    title: "Select Fee to Adjust",
+    input: "select",
+    inputOptions: Object.fromEntries(
+      Object.entries(feeData).map(([key, value]) => [
+        key,
+        `${key} (Current: KES ${value})`
+      ])
+    ),
+    showCancelButton: true
+  });
+
+  if (!feeType) return;
+
+  const currentAmount = Number(feeData[feeType] || 0);
+
+  // ==============================
+  // 2. CHOOSE OPERATION (ADD / DEDUCT)
+  // ==============================
+  const { value: action } = await Swal.fire({
+    title: "Select Action",
+    input: "radio",
+    inputOptions: {
+      add: "➕ Add Amount",
+      deduct: "➖ Deduct Amount"
+    },
+    showCancelButton: true
+  });
+
+  if (!action) return;
+
+  // ==============================
+  // 3. ENTER AMOUNT
+  // ==============================
+  const { value: amount } = await Swal.fire({
+    title: action === "add" ? "Add Amount" : "Deduct Amount",
+    html: `
+      <div style="font-size:14px;">
+        Current: <b>KES ${currentAmount}</b>
+      </div>
+    `,
+    input: "number",
+    inputPlaceholder: "Enter amount",
+    showCancelButton: true
+  });
+
+  if (!amount || Number(amount) <= 0) return;
+
+  const change = Number(amount);
+
+  // ==============================
+  // 4. CALCULATE NEW VALUE
+  // ==============================
+  let newAmount;
+
+  if (action === "add") {
+    newAmount = currentAmount + change;
+  } else {
+    newAmount = currentAmount - change;
+
+    if (newAmount < 0) newAmount = 0; // safety guard
+  }
+
+  // ==============================
+  // 5. CONFIRMATION
+  // ==============================
+  const confirm = await Swal.fire({
+    title: "Confirm Adjustment",
+    html: `
+      <b>${feeType}</b><br><br>
+      Current: <b>KES ${currentAmount}</b><br>
+      ${action === "add" ? "Added" : "Deducted"}: <b>${change}</b><br>
+      New Balance: <b style="color:green;">KES ${newAmount}</b>
+    `,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Apply Change"
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  // ==============================
+  // 6. UPDATE DATABASE
+  // ==============================
+const feeRef = ref(db, "fees/" + year + "/" + studentId + "/fees/" + feeType);
+
+await set(feeRef, Number(newAmount));
+
+  // ==============================
+  // 7. SAVE HISTORY (VERY IMPORTANT)
+  // ==============================
+  const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
+
+  await push(historyRef, {
+    feeType,
+    type: action === "add" ? "ADJUSTMENT (+)" : "ADJUSTMENT (-)",
+    before: currentAmount,
+    change: change,
+    after: newAmount,
+    date: new Date().toLocaleString()
+  });
+
+  // ==============================
+  // 8. SUCCESS
+  // ==============================
+  await Swal.fire({
+    icon: "success",
+    title: "Fee Updated",
+    html: `
+      ${feeType}<br>
+      ${currentAmount} → ${newAmount}
+    `
+  });
+
+  loadFeeStatement();
 };
-
-
 window.refundFees = async function(studentId) {
   try {
+    const year = document.getElementById("feeYear").value;
+
+    if (!year) {
+      Swal.fire({
+        icon: "warning",
+        title: "Select Year",
+        text: "Please select a year first"
+      });
+      return;
+    }
+
+    const feeRef = ref(db, "fees/" + year + "/" + studentId);
+    const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
+
+    const snapshot = await get(feeRef);
+    let data = snapshot.val();
+
+    if (!data || !data.fees) {
+      await Swal.fire({
+        icon: "error",
+        title: "No Data",
+        text: "No fees found for this student"
+      });
+      return;
+    }
+
+    const feeTypes = data.fees;
+
+    // ==============================
+    // 🔽 SELECT FEE TYPE (SHOW NAME + VALUE)
+    // ==============================
     const { value: feeType } = await Swal.fire({
-      title: "Refund Fee",
-      input: "text",
-      inputLabel: "Enter fee type",
-      inputPlaceholder: "e.g. Transport Fees",
+      title: "Select Fee to Refund",
+      input: "select",
+      inputOptions: Object.fromEntries(
+        Object.entries(feeTypes).map(([key, value]) => [
+          key,
+          `${key} (Balance: ${value})`
+        ])
+      ),
+      inputPlaceholder: "Choose fee type",
       showCancelButton: true
     });
 
     if (!feeType) return;
 
+    const currentBalance = Number(feeTypes[feeType]);
+
+    // ==============================
+    // 💰 ENTER AMOUNT (SHOW CONTEXT)
+    // ==============================
     const { value: amount } = await Swal.fire({
-      title: "Enter Refund Amount",
+      title: `Refund: ${feeType}`,
+      html: `<b>Current Balance:</b> ${currentBalance}`,
       input: "number",
       inputLabel: "Refund Amount",
       inputPlaceholder: "Enter amount",
       showCancelButton: true
     });
 
-    if (!amount) return;
+    if (!amount || amount <= 0) return;
 
-    const feeRef = ref(db, "fees/" + studentId);
-    const historyRef = ref(db, "fees/" + studentId + "/history");
-
-    const snapshot = await get(feeRef);
-    let data = snapshot.val();
-
-    if (!data || !data.fees || !data.fees[feeType]) {
+    // ==============================
+    // ❌ VALIDATION
+    // ==============================
+    if (Number(amount) > currentBalance) {
       await Swal.fire({
-        icon: "error",
-        title: "Not Found",
-        text: "Fee type not found"
+        icon: "warning",
+        title: "Invalid Refund",
+        text: "Refund exceeds available balance"
       });
       return;
     }
 
-    // subtract amount
-    data.fees[feeType] -= Number(amount);
-    if (data.fees[feeType] < 0) data.fees[feeType] = 0;
+    const newBalance = currentBalance - Number(amount);
 
-    await set(feeRef, data);
-
-    // save refund history
-    await push(historyRef, {
-      feeType: feeType,
-      amount: Number(amount),
-      type: "REFUND",
-      date: new Date().toLocaleString()
+    // ==============================
+    // 🔄 UPDATE DATABASE
+    // ==============================
+    await update(feeRef, {
+      [`fees/${feeType}`]: newBalance
     });
 
+    // ==============================
+    // 🧾 SAVE HISTORY (IMPROVED)
+    // ==============================
+    await push(historyRef, {
+      feeType: feeType,
+      feeName: feeType, // extra clarity
+      amount: Number(amount),
+      type: "REFUND",
+      date: new Date().toLocaleString(),
+      before: currentBalance,
+      after: newBalance
+    });
+
+    // ==============================
+    // 🎉 SUCCESS MESSAGE (DETAILED)
+    // ==============================
     await Swal.fire({
       icon: "success",
       title: "Refund Successful",
-      text: "Refund processed ✅"
+      html: `
+        <b>Fee Type:</b> ${feeType}<br>
+        <b>Before:</b> ${currentBalance}<br>
+        <b>Refunded:</b> ${amount}<br>
+        <b>After:</b> ${newBalance}
+      `
     });
 
     loadFeeStatement();
@@ -14991,31 +15410,43 @@ const expectedPerStudent = allFeeTypes.reduce((sum, type) => {
     ? Math.round((totalCollected / totalExpected) * 100)
     : 0;
 
-  // UPDATE TEXT
+  // =========================
+  // 🔥 YEARLY BREAKDOWN (ADDED HERE)
+  // =========================
+  const yearly = getYearlyCollectionSummary(feeData);
+
+  document.getElementById("yearTotalCollected").textContent = yearly.totalCollected;
+  document.getElementById("cashCollected").textContent = yearly.cashTotal;
+  document.getElementById("bankCollected").textContent = yearly.bankTotal;
+  document.getElementById("refundTotal").textContent = yearly.refundTotal;
+
+  // =========================
+  // MAIN DASHBOARD TEXT
+  // =========================
   document.getElementById("totallStudents").textContent = studentCount;
   document.getElementById("totalExpected").textContent = totalExpected;
   document.getElementById("totalCollected").textContent = totalCollected;
   document.getElementById("totalBalance").textContent = totalBalance;
 
-  // UPDATE RINGS
+  // =========================
+  // PROGRESS RINGS
+  // =========================
   const rings = document.querySelectorAll(".progress-ring");
 
-  updateProgressRing(rings[0], 100); // students
-  updateProgressRing(rings[1], 100); // expected
-  updateProgressRing(rings[2], percentPaid); // collected
-  updateProgressRing(rings[3], percentPaid); // balance inverse feel
-updateLeaderboardAndDefaulters(feeData, expectedPerStudent);
-  // 🔥 LIVE CHART UPDATE
-  updateFeeChart(totalCollected, totalBalance);
+  updateProgressRing(rings[0], 100);
+  updateProgressRing(rings[1], 100);
+  updateProgressRing(rings[2], percentPaid);
+  updateProgressRing(rings[3], percentPaid);
+
+  updateLeaderboardAndDefaulters(feeData, expectedPerStudent);
 
   // =========================
-  // 🔥 FIXED CHART SECTION
+  // CHART
   // =========================
   const ctx = document.getElementById("feeChart");
 
-  if (!ctx) return; // prevent crash if canvas missing
+  if (!ctx) return;
 
-  // 🧹 Destroy previous chart
   if (feeChartInstance) {
     feeChartInstance.destroy();
   }
@@ -15361,6 +15792,144 @@ window.sendBulkSMS = async function () {
     Swal.fire("Error", "Server error", "error");
   }
 };
+document.getElementById("bankPayBtn").onclick = async () => {
+
+  const studentId = document.getElementById("feeStudent").value;
+  const year = document.getElementById("feeYear").value;
+
+  if (!studentId || !year) {
+    Swal.fire("Select student and year first");
+    return;
+  }
+
+ const { value: feeType } = await Swal.fire({
+  title: "Bank Payment - Select Fee Type",
+  input: "select",
+  inputOptions: Object.fromEntries(
+    Object.entries(feeStructure).map(([key, value]) => {
+      return [key, `${key} (KES ${value})`];
+    })
+  ),
+  inputPlaceholder: "Choose fee type",
+  showCancelButton: true
+});
+  if (!feeType) return;
+
+  // 2. Amount
+  const { value: amount } = await Swal.fire({
+    title: "Enter Bank Amount",
+    input: "number",
+    inputLabel: "Amount Paid",
+    inputPlaceholder: "Enter amount",
+    showCancelButton: true
+  });
+
+  if (!amount || amount <= 0) return;
+
+  // 3. Bank Reference
+  const { value: reference } = await Swal.fire({
+    title: "Bank Reference",
+    input: "text",
+    inputLabel: "Transaction ID / Reference",
+    inputPlaceholder: "e.g. ABC123XYZ",
+    showCancelButton: true
+  });
+
+  if (!reference) return;
+
+  await recordBankPayment(studentId, Number(amount), feeType, reference);
+};
+async function recordBankPayment(studentId, amount, feeType, reference) {
+
+  const year = document.getElementById("feeYear").value;
+  const learner = allLearners.find(l => l.key === studentId);
+
+  // ==============================
+  // 🚨 DUPLICATE CHECK (CRITICAL)
+  // ==============================
+  const used = await isReferenceUsed(year, reference);
+
+  if (used) {
+    Swal.fire({
+      icon: "error",
+      title: "Duplicate Transaction",
+      text: "This bank reference already exists in the system!"
+    });
+    return;
+  }
+
+  const feeRef = ref(db, "fees/" + year + "/" + studentId);
+  const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
+
+  const snapshot = await get(feeRef);
+  let data = snapshot.val();
+  let fees = data?.fees || {};
+
+  if (!fees[feeType]) fees[feeType] = 0;
+
+  fees[feeType] = Number(fees[feeType] || 0) + Number(amount);
+
+  // ==============================
+  // SAVE MAIN RECORD
+  // ==============================
+  await set(feeRef, {
+    studentId,
+    name: learner?.name || "",
+    grade: learner?.grade || "",
+    year,
+    fees,
+    lastUpdated: new Date().toLocaleString()
+  });
+
+  // ==============================
+  // SAVE HISTORY (LOCKED)
+  // ==============================
+  await push(historyRef, {
+    feeType,
+    amount,
+    type: "BANK PAYMENT",
+    method: "BANK",
+    reference,
+    status: "VERIFIED",
+    date: new Date().toLocaleString()
+  });
+
+  Swal.fire({
+    icon: "success",
+    title: "Verified Bank Payment",
+    text: "Transaction recorded successfully"
+  });
+
+  loadFeeStatement();
+}
+function getYearlyCollectionSummary(feeData) {
+
+  let totalCollected = 0;
+  let cashTotal = 0;
+  let bankTotal = 0;
+  let refundTotal = 0;
+
+  Object.values(feeData || {}).forEach(student => {
+
+    Object.values(student.fees || {}).forEach(v => {
+      totalCollected += Number(v || 0);
+    });
+
+    // history-based breakdown (optional but powerful)
+    Object.values(student.history || {}).forEach(h => {
+      if (h.type === "PAYMENT") cashTotal += Number(h.amount || 0);
+      if (h.type === "BANK PAYMENT") bankTotal += Number(h.amount || 0);
+      if (h.type === "REFUND") refundTotal += Number(h.amount || 0);
+    });
+  });
+
+  return {
+    totalCollected,
+    cashTotal,
+    bankTotal,
+    refundTotal
+  };
+}
 const floatingContainer = document.getElementById("floatingNotificationsContainer");
 
 function showFloatingNotification(msg) {

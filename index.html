@@ -2572,7 +2572,8 @@ button[onclick^="show"] {
     </select>
 
     <input type="date" id="attendanceDate">
-
+<input type="date" id="attendanceStartDate">
+<input type="date" id="attendanceEndDate">
     <div class="button-group">
       <button class="btn load-btn" id="loadAttendanceBtn">
         📂 Load
@@ -13814,7 +13815,423 @@ overlay.addEventListener("click", () => {
   modal.style.display = "none";
   overlay.style.display = "none";
 });
+const attendanceOutput = document.getElementById("attendanceOutput");
+let isSavingAttendance = false;
 
+// ===============================
+// LOAD ATTENDANCE
+// ===============================
+document.getElementById("loadAttendanceBtn").addEventListener("click", () => {
+  const grade = document.getElementById("attendanceGrade").value;
+
+  if (!grade) {
+    return Swal.fire("Select Grade", "Please select a grade first", "warning");
+  }
+
+  const learners = allLearners.filter(l => l.grade === grade);
+
+  const boys = learners.filter(l => l.gender === "Male");
+  const girls = learners.filter(l => l.gender === "Female");
+
+  function generateTable(title, list) {
+    if (!list.length) return "";
+
+    return `
+      <h3 class="section-title">${title} (${list.length})</h3>
+
+      <table class="learners-table">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Adm No</th>
+            <th>Present</th>
+            <th>Absent</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${list.map((l, i) => `
+            <tr id="row_${l.key}">
+              <td>${i + 1}</td>
+              <td>${l.name}</td>
+              <td>${l.admissionNo || ""}</td>
+
+              <td>
+                <input type="radio" name="att_${l.key}" value="Present" checked
+                  data-key="${l.key}">
+              </td>
+
+              <td>
+                <input type="radio" name="att_${l.key}" value="Absent"
+                  data-key="${l.key}">
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  }
+
+  let html = generateTable("👦 Boys", boys) + generateTable("👧 Girls", girls);
+
+  if (!html) {
+    html = `<p>No learners found for this grade</p>`;
+  }
+
+  attendanceOutput.innerHTML = html;
+
+  // 🔥 Event Delegation (better performance)
+  attendanceOutput.addEventListener("change", (e) => {
+    if (e.target.type === "radio") {
+      const key = e.target.dataset.key;
+      updateRowColor(key, e.target.value);
+      updateStats();
+    }
+  });
+
+  updateStats();
+});
+
+// ===============================
+// SAVE ATTENDANCE (OPTIMIZED)
+// ===============================
+document.getElementById("saveAttendanceBtn").addEventListener("click", async () => {
+
+  if (isSavingAttendance) return;
+  isSavingAttendance = true;
+
+  const saveBtn = document.getElementById("saveAttendanceBtn");
+  const originalText = saveBtn.innerHTML;
+
+  try {
+    const date = document.getElementById("attendanceDate").value;
+    const grade = document.getElementById("attendanceGrade").value;
+
+    if (!date || !grade) {
+      throw new Error("Please select date and grade");
+    }
+
+    const learners = allLearners.filter(l => l.grade === grade);
+    if (!learners.length) {
+      throw new Error("No learners found");
+    }
+
+    saveBtn.innerHTML = "💾 Saving...";
+    saveBtn.disabled = true;
+
+    // 🔥 COLLECT DATA FIRST (IMPORTANT)
+    const updates = {};
+    let count = 0;
+
+    learners.forEach(l => {
+      const selected = document.querySelector(`input[name="att_${l.key}"]:checked`);
+      if (!selected) return;
+
+      updates[`attendance/${date}/${l.key}`] = {
+        name: l.name,
+        admissionNo: l.admissionNo || "",
+        grade: l.grade,
+        status: selected.value,
+        timestamp: Date.now()
+      };
+
+      count++;
+    });
+
+    if (!count) throw new Error("No attendance selected");
+
+    // 🔥 SINGLE FIREBASE CALL (VERY FAST)
+    await update(ref(db), updates);
+
+    Swal.fire("Success", "Attendance saved successfully", "success");
+
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", error.message, "error");
+
+  } finally {
+    saveBtn.innerHTML = originalText;
+    saveBtn.disabled = false;
+    isSavingAttendance = false;
+  }
+});
+
+// ===============================
+// POPULATE GRADES
+// ===============================
+function populateAttendanceGrades() {
+  const gradeSelect = document.getElementById("attendanceGrade");
+
+  const grades = [...new Set(allLearners.map(l => l.grade).filter(Boolean))].sort();
+
+  gradeSelect.innerHTML = `<option value="">Select Grade</option>`;
+
+  grades.forEach(g => {
+    const option = document.createElement("option");
+    option.value = g;
+    option.textContent = g;
+    gradeSelect.appendChild(option);
+  });
+}
+
+// ===============================
+// MARK ALL
+// ===============================
+function markAllPresent() {
+  const radios = document.querySelectorAll("#attendanceOutput input[value='Present']");
+  if (!radios.length) return alert("No attendance loaded ❌");
+
+  radios.forEach(r => r.checked = true);
+  updateStats();
+  alert("All marked present ✅");
+}
+
+function markAllAbsent() {
+  const radios = document.querySelectorAll("#attendanceOutput input[value='Absent']");
+  if (!radios.length) return alert("No attendance loaded ❌");
+
+  radios.forEach(r => r.checked = true);
+  updateStats();
+}
+
+// ===============================
+// ROW COLOR
+// ===============================
+function updateRowColor(key, status) {
+  const row = document.getElementById("row_" + key);
+  if (!row) return;
+
+  row.style.backgroundColor = status === "Absent" ? "#ffcccc" : "#ccffcc";
+}
+
+// ===============================
+// STATS (SIMPLE VERSION)
+// ===============================
+function updateStats() {
+  const present = document.querySelectorAll("#attendanceOutput input[value='Present']:checked").length;
+  const absent = document.querySelectorAll("#attendanceOutput input[value='Absent']:checked").length;
+
+  console.log(`Present: ${present}, Absent: ${absent}`);
+}
+
+// ===============================
+// VIEW REPORT (IMPROVED SAFETY)
+// ===============================
+document.getElementById("viewAttendanceReportBtn").addEventListener("click", async () => {
+
+  const grade = document.getElementById("attendanceGrade").value;
+  if (!grade) return Swal.fire("Select grade first", "", "warning");
+
+  const snapshot = await get(ref(db, "attendance"));
+  if (!snapshot.exists()) return Swal.fire("No data found", "", "info");
+
+  const data = snapshot.val();
+  const days = ["Mon","Tue","Wed","Thu","Fri"];
+  const stats = {};
+
+  Object.entries(data).forEach(([date, dayData]) => {
+    const dayName = new Date(date).toLocaleDateString("en-US",{ weekday:"short" });
+    if (!days.includes(dayName)) return;
+
+    Object.entries(dayData).forEach(([id, record]) => {
+      if (record.grade !== grade) return;
+
+      if (!stats[id]) {
+        const learner = allLearners.find(l => l.key === id);
+        stats[id] = {
+          name: record.name,
+          gender: learner?.gender || "",
+          present: 0,
+          Mon:"", Tue:"", Wed:"", Thu:"", Fri:""
+        };
+      }
+
+      stats[id][dayName] = record.status === "Present" ? "✔" : "✖";
+      if (record.status === "Present") stats[id].present++;
+    });
+  });
+
+  const learnersList = Object.values(stats);
+
+  if (!learnersList.length) {
+    return Swal.fire("No report data", "", "info");
+  }
+
+  const totalLearners = learnersList.length;
+  const totalPresent = learnersList.reduce((sum,s)=> sum + s.present,0);
+  const totalPossible = totalLearners * days.length;
+  const overallPercent = ((totalPresent/totalPossible)*100).toFixed(1);
+
+  document.getElementById("attendanceReportOutput").innerHTML = `
+    <h3>📊 Summary</h3>
+    Learners: ${totalLearners}<br>
+    Present: ${totalPresent}/${totalPossible}<br>
+    Attendance: ${overallPercent}%
+  `;
+});
+
+document.getElementById("viewAttendanceReportBtn").addEventListener("click", async () => {
+
+  const grade = document.getElementById("attendanceGrade").value;
+  const startDate = document.getElementById("attendanceStartDate").value;
+  const endDate = document.getElementById("attendanceEndDate").value;
+
+  if (!grade) return Swal.fire("Select grade", "", "warning");
+  if (!startDate || !endDate) return Swal.fire("Select date range", "", "warning");
+
+  if (startDate > endDate) {
+    return Swal.fire("Invalid Range", "Start date cannot be after end date", "error");
+  }
+
+  const snapshot = await get(ref(db, "attendance"));
+  if (!snapshot.exists()) {
+    return Swal.fire("No attendance data", "", "info");
+  }
+
+  const data = snapshot.val();
+  const stats = {};
+  const selectedDates = [];
+
+  // ===============================
+  // FILTER DATES IN RANGE
+  // ===============================
+  Object.keys(data).forEach(date => {
+    if (date >= startDate && date <= endDate) {
+      selectedDates.push(date);
+    }
+  });
+
+  if (!selectedDates.length) {
+    return Swal.fire("No data in selected range", "", "info");
+  }
+
+  selectedDates.sort(); // ensure order
+
+  // ===============================
+  // COLLECT DATA
+  // ===============================
+  selectedDates.forEach(date => {
+
+    const dayData = data[date];
+
+    Object.keys(dayData).forEach(id => {
+
+      const record = dayData[id];
+      if (record.grade !== grade) return;
+
+      if (!stats[id]) {
+        const learner = allLearners.find(l => l.key === id);
+
+        stats[id] = {
+          name: record.name,
+          gender: learner?.gender || "",
+          present: 0,
+          days: {}
+        };
+      }
+
+      stats[id].days[date] = record.status;
+
+      if (record.status === "Present") {
+        stats[id].present++;
+      }
+
+    });
+
+  });
+
+  // ===============================
+  // SPLIT GROUPS
+  // ===============================
+  const boys = Object.values(stats).filter(s => s.gender === "Male");
+  const girls = Object.values(stats).filter(s => s.gender === "Female");
+
+  // ===============================
+  // TABLE GENERATOR (DYNAMIC DATES 🔥)
+  // ===============================
+  function generateTable(title, list) {
+
+    if (!list.length) return "";
+
+    let html = `
+      <h3 style="margin-top:20px; background:#2196F3; color:white; padding:6px 10px; border-radius:6px;">
+        ${title} (${list.length})
+      </h3>
+
+      <table class="learners-table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Name</th>
+
+            ${selectedDates.map(d => `<th>${d}</th>`).join("")}
+
+            <th>Total</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    let index = 1;
+
+    list.forEach(s => {
+
+      const totalDays = selectedDates.length;
+      const percent = ((s.present / totalDays) * 100).toFixed(1);
+
+      html += `
+        <tr>
+          <td>${index++}</td>
+          <td>${s.name}</td>
+
+          ${selectedDates.map(d => {
+            const val = s.days[d];
+            return `
+              <td class="${val === "Absent" ? "absent" : "present"}">
+                ${val === "Present" ? "✔" : val === "Absent" ? "✖" : "-"}
+              </td>
+            `;
+          }).join("")}
+
+          <td><b>${s.present}</b></td>
+          <td>${percent}%</td>
+        </tr>
+      `;
+    });
+
+    html += "</tbody></table>";
+    return html;
+  }
+
+  let finalHTML = "";
+  finalHTML += generateTable("👦 Boys", boys);
+  finalHTML += generateTable("👧 Girls", girls);
+
+  if (!finalHTML) finalHTML = "<p>No report data</p>";
+
+  // ===============================
+  // SUMMARY
+  // ===============================
+  const totalLearners = Object.keys(stats).length;
+  const totalPresent = Object.values(stats).reduce((sum,s)=> sum + s.present,0);
+  const totalPossible = totalLearners * selectedDates.length;
+  const overallPercent = totalPossible
+    ? ((totalPresent / totalPossible) * 100).toFixed(1)
+    : 0;
+
+  finalHTML += `
+    <div style="margin-top:20px; padding:10px; background:#f5f5f5; border-radius:6px; font-weight:bold;">
+      📊 Summary <br>
+      Learners: ${totalLearners} <br>
+      Present: ${totalPresent}/${totalPossible} <br>
+      Attendance: ${overallPercent}%
+    </div>
+  `;
+
+  document.getElementById("attendanceReportOutput").innerHTML = finalHTML;
+
+});
 // ================= LOAD GRADES & STUDENTS =================
 function loadFeeStudents() {
   const gradeSelect = document.getElementById("feeGrade");
@@ -15839,68 +16256,141 @@ document.getElementById("bankPayBtn").onclick = async () => {
 
   await recordBankPayment(studentId, Number(amount), feeType, reference);
 };
+let isProcessingBankPayment = false;
+
 async function recordBankPayment(studentId, amount, feeType, reference) {
+
+  if (isProcessingBankPayment) return;
+  isProcessingBankPayment = true;
+
+  const currentUser = JSON.parse(localStorage.getItem("loggedInUser")) || {};
 
   const year = document.getElementById("feeYear").value;
   const learner = allLearners.find(l => l.key === studentId);
 
   // ==============================
-  // 🚨 DUPLICATE CHECK (CRITICAL)
+  // 🧪 VALIDATION
   // ==============================
-  const used = await isReferenceUsed(year, reference);
-
-  if (used) {
-    Swal.fire({
-      icon: "error",
-      title: "Duplicate Transaction",
-      text: "This bank reference already exists in the system!"
-    });
+  if (!studentId || !year || !amount || !feeType || !reference) {
+    isProcessingBankPayment = false;
+    Swal.fire("Missing Data", "All fields are required", "warning");
     return;
   }
 
-  const feeRef = ref(db, "fees/" + year + "/" + studentId);
-  const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
+  amount = Number(amount);
+  reference = reference.trim().toUpperCase();
 
-  const snapshot = await get(feeRef);
-  let data = snapshot.val();
-  let fees = data?.fees || {};
+  if (amount <= 0) {
+    isProcessingBankPayment = false;
+    Swal.fire("Invalid Amount", "Amount must be greater than 0", "error");
+    return;
+  }
 
-  if (!fees[feeType]) fees[feeType] = 0;
+  try {
 
-  fees[feeType] = Number(fees[feeType] || 0) + Number(amount);
+    // ==============================
+    // 🔒 1. FAST DUPLICATE CHECK (INDEX)
+    // ==============================
+    const refIndex = ref(db, "bankReferences/" + year + "/" + reference);
+    const refSnap = await get(refIndex);
 
-  // ==============================
-  // SAVE MAIN RECORD
-  // ==============================
-  await set(feeRef, {
-    studentId,
-    name: learner?.name || "",
-    grade: learner?.grade || "",
-    year,
-    fees,
-    lastUpdated: new Date().toLocaleString()
-  });
+    if (refSnap.exists()) {
+      isProcessingBankPayment = false;
 
-  // ==============================
-  // SAVE HISTORY (LOCKED)
-  // ==============================
-  await push(historyRef, {
-    feeType,
-    amount,
-    type: "BANK PAYMENT",
-    method: "BANK",
-    reference,
-    status: "VERIFIED",
-    date: new Date().toLocaleString()
-  });
+      Swal.fire({
+        icon: "error",
+        title: "Duplicate Reference",
+        text: "This bank reference already exists!"
+      });
+      return;
+    }
 
-  Swal.fire({
-    icon: "success",
-    title: "Verified Bank Payment",
-    text: "Transaction recorded successfully"
-  });
+    // ==============================
+    // 🔧 2. DB PATHS
+    // ==============================
+    const feeRef = ref(db, "fees/" + year + "/" + studentId);
+    const historyRef = ref(db, "fees/" + year + "/" + studentId + "/history");
 
-  loadFeeStatement();
+    const snapshot = await get(feeRef);
+    let data = snapshot.val();
+
+    let fees = data?.fees || {};
+
+    // ==============================
+    // 💰 3. SAFE ADDITION
+    // ==============================
+    fees[feeType] = Number(fees[feeType] || 0) + amount;
+
+    const receiptNo = "BANK-" + Date.now();
+
+    // ==============================
+    // 💾 4. UPDATE MAIN RECORD
+    // ==============================
+    await update(feeRef, {
+      [`fees/${feeType}`]: fees[feeType],
+      lastUpdated: new Date().toLocaleString()
+    });
+
+    // ==============================
+    // 📜 5. SAVE HISTORY
+    // ==============================
+    await push(historyRef, {
+      feeType,
+      amount,
+      type: "BANK PAYMENT",
+      method: "BANK",
+      reference,
+      receiptNo,
+      status: "VERIFIED",
+
+      createdAt: Date.now(),
+      date: new Date().toLocaleString(),
+
+      // 🔐 audit trail
+      recordedBy: currentUser?.name || "Unknown",
+      userId: currentUser?.id || "N/A",
+      device: navigator.userAgent
+    });
+
+    // ==============================
+    // 🔐 6. LOCK REFERENCE (ANTI-FRAUD)
+    // ==============================
+    await set(refIndex, {
+      used: true,
+      studentId,
+      amount,
+      timestamp: Date.now()
+    });
+
+    // ==============================
+    // ✅ SUCCESS
+    // ==============================
+    await Swal.fire({
+      icon: "success",
+      title: "Bank Payment Recorded",
+      html: `
+        <b>Student:</b> ${learner?.name || ""}<br>
+        <b>Fee Type:</b> ${feeType}<br>
+        <b>Amount:</b> KES ${amount}<br>
+        <b>Reference:</b> ${reference}<br>
+        <b>Receipt No:</b> ${receiptNo}
+      `
+    });
+
+    loadFeeStatement();
+
+  } catch (err) {
+    console.error(err);
+
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: err.message
+    });
+
+  } finally {
+    isProcessingBankPayment = false;
+  }
 }
 function getYearlyCollectionSummary(feeData) {
 
@@ -16145,450 +16635,6 @@ function setOfflineStatus() {
 window.addEventListener("online", setOnlineStatus);
 window.addEventListener("offline", setOfflineStatus);
 
-const attendanceOutput = document.getElementById("attendanceOutput");
-
-document.getElementById("loadAttendanceBtn").addEventListener("click", () => {
-  const grade = document.getElementById("attendanceGrade").value;
-
-  if (!grade) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Select Grade',
-      text: 'Please select a grade first'
-    });
-    return;
-  }
-
-  const learners = allLearners.filter(l => l.grade === grade);
-
-  // 🔥 Separate Boys & Girls
-  const boys = learners.filter(l => l.gender === "Male");
-  const girls = learners.filter(l => l.gender === "Female");
-
-  function generateTable(title, list) {
-    let html = `
-      <h3 style="margin-top:20px; background:#2196F3; color:white; padding:6px 10px; border-radius:6px;">
-        ${title} (${list.length})
-      </h3>
-
-      <table class="learners-table">
-        <thead>
-          <tr>
-            <th>No.</th>
-            <th>Name</th>
-            <th>Adm No</th>
-            <th>Present</th>
-            <th>Absent</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    list.forEach((l, index) => {
-      html += `
-        <tr id="row_${l.key}">
-          <td>${index + 1}</td>
-          <td>${l.name}</td>
-          <td>${l.admissionNo}</td>
-
-          <td>
-            <input type="radio" name="att_${l.key}" value="Present"
-              onchange="updateRowColor('${l.key}', 'Present'); updateStats()" checked>
-          </td>
-
-          <td>
-            <input type="radio" name="att_${l.key}" value="Absent"
-              onchange="updateRowColor('${l.key}', 'Absent'); updateStats()">
-          </td>
-        </tr>
-      `;
-    });
-
-    html += `</tbody></table>`;
-    return html;
-  }
-
-  // 🔥 Combine both sections
-  let finalHTML = "";
-
-  if (boys.length > 0) {
-    finalHTML += generateTable("👦 Boys", boys);
-  }
-
-  if (girls.length > 0) {
-    finalHTML += generateTable("👧 Girls", girls);
-  }
-
-  if (!boys.length && !girls.length) {
-    finalHTML = `<p>No learners found for this grade</p>`;
-  }
-
-  attendanceOutput.innerHTML = finalHTML;
-
-  // Update stats after load
-  updateStats();
-});
-document.getElementById("saveAttendanceBtn").addEventListener("click", async () => {
-  const saveBtn = document.getElementById("saveAttendanceBtn");
-  const originalText = saveBtn.innerHTML;
-
-  try {
-    const date = document.getElementById("attendanceDate").value;
-    const grade = document.getElementById("attendanceGrade").value;
-
-    // 🔴 Validation
-    if (!date || !grade) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Missing Information',
-        text: 'Please select date and grade'
-      });
-      return;
-    }
-
-    const learners = allLearners.filter(l => l.grade === grade);
-
-    if (learners.length === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'No Learners',
-        text: 'No learners found for this grade'
-      });
-      return;
-    }
-
-    // 🔄 Button spinner
-    saveBtn.innerHTML = `
-      <span style="color:#ff0000; font-weight:bold;">
-        💾 Saving...
-      </span>
-      <span class="spinner"></span>
-    `;
-    saveBtn.disabled = true;
-
-    let total = learners.length;
-    let count = 0;
-
-    // 🔥 SweetAlert with progress bar
-    Swal.fire({
-      title: 'Saving Attendance...',
-      html: `
-        <div style="width:100%; background:#ddd; border-radius:10px; overflow:hidden; margin-top:10px;">
-          <div id="progressBar" style="width:0%; height:20px; background:#4CAF50;"></div>
-        </div>
-        <p id="progressText" style="margin-top:10px;">0 / ${total}</p>
-      `,
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
-
-    // 🔁 Save loop with progress
-    for (let l of learners) {
-      const radios = document.getElementsByName("att_" + l.key);
-      let status = "";
-
-      Array.from(radios).forEach(r => {
-        if (r.checked) status = r.value;
-      });
-
-      if (status) {
-        await set(ref(db, `attendance/${date}/${l.key}`), {
-          name: l.name,
-          admissionNo: l.admissionNo,
-          grade: l.grade,
-          status: status
-        });
-      }
-
-      // 📊 Update progress
-      count++;
-      let percent = Math.round((count / total) * 100);
-
-      document.getElementById("progressBar").style.width = percent + "%";
-      document.getElementById("progressText").innerText = `${count} / ${total}`;
-    }
-
-    // ✅ Done
-    Swal.fire({
-      icon: 'success',
-      title: 'Success!',
-      text: 'Attendance saved successfully',
-      timer: 2000,
-      showConfirmButton: false
-    });
-
-  } catch (error) {
-    console.error("ERROR:", error);
-
-    Swal.fire({
-      icon: 'error',
-      title: 'Error!',
-      text: 'Failed to save attendance'
-    });
-
-  } finally {
-    // 🔁 Restore button
-    saveBtn.innerHTML = originalText;
-    saveBtn.disabled = false;
-  }
-});
-function populateAttendanceGrades() {
-  const gradeSelect = document.getElementById("attendanceGrade");
-
-  // Get unique grades
-  const grades = [...new Set(allLearners.map(l => l.grade).filter(Boolean))];
-
-  gradeSelect.innerHTML = `<option value="">Select Grade</option>`;
-
-  grades.sort().forEach(g => {
-    const option = document.createElement("option");
-    option.value = g;
-    option.textContent = g;
-    gradeSelect.appendChild(option);
-  });
-}
-function markAllPresent() {
-  const radios = document.querySelectorAll("#attendanceOutput input[type='radio'][value='Present']");
-
-  console.log("Found:", radios.length);
-
-  radios.forEach(radio => {
-    radio.checked = true;
-    radio.dispatchEvent(new Event("change")); // 🔥 THIS NOW WORKS
-  });
-
-  if (radios.length === 0) {
-    alert("No attendance loaded yet ❌");
-  } else {
-    alert("All marked present ✅");
-  }
-}
-document.getElementById("viewAttendanceReportBtn").addEventListener("click", async () => {
-
-  const grade = document.getElementById("attendanceGrade").value;
-  if (!grade) return alert("Select grade");
-
-  const snapshot = await get(ref(db, "attendance"));
-
-  if (!snapshot.exists()) {
-    return alert("No attendance data");
-  }
-
-  const data = snapshot.val();
-
-  const days = ["Mon","Tue","Wed","Thu","Fri"];
-
-  const stats = {};
-
-  // collect attendance
-  Object.keys(data).forEach(date => {
-
-    const dayName = new Date(date).toLocaleDateString("en-US",{ weekday:"short" });
-
-    if (!days.includes(dayName)) return;
-
-    const dayData = data[date];
-
-    Object.keys(dayData).forEach(id => {
-
-      const record = dayData[id];
-
-      if (record.grade !== grade) return;
-
-      if (!stats[id]) {
-
-        const learner = allLearners.find(l => l.key === id);
-
-        stats[id] = {
-          name: record.name,
-          gender: learner?.gender || "",
-          Mon:"",
-          Tue:"",
-          Wed:"",
-          Thu:"",
-          Fri:"",
-          present:0
-        };
-      }
-
-      if (record.status === "Present") {
-        stats[id][dayName] = "✔";
-        stats[id].present++;
-      } else {
-        stats[id][dayName] = "✖";
-      }
-
-    });
-
-  });
-
-
-  // separate boys & girls
-  const boys = Object.values(stats).filter(s => s.gender === "Male");
-  const girls = Object.values(stats).filter(s => s.gender === "Female");
-
-
-  function generateTable(title, list){
-
-    let html = `
-      <h3 style="
-        margin-top:20px;
-        background:#2196F3;
-        color:white;
-        padding:6px 10px;
-        border-radius:6px;">
-        ${title} (${list.length})
-      </h3>
-
-      <table class="learners-table">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Name</th>
-
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-
-            <th>Total</th>
-            <th>%</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    let index = 1;
-
-    list.forEach(s => {
-
-      const totalDays = days.length;
-      const percent = ((s.present / totalDays) * 100).toFixed(1);
-
-      html += `
-        <tr>
-
-          <td>${index++}</td>
-
-          <td>${s.name}</td>
-
-          <td class="${s.Mon === "✖" ? "absent" : "present"}">${s.Mon}</td>
-
-          <td class="${s.Tue === "✖" ? "absent" : "present"}">${s.Tue}</td>
-
-          <td class="${s.Wed === "✖" ? "absent" : "present"}">${s.Wed}</td>
-
-          <td class="${s.Thu === "✖" ? "absent" : "present"}">${s.Thu}</td>
-
-          <td class="${s.Fri === "✖" ? "absent" : "present"}">${s.Fri}</td>
-
-          <td><b>${s.present}</b></td>
-
-          <td>${percent}%</td>
-
-        </tr>
-      `;
-
-    });
-
-    html += "</tbody></table>";
-
-    return html;
-
-  }
-
-
-  let finalHTML = "";
-
-  if (boys.length > 0) {
-    finalHTML += generateTable("👦 Boys", boys);
-  }
-
-  if (girls.length > 0) {
-    finalHTML += generateTable("👧 Girls", girls);
-  }
-
-  if (!boys.length && !girls.length) {
-    finalHTML = "<p>No report data</p>";
-  }
-
-
-  // summary totals
-  const totalLearners = Object.keys(stats).length;
-
-  const totalPresent = Object.values(stats)
-    .reduce((sum,s)=> sum + s.present,0);
-
-  const totalPossible = totalLearners * days.length;
-
-  const overallPercent = ((totalPresent/totalPossible)*100).toFixed(1);
-
-
-  finalHTML += `
-
-    <div style="
-      margin-top:20px;
-      padding:10px;
-      background:#f5f5f5;
-      border-radius:6px;
-      font-weight:bold;">
-
-      📊 Class Summary
-
-      <br>
-
-      Learners: ${totalLearners}
-
-      <br>
-
-      Total Present Marks:
-      <span style="color:green;">
-        ${totalPresent}
-      </span>
-
-      /
-      ${totalPossible}
-
-      <br>
-
-      Overall Attendance:
-      <span style="color:#2196F3;">
-        ${overallPercent}%
-      </span>
-
-    </div>
-
-  `;
-
-
-  document.getElementById("attendanceReportOutput").innerHTML = finalHTML;
-
-});
-
-function updateRowColor(key, status) {
-  const row = document.getElementById("row_" + key);
-
-  if (status === "Absent") {
-    row.style.backgroundColor = "#ffcccc"; // red
-  } else {
-    row.style.backgroundColor = "#ccffcc"; // green
-  }
-}
-
-
-
-function markAllAbsent() {
-  const radios = document.querySelectorAll("#attendanceOutput input[value='Absent']");
-
-  radios.forEach(radio => {
-    radio.checked = true;
-    radio.dispatchEvent(new Event("change"));
-  });
-}
 
  
 document.addEventListener("DOMContentLoaded", function () {

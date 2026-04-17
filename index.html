@@ -2145,6 +2145,28 @@ button[onclick^="show"] {
   transform: scale(1.15);
   filter: brightness(1.2);
 }
+
+.action-btn,
+.print-button {
+  padding: 6px 12px;       /* reduces height */
+  font-size: 14px;         /* keeps text compact */
+  line-height: 1.2;
+  border-radius: 8px;
+  min-height: 32px;        /* consistent button height */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Mobile tuning */
+@media (max-width: 600px) {
+  .action-btn,
+  .print-button {
+    padding: 5px 10px;
+    font-size: 13px;
+    min-height: 30px;
+  }
+}
 </style>
 
 </head>
@@ -2224,7 +2246,8 @@ button[onclick^="show"] {
   id="announcement"
   style="
     padding:10px 16px;
-    background: linear-gradient(135deg, #ff4d4f, #ff7875);
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+backdrop-filter: blur(8px);
     border:1px solid #d9363e;
     color:#fff;
     border-radius:12px;

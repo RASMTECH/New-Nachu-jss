@@ -14069,7 +14069,7 @@ document.getElementById("viewAttendanceReportBtn").addEventListener("click", asy
         };
       }
 
-      stats[id][dayName] = record.status === "Present" ? "✔" : "✖";
+      stats[id][dayName] = record.status === "Present" ? "✖" : "00";
       if (record.status === "Present") stats[id].present++;
     });
   });
@@ -14128,7 +14128,7 @@ document.getElementById("viewAttendanceReportBtn").addEventListener("click", asy
     return Swal.fire("No data in selected range", "", "info");
   }
 
-  selectedDates.sort(); // ensure order
+  selectedDates.sort();
 
   // ===============================
   // COLLECT DATA
@@ -14164,17 +14164,27 @@ document.getElementById("viewAttendanceReportBtn").addEventListener("click", asy
   });
 
   // ===============================
+  // FORMAT FUNCTION (02,04,...10)
+  // ===============================
+  function formatMarks(value) {
+    return value < 10 ? "0" + value : value.toString();
+  }
+
+  // ===============================
   // SPLIT GROUPS
   // ===============================
   const boys = Object.values(stats).filter(s => s.gender === "Male");
   const girls = Object.values(stats).filter(s => s.gender === "Female");
 
   // ===============================
-  // TABLE GENERATOR (DYNAMIC DATES 🔥)
+  // TABLE GENERATOR
   // ===============================
   function generateTable(title, list) {
 
     if (!list.length) return "";
+
+    let totalPresentGroup = 0;
+    let totalPossibleGroup = list.length * selectedDates.length * 2;
 
     let html = `
       <h3 style="margin-top:20px; background:#2196F3; color:white; padding:6px 10px; border-radius:6px;">
@@ -14200,8 +14210,10 @@ document.getElementById("viewAttendanceReportBtn").addEventListener("click", asy
 
     list.forEach(s => {
 
-      const totalDays = selectedDates.length;
-      const percent = ((s.present / totalDays) * 100).toFixed(1);
+      const marks = s.present * 2; // 🔥 KEY CHANGE
+      const percent = ((s.present / selectedDates.length) * 100).toFixed(1);
+
+      totalPresentGroup += marks;
 
       html += `
         <tr>
@@ -14212,21 +14224,50 @@ document.getElementById("viewAttendanceReportBtn").addEventListener("click", asy
             const val = s.days[d];
             return `
               <td class="${val === "Absent" ? "absent" : "present"}">
-                ${val === "Present" ? "✔" : val === "Absent" ? "✖" : "-"}
+                ${val === "Present" ? "✖" : val === "Absent" ? "00" : "-"}
               </td>
             `;
           }).join("")}
 
-          <td><b>${s.present}</b></td>
+          <td><b>${formatMarks(marks)}</b></td>
           <td>${percent}%</td>
         </tr>
       `;
     });
 
-    html += "</tbody></table>";
+    // ===============================
+    // GROUP SUMMARY
+    // ===============================
+    const groupPercent = totalPossibleGroup
+      ? ((totalPresentGroup / totalPossibleGroup) * 100).toFixed(1)
+      : 0;
+
+    html += `
+        </tbody>
+      </table>
+
+      <div style="
+        margin-top:10px;
+        padding:10px;
+        background:#e3f2fd;
+        border-left:5px solid #2196F3;
+        border-radius:6px;
+        font-weight:bold;
+      ">
+        📊 ${title} Summary <br>
+        👥 Learners: ${list.length} <br>
+        ✅ Marks: ${totalPresentGroup} <br>
+        📅 Possible Marks: ${totalPossibleGroup} <br>
+        📈 Attendance: ${groupPercent}%
+      </div>
+    `;
+
     return html;
   }
 
+  // ===============================
+  // BUILD OUTPUT
+  // ===============================
   let finalHTML = "";
   finalHTML += generateTable("👦 Boys", boys);
   finalHTML += generateTable("👧 Girls", girls);
@@ -14234,11 +14275,15 @@ document.getElementById("viewAttendanceReportBtn").addEventListener("click", asy
   if (!finalHTML) finalHTML = "<p>No report data</p>";
 
   // ===============================
-  // SUMMARY
+  // FINAL SUMMARY
   // ===============================
   const totalLearners = Object.keys(stats).length;
-  const totalPresent = Object.values(stats).reduce((sum,s)=> sum + s.present,0);
-  const totalPossible = totalLearners * selectedDates.length;
+
+  const totalPresent = Object.values(stats)
+    .reduce((sum, s) => sum + (s.present * 2), 0);
+
+  const totalPossible = totalLearners * selectedDates.length * 2;
+
   const overallPercent = totalPossible
     ? ((totalPresent / totalPossible) * 100).toFixed(1)
     : 0;
@@ -14246,15 +14291,16 @@ document.getElementById("viewAttendanceReportBtn").addEventListener("click", asy
   finalHTML += `
     <div style="margin-top:20px; padding:10px; background:#f5f5f5; border-radius:6px; font-weight:bold;">
       📊 Summary <br>
-      Learners: ${totalLearners} <br>
-      Present: ${totalPresent}/${totalPossible} <br>
-      Attendance: ${overallPercent}%
+      👥 Learners: ${totalLearners} <br>
+      ✅ Marks: ${totalPresent}/${totalPossible} <br>
+      📈 Attendance: ${overallPercent}%
     </div>
   `;
 
   document.getElementById("attendanceReportOutput").innerHTML = finalHTML;
 
 });
+
 // ================= LOAD GRADES & STUDENTS =================
 function loadFeeStudents() {
   const gradeSelect = document.getElementById("feeGrade");
@@ -16177,7 +16223,7 @@ window.sendBulkSMS = async function () {
   const defaulters = Object.entries(filteredFeeData).filter(([id, student]) => {
     let paid = 0;
     Object.values(student.fees || {}).forEach(v => paid += v);
-    return paid === 0 || paid < expected;
+    return paid < expected;
   });
 
   if (defaulters.length === 0) {
@@ -16185,7 +16231,10 @@ window.sendBulkSMS = async function () {
     return;
   }
 
-  let phones = [];
+  // =========================
+  // GROUP BY PHONE (avoid duplicates)
+  // =========================
+  const phoneMap = {};
 
   defaulters.forEach(([id, student]) => {
 
@@ -16195,37 +16244,117 @@ window.sendBulkSMS = async function () {
     let phone = option.getAttribute("data-phone");
     if (!phone) return;
 
-    phones.push(phone);
-  });
+    // =========================
+    // CLEAN PHONE
+    // =========================
+    let clean = phone.replace(/\s/g, "");
 
-  const message = `Fee Reminder: Your child has an outstanding balance. Kindly clear ASAP. Thank you.`;
+    if (clean.startsWith("+")) clean = clean.substring(1);
+    if (clean.startsWith("0")) clean = "254" + clean.substring(1);
+    if (!clean.startsWith("254")) clean = "254" + clean.slice(-9);
+
+    const finalPhone = `+${clean}`;
+
+    // =========================
+    // CALCULATE BALANCE
+    // =========================
+    let paid = 0;
+    Object.values(student.fees || {}).forEach(v => paid += v);
+    const balance = expected - paid;
+
+    // =========================
+    // GROUP PER PARENT
+    // =========================
+    if (!phoneMap[finalPhone]) {
+      phoneMap[finalPhone] = [];
+    }
+
+    phoneMap[finalPhone].push({
+      name: student.name || "Student",
+      balance
+    });
+  });
 
   try {
 
     Swal.fire({
-      title: "Sending SMS...",
+      title: "Sending Official Fee Statements...",
+      text: "Please wait while messages are being delivered",
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading()
     });
 
-    const res = await fetch("http://localhost:3000/send-sms", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        phones: phones,
-        message: message
-      })
-    });
+    let successCount = 0;
+    let failCount = 0;
 
-    const data = await res.json();
+    const schoolName = "NACHU JUNIOR SCHOOL";
+    const today = new Date().toLocaleDateString();
 
-    if (data.success) {
-      Swal.fire("Success", "SMS sent successfully ✅", "success");
-    } else {
-      Swal.fire("Error", "Failed to send SMS", "error");
+    // =========================
+    // SEND PER PARENT
+    // =========================
+    for (const phone in phoneMap) {
+
+      const students = phoneMap[phone];
+
+      let total = 0;
+
+      let message =
+`${schoolName}
+FEE STATEMENT NOTICE
+Date: ${today}
+
+Dear Parent/Guardian,
+
+Below is the outstanding fee statement for your child(ren):
+
+`;
+
+      students.forEach((s, index) => {
+        message += `${index + 1}. ${s.name} - KES ${s.balance}\n`;
+        total += s.balance;
+      });
+
+      message += `
+TOTAL AMOUNT DUE: KES ${total}
+
+Please ensure payment is made at the earliest opportunity to avoid disruption of learning.
+
+For any inquiries, kindly contact the school office.
+
+Regards,
+Administration
+${schoolName}`;
+
+      try {
+        const res = await fetch("http://localhost:3000/send-sms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phones: [phone],
+            message
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+
+      } catch (err) {
+        console.error("SMS error:", err);
+        failCount++;
+      }
     }
+
+    Swal.fire(
+      "Completed",
+      `SMS Sent: ${successCount}\nFailed: ${failCount}`,
+      "success"
+    );
 
   } catch (err) {
     console.error(err);

@@ -7400,9 +7400,11 @@ function buildResultMessage(learner, marks, examPeriod, mode = "whatsapp") {
   let total = 0;
   let count = 0;
 
+  
   const subjects = [
     ["English", "eng"],
     ["Mathematics", "math"],
+    ["Pre-Technical Studies", "preTech"],
     ["Kiswahili", "kiswahili"],
     ["Science & Tech", "science"],
     ["Social Studies", "social"],
@@ -7412,21 +7414,31 @@ function buildResultMessage(learner, marks, examPeriod, mode = "whatsapp") {
   ];
 
   // 🔥 CBC LEVEL SYSTEM
-  function getLevel(score) {
-    if (score >= 90) return 4;
-    if (score >= 50) return 3;
-    if (score >= 30) return 2;
-    return 1;
-  }
+function getLevel(score) {
+  if (score >= 90) return 8;
+  if (score >= 75) return 7;
+  if (score >= 58) return 6;
+  if (score >= 41) return 5;
+  if (score >= 31) return 4;
+  if (score >= 21) return 3;
+  if (score >= 11) return 2;
+  return 1;
+}
 
-  function getMeaning(level) {
-    switch (Number(level)) {
-      case 4: return "Exceeding  Expectations 🌟";
-      case 3: return "Meeting Expectations 👍";
-      case 2: return "Approaching Expectations 🙂";
-      case 1: return "Below Expectations 📚";
-      default: return "Not Assessed";
-    }
+function getMeaning(level) {
+  const map = {
+    8: "Exceeding Expectations 🌟🌟",
+    7: "Exceeding Expectations 🌟",
+    6: "Meeting Expectations 👍👍",
+    5: "Meeting Expectations 👍",
+    4: "Approaching Expectations 🙂🙂",
+    3: "Approaching Expectations 🙂",
+    2: "Below Expectations 📚",
+    1: "Very Low Performance ⚠️"
+  };
+
+  return map[Number(level)] || "Not Assessed";
+}
   }
 
   // =========================

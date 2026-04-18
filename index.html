@@ -4143,6 +4143,19 @@ Accuracy and Efficiency in Every Click.</span>
     🎓 Generate Top 5 Certificates
   </button>
 
+
+<button id="sendSmsResultsBtn" style="
+  background: linear-gradient(90deg, #ff9800, #ff5722);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+">
+  📩 Send Results via SMS
+</button>
 </div>
 
 
@@ -7380,14 +7393,16 @@ window.sendResultsToParents = function () {
     showConfirmButton: false
   });
 };
-function buildResultMessage(learner, marks, examPeriod) {
+
+
+
+function buildResultMessage(learner, marks, examPeriod, mode = "whatsapp") {
   let total = 0;
   let count = 0;
 
   const subjects = [
     ["English", "eng"],
     ["Mathematics", "math"],
-    ["Pre-Technical Studies", "preTech"],
     ["Kiswahili", "kiswahili"],
     ["Science & Tech", "science"],
     ["Social Studies", "social"],
@@ -7397,34 +7412,63 @@ function buildResultMessage(learner, marks, examPeriod) {
   ];
 
   // 🔥 CBC LEVEL SYSTEM
-function getLevel(score) {
-  if (score >= 90) return 8;
-  if (score >= 75) return 7;
-  if (score >= 58) return 6;
-  if (score >= 41) return 5;
-  if (score >= 31) return 4;
-  if (score >= 21) return 3;
-  if (score >= 11) return 2;
-  return 1;
-}
+  function getLevel(score) {
+    if (score >= 90) return 4;
+    if (score >= 50) return 3;
+    if (score >= 30) return 2;
+    return 1;
+  }
 
-function getMeaning(level) {
-  const map = {
-    8: "Exceeding Expectations 🌟🌟",
-    7: "Exceeding Expectations 🌟",
-    6: "Meeting Expectations 👍👍",
-    5: "Meeting Expectations 👍",
-    4: "Approaching Expectations 🙂🙂",
-    3: "Approaching Expectations 🙂",
-    2: "Below Expectations 📚",
-    1: "Very Low Performance ⚠️"
-  };
+  function getMeaning(level) {
+    switch (Number(level)) {
+      case 4: return "Exceeding  Expectations 🌟";
+      case 3: return "Meeting Expectations 👍";
+      case 2: return "Approaching Expectations 🙂";
+      case 1: return "Below Expectations 📚";
+      default: return "Not Assessed";
+    }
+  }
 
-  return map[Number(level)] || "Not Assessed";
-}
+  // =========================
+  // 🔥 SMS MODE (SHORT VERSION)
+  // =========================
+  if (mode === "sms") {
 
-  let msg = `🏫 *NACHU Junior SCHOOL*\n`;
-  msg += `📊 * LEARNER ASSESSMENT REPORT *\n`;
+    let msg = `NACHU PRIMARY SCHOOL\n`;
+    msg += `LEARNER RESULTS\n`;
+    msg += `------------------------\n`;
+
+    msg += `Name: ${learner.name}\n`;
+    msg += `Grade: ${learner.grade || "N/A"}\n`;
+    msg += `Exam: ${examPeriod}\n\n`;
+
+    subjects.forEach(([label, key]) => {
+      const score = +marks[key] || 0;
+      total += score;
+      count++;
+      msg += `${label}:${score} `;
+    });
+
+    const avg = total / count;
+    const avgLevel = getLevel(avg);
+
+    msg += `\nAVG:${avg.toFixed(1)}% L${avgLevel}\n`;
+
+    if (learner.position) {
+      msg += `POS:${learner.position}\n`;
+    }
+
+    msg += `\nRasm Tech School System`;
+
+    return msg;
+  }
+
+  // =========================
+  // 🔥 WHATSAPP MODE (FULL)
+  // =========================
+
+  let msg = `🏫 *NACHU PRIMARY SCHOOL*\n`;
+  msg += `📊 * LEARNER REPORT CARD*\n`;
   msg += `════════════════════════════\n\n`;
 
   msg += `👨‍🎓 *Learner:* ${learner.name}\n`;
@@ -7464,7 +7508,6 @@ function getMeaning(level) {
 
   msg += `📝 *TEACHER'S COMMENT:* ${remark}\n`;
 
-  // Optional class position
   if (learner.position) {
     msg += `🏆 *CLASS POSITION:* ${learner.position}\n`;
   }
@@ -7475,6 +7518,246 @@ function getMeaning(level) {
 
   return msg;
 }
+document.getElementById("sendSmsResultsBtn").addEventListener("click", function () {
+  sendResultsToParentsSMS();
+});
+window.sendResultsToParentsSMS = async function () {
+
+  // 🔐 ADMIN CHECK
+  console.log("🔓 Admin check bypassed");
+
+  const examPeriod = document.getElementById("marksExamPeriodSelect").value;
+
+  if (!examPeriod) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Select Exam Period",
+      text: "Please select exam period before sending results."
+    });
+  }
+
+  if (!allLearners || Object.keys(allLearners).length === 0) {
+    return Swal.fire({
+      icon: "info",
+      title: "No Learners",
+      text: "No learner data found."
+    });
+  }
+
+  const learnersList = Object.values(allLearners);
+
+  // =========================
+  // 🔥 PROGRESS UI
+  // =========================
+  Swal.fire({
+    title: "Sending SMS Results...",
+    html: `
+      <div style="margin-bottom:10px;">Processing messages...</div>
+
+      <div style="width:100%;background:#eee;border-radius:10px;height:12px;">
+        <div id="smsProgressBar" style="
+          width:0%;
+          height:100%;
+          background:linear-gradient(90deg,#4facfe,#00f2fe);
+        "></div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <b id="smsProgressText">0%</b>
+      </div>
+    `,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    didOpen: () => Swal.showLoading()
+  });
+
+  // =========================
+  // CONFIG
+  // =========================
+  const batchSize = 5;
+  const delay = 1200;
+
+  let index = 0;
+  let success = 0;
+  let failedList = [];
+
+  // =========================
+  // FORMAT PHONE
+  // =========================
+  function formatPhone(phone) {
+    phone = phone.toString().trim();
+
+    if (phone.startsWith("+")) phone = phone.replace("+", "");
+    if (phone.startsWith("0")) phone = "254" + phone.substring(1);
+    if (!phone.startsWith("254")) phone = "254" + phone.slice(-9);
+
+    return phone;
+  }
+
+  // =========================
+  // SAFE FETCH (WITH TIMEOUT)
+  // =========================
+  async function sendSMS(phone, message) {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 10000);
+
+    try {
+      const res = await fetch("http://localhost:3000/send-sms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          phone: phone,   // ✅ FIXED
+          message: message
+        }),
+        signal: controller.signal
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        return true;
+      } else {
+        console.error("❌ API rejected:", phone, data);
+        return false;
+      }
+
+    } catch (err) {
+      console.error("❌ Network/Timeout error:", phone, err);
+      return false;
+    }
+  }
+
+  // =========================
+  // SEND BATCH FUNCTION
+  // =========================
+  async function sendBatch() {
+
+    const batch = learnersList.slice(index, index + batchSize);
+
+    for (const learner of batch) {
+
+      let phone = learner.parentPhone;
+
+      if (!phone) {
+        failedList.push(learner);
+        continue;
+      }
+
+      phone = formatPhone(phone);
+
+      const marks = learner.marks?.[examPeriod];
+
+      if (!marks) {
+        failedList.push(learner);
+        continue;
+      }
+
+      const message = buildResultMessage(
+        learner,
+        marks,
+        examPeriod,
+        "sms"
+      );
+
+      const ok = await sendSMS(phone, message);
+
+      if (ok) {
+        success++;
+      } else {
+        failedList.push(learner);
+      }
+    }
+
+    // =========================
+    // UPDATE PROGRESS
+    // =========================
+    index += batchSize;
+
+    const percent = Math.min(
+      Math.round((index / learnersList.length) * 100),
+      100
+    );
+
+    const bar = document.getElementById("smsProgressBar");
+    const text = document.getElementById("smsProgressText");
+
+    if (bar) bar.style.width = percent + "%";
+    if (text) text.innerText = percent + "%";
+
+    // =========================
+    // CONTINUE OR FINISH
+    // =========================
+    if (index < learnersList.length) {
+      setTimeout(sendBatch, delay);
+    } else {
+      retryFailed();
+    }
+  }
+
+  // =========================
+  // RETRY FAILED NUMBERS
+  // =========================
+  async function retryFailed() {
+
+    if (failedList.length === 0) {
+      return finish();
+    }
+
+    let retrySuccess = 0;
+    const retryBatch = [...failedList];
+    failedList = [];
+
+    for (const learner of retryBatch) {
+
+      let phone = learner.parentPhone;
+      if (!phone) continue;
+
+      phone = formatPhone(phone);
+
+      const marks = learner.marks?.[examPeriod];
+      if (!marks) continue;
+
+      const message = buildResultMessage(
+        learner,
+        marks,
+        examPeriod,
+        "sms"
+      );
+
+      const ok = await sendSMS(phone, message);
+
+      if (ok) {
+        retrySuccess++;
+      } else {
+        failedList.push(learner);
+      }
+    }
+
+    success += retrySuccess;
+
+    finish();
+  }
+
+  // =========================
+  // FINAL OUTPUT
+  // =========================
+  function finish() {
+    Swal.fire({
+      icon: "success",
+      title: "SMS Sending Complete 🎉",
+      html: `
+        <b>✅ Sent:</b> ${success}<br>
+        <b>❌ Failed:</b> ${failedList.length}<br>
+        <b>📊 Total:</b> ${learnersList.length}
+      `
+    });
+  }
+
+  // 🚀 START
+  sendBatch();
+};
 window.sendSelectedResults = function () {
 
   const examPeriod = document.getElementById("marksExamPeriodSelect").value;

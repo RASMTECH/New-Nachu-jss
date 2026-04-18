@@ -2167,13 +2167,33 @@ button[onclick^="show"] {
     min-height: 30px;
   }
 }
-
 .results-dispatch-panel-title {
-  background: linear-gradient(90deg, #ff9800, #ff5722);
+  background: linear-gradient(270deg, #1e3c72, #2a5298, #00c6ff, #0072ff);
+  background-size: 800% 800%;
   color: white;
-  padding: 12px 18px;
-  border-radius: 10px;
+  padding: 14px 20px;
+  border-radius: 12px;
   text-align: center;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+
+  animation: gradientMove 8s ease infinite, glowPulse 2.5s ease-in-out infinite;
+}
+
+/* Moving gradient animation */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Soft glow pulse */
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 10px rgba(0,198,255,0.3); }
+  50% { box-shadow: 0 0 20px rgba(0,198,255,0.6); }
+  100% { box-shadow: 0 0 10px rgba(0,198,255,0.3); }
 }
 </style>
 

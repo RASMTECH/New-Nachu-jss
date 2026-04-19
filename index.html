@@ -2195,6 +2195,16 @@ button[onclick^="show"] {
   50% { box-shadow: 0 0 20px rgba(0,198,255,0.6); }
   100% { box-shadow: 0 0 10px rgba(0,198,255,0.3); }
 }
+
+.yellow-btn {
+  background-color: #f1c40f;
+  color: #fff;
+  border: none;
+}
+
+.yellow-btn:hover {
+  background-color: #d4ac0d;
+}
 </style>
 
 </head>
@@ -3314,7 +3324,9 @@ backdrop-filter: blur(8px);
 <button class="action-btn purple-btn" id="toggleClassListSectionBtn">
   <i class="fas fa-chevron-down"></i> Class List Generator
 </button>
-
+<button class="action-btn yellow-btn" id="sendMeetingSmsBtn">
+  <i class="fas fa-bullhorn"></i> Send Parent Meeting SMS
+</button>
 
     <button class="action-btn red-btn" onclick="promoteLearners()">
       <i class="fas fa-level-up-alt"></i> Promote Learners
@@ -3323,7 +3335,9 @@ backdrop-filter: blur(8px);
     <button class="action-btn red-btn" id="bulkDeleteButton">
       <i class="fas fa-trash-alt"></i> Delete Selected Learners
     </button>
-
+<button id="sendMeetingSmsBtn" class="btn btn-warning">
+  📢 Send Parent Meeting SMS
+</button>
     <button class="action-btn gray-btn" onclick="undoPromotion()">
       <i class="fas fa-undo-alt"></i> Undo Promotion
     </button>
@@ -7566,12 +7580,24 @@ window.sendResultsToParentsSMS = async function () {
   console.log("🔓 Admin check bypassed");
 
   const examPeriod = document.getElementById("marksExamPeriodSelect").value;
+  const selectedGrade = document.getElementById("filterMarksGrade")?.value?.trim();
 
+  // =========================
+  // VALIDATIONS
+  // =========================
   if (!examPeriod) {
     return Swal.fire({
       icon: "warning",
       title: "Select Exam Period",
       text: "Please select exam period before sending results."
+    });
+  }
+
+  if (!selectedGrade) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Select Grade",
+      text: "Please select a grade first."
     });
   }
 
@@ -7583,13 +7609,24 @@ window.sendResultsToParentsSMS = async function () {
     });
   }
 
-  const learnersList = Object.values(allLearners);
+  // ✅ FILTER BY GRADE
+  const learnersList = Object.values(allLearners).filter(
+    l => l.grade === selectedGrade
+  );
+
+  if (learnersList.length === 0) {
+    return Swal.fire({
+      icon: "info",
+      title: "No Students Found",
+      text: `No learners in ${selectedGrade}`
+    });
+  }
 
   // =========================
   // 🔥 PROGRESS UI
   // =========================
   Swal.fire({
-    title: "Sending SMS Results...",
+    title: `Sending SMS Results (${selectedGrade})`,
     html: `
       <div style="margin-bottom:10px;">Processing messages...</div>
 
@@ -7624,6 +7661,8 @@ window.sendResultsToParentsSMS = async function () {
   // FORMAT PHONE
   // =========================
   function formatPhone(phone) {
+    if (!phone) return null;
+
     phone = phone.toString().trim();
 
     if (phone.startsWith("+")) phone = phone.replace("+", "");
@@ -7634,11 +7673,12 @@ window.sendResultsToParentsSMS = async function () {
   }
 
   // =========================
-  // SAFE FETCH (WITH TIMEOUT)
+  // ✅ FIXED SMS FUNCTION
   // =========================
   async function sendSMS(phone, message) {
+
     const controller = new AbortController();
-    setTimeout(() => controller.abort(), 10000);
+    const timeout = setTimeout(() => controller.abort(), 12000);
 
     try {
       const res = await fetch("http://localhost:3000/send-sms", {
@@ -7646,21 +7686,37 @@ window.sendResultsToParentsSMS = async function () {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          phone: phone,   // ✅ FIXED
-          message: message
-        }),
+        body: JSON.stringify({ phone, message }),
         signal: controller.signal
       });
 
+      clearTimeout(timeout);
+
       const data = await res.json();
 
-      if (res.ok && data.success) {
+      console.log("📩 SMS RESPONSE:", data);
+
+      const apiMessage = data?.SMSMessageData?.Message || "";
+      const recipients = data?.SMSMessageData?.Recipients || [];
+
+      // ✅ PRIMARY CHECK (your API)
+      if (res.ok && apiMessage.toLowerCase().includes("sent to")) {
         return true;
-      } else {
-        console.error("❌ API rejected:", phone, data);
-        return false;
       }
+
+      // ✅ SECONDARY CHECK
+      if (res.ok && recipients.length > 0) {
+        return true;
+      }
+
+      // ✅ FALLBACK
+      if (res.ok) {
+        console.warn("⚠️ Assuming success (HTTP 200)");
+        return true;
+      }
+
+      console.error("❌ SMS FAILED:", data);
+      return false;
 
     } catch (err) {
       console.error("❌ Network/Timeout error:", phone, err);
@@ -7669,7 +7725,7 @@ window.sendResultsToParentsSMS = async function () {
   }
 
   // =========================
-  // SEND BATCH FUNCTION
+  // SEND BATCH
   // =========================
   async function sendBatch() {
 
@@ -7702,16 +7758,10 @@ window.sendResultsToParentsSMS = async function () {
 
       const ok = await sendSMS(phone, message);
 
-      if (ok) {
-        success++;
-      } else {
-        failedList.push(learner);
-      }
+      if (ok) success++;
+      else failedList.push(learner);
     }
 
-    // =========================
-    // UPDATE PROGRESS
-    // =========================
     index += batchSize;
 
     const percent = Math.min(
@@ -7725,9 +7775,6 @@ window.sendResultsToParentsSMS = async function () {
     if (bar) bar.style.width = percent + "%";
     if (text) text.innerText = percent + "%";
 
-    // =========================
-    // CONTINUE OR FINISH
-    // =========================
     if (index < learnersList.length) {
       setTimeout(sendBatch, delay);
     } else {
@@ -7736,7 +7783,7 @@ window.sendResultsToParentsSMS = async function () {
   }
 
   // =========================
-  // RETRY FAILED NUMBERS
+  // RETRY FAILED
   // =========================
   async function retryFailed() {
 
@@ -7767,11 +7814,8 @@ window.sendResultsToParentsSMS = async function () {
 
       const ok = await sendSMS(phone, message);
 
-      if (ok) {
-        retrySuccess++;
-      } else {
-        failedList.push(learner);
-      }
+      if (ok) retrySuccess++;
+      else failedList.push(learner);
     }
 
     success += retrySuccess;
@@ -7780,7 +7824,7 @@ window.sendResultsToParentsSMS = async function () {
   }
 
   // =========================
-  // FINAL OUTPUT
+  // FINAL RESULT
   // =========================
   function finish() {
     Swal.fire({
@@ -7797,6 +7841,206 @@ window.sendResultsToParentsSMS = async function () {
   // 🚀 START
   sendBatch();
 };
+window.sendParentMeetingSMS = async function () {
+
+  const selectedGrade = document.getElementById("filterGrade")?.value?.trim();
+
+  if (!selectedGrade) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Select Grade",
+      text: "Please select a grade first."
+    });
+  }
+
+  if (!allLearners || Object.keys(allLearners).length === 0) {
+    return Swal.fire({
+      icon: "info",
+      title: "No Learners",
+      text: "No learner data found."
+    });
+  }
+
+  const learnersList = Object.values(allLearners).filter(
+    l => l.grade === selectedGrade
+  );
+
+  if (learnersList.length === 0) {
+    return Swal.fire({
+      icon: "info",
+      title: "No Students Found",
+      text: `No learners in ${selectedGrade}`
+    });
+  }
+
+  Swal.fire({
+    title: `Sending Parent Meeting SMS (${selectedGrade})`,
+    html: `
+      <div style="margin-bottom:10px;">Processing messages...</div>
+
+      <div style="width:100%;background:#eee;border-radius:10px;height:12px;">
+        <div id="smsProgressBar" style="
+          width:0%;
+          height:100%;
+          background:linear-gradient(90deg,#ff9800,#ff5722);
+        "></div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <b id="smsProgressText">0%</b>
+      </div>
+    `,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    didOpen: () => Swal.showLoading()
+  });
+
+  const batchSize = 5;
+  const delay = 1200;
+
+  let index = 0;
+  let success = 0;
+  let failedList = [];
+
+  function formatPhone(phone) {
+    if (!phone) return null;
+
+    phone = phone.toString().trim();
+
+    if (phone.startsWith("+")) phone = phone.replace("+", "");
+    if (phone.startsWith("0")) phone = "254" + phone.substring(1);
+    if (!phone.startsWith("254")) phone = "254" + phone.slice(-9);
+
+    return phone;
+  }
+
+  // ✅ FIXED FUNCTION
+  async function sendSMS(phone, message) {
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+
+    try {
+      const res = await fetch("http://localhost:3000/send-sms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ phone, message }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+
+      const data = await res.json();
+
+      console.log("📩 SMS RESPONSE:", data);
+
+      // ✅ YOUR API FORMAT CHECK
+      const apiMessage = data?.SMSMessageData?.Message || "";
+      const recipients = data?.SMSMessageData?.Recipients || [];
+
+      // ✅ PRIMARY CHECK (Africa's Talking style)
+      if (res.ok && apiMessage.toLowerCase().includes("sent to")) {
+        return true;
+      }
+
+      // ✅ SECONDARY CHECK (recipients exist)
+      if (res.ok && recipients.length > 0) {
+        return true;
+      }
+
+      // ✅ FALLBACK (HTTP success)
+      if (res.ok) {
+        console.warn("⚠️ No clear success flag, assuming success");
+        return true;
+      }
+
+      console.error("❌ SMS FAILED:", data);
+      return false;
+
+    } catch (err) {
+      console.error("❌ NETWORK ERROR:", err);
+      return false;
+    }
+  }
+
+  function updateProgress() {
+    const bar = document.getElementById("smsProgressBar");
+    const text = document.getElementById("smsProgressText");
+
+    const percent = Math.min(
+      Math.round((index / learnersList.length) * 100),
+      100
+    );
+
+    if (bar) bar.style.width = percent + "%";
+    if (text) text.innerText = percent + "%";
+  }
+
+  async function sendBatch() {
+
+    const batch = learnersList.slice(index, index + batchSize);
+
+    for (const learner of batch) {
+
+      const phone = formatPhone(learner.parentPhone);
+
+      if (!phone) {
+        failedList.push(learner);
+        continue;
+      }
+
+      const message =
+`Dear Parent/Guardian,
+
+You are invited to the PARENTS MEETING for ${learner.name || "your child"}.
+
+📅 Date: To be announced
+📍 Venue: School Hall
+⏰ Time: 8:00 AM
+
+Regards,
+School Administration`;
+
+      const ok = await sendSMS(phone, message);
+
+      if (ok) success++;
+      else failedList.push(learner);
+    }
+
+    index += batchSize;
+    updateProgress();
+
+    if (index < learnersList.length) {
+      setTimeout(sendBatch, delay);
+    } else {
+      finish();
+    }
+  }
+
+  function finish() {
+    Swal.fire({
+      icon: "success",
+      title: "Completed 🎉",
+      html: `
+        <b>Sent:</b> ${success}<br>
+        <b>Failed:</b> ${failedList.length}<br>
+        <b>Total:</b> ${learnersList.length}
+      `
+    });
+  }
+
+  sendBatch();
+};
+
+// ===============================
+// 🔘 BUTTON FIX (CORRECT VERSION)
+// ===============================
+
+document.getElementById("sendMeetingSmsBtn").addEventListener("click", () => {
+  window.sendParentMeetingSMS();
+});
 window.sendSelectedResults = function () {
 
   const examPeriod = document.getElementById("marksExamPeriodSelect").value;

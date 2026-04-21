@@ -6665,52 +6665,77 @@ function updateMarksCoverage(totalLearners, learnersWithMarks) {
     bar.style.background = "linear-gradient(90deg,#43e97b,#38f9d7)";
   }
 }
-function loadMarksUnified() {
+
+function updateProgress(loaded, total) {
+  requestAnimationFrame(() => {
+    const el = Swal.getHtmlContainer()?.querySelector("#countText");
+    if (el) el.innerText = `${loaded} / ${total} students loaded`;
+  });
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function loadMarksUnified() {
+
   const examPeriod = marksExamPeriodSelect.value;
   currentExamPeriod = examPeriod;
+
   const selectedGrade = filterMarksGrade.value;
 
   if (!examPeriod) {
-    Swal.fire({
+    return Swal.fire({
       toast: true,
       position: 'top-end',
       icon: 'warning',
       title: 'Please select exam period',
-      showConfirmButton: false,
-      timer: 2000
+      timer: 2000,
+      showConfirmButton: false
     });
-    return;
   }
 
-  let loadedCount = 0;
-  let totalCount = 0;
+  const subjects = [
+    "eng", "math", "preTech", "kiswahili",
+    "science", "social", "agriculture",
+    "cre", "creativeArt"
+  ];
 
-  // ==============================
-  // 🔥 MODERN LOADING UI (DOTS)
-  // ==============================
+  const sums = subjects.reduce((acc, s) => {
+    acc[s] = 0;
+    return acc;
+  }, {
+    totalMarks: 0,
+    totalLevels: 0
+  });
+
+  const gradeGroups = {};
+  const grades = new Set();
+  let learnersCount = 0;
+  let noMarksFound = true;
+  let loadedCount = 0;
+
+  // =========================
+  // 🔥 LOADING UI
+  // =========================
   Swal.fire({
     title: 'Loading Marks...',
     html: `
-      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-
-        <div style="display:flex;gap:6px;margin-top:10px;">
-          <span style="width:10px;height:10px;background:#4285f4;border-radius:50%;animation:bounce 1s infinite;"></span>
-          <span style="width:10px;height:10px;background:#34a853;border-radius:50%;animation:bounce 1s infinite 0.2s;"></span>
-          <span style="width:10px;height:10px;background:#fbbc05;border-radius:50%;animation:bounce 1s infinite 0.4s;"></span>
-          <span style="width:10px;height:10px;background:#ea4335;border-radius:50%;animation:bounce 1s infinite 0.6s;"></span>
-        </div>
-
-        <div id="statusText" style="font-size:14px;color:#555;">
-          Initializing...
-        </div>
-
-        <div id="countText" style="font-size:12px;color:#777;">
-          Preparing data...
-        </div>
-
+      <div style="text-align:center">
+        <div class="loader"></div>
+        <div id="statusText">Fetching data...</div>
+        <div id="countText">0 students loaded</div>
       </div>
 
       <style>
+        .loader {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          display: inline-block;
+          animation: bounce 1s infinite;
+          background:#4285f4;
+        }
         @keyframes bounce {
           0%, 80%, 100% { transform: scale(0.7); opacity:0.5; }
           40% { transform: scale(1.3); opacity:1; }
@@ -6723,171 +6748,127 @@ function loadMarksUnified() {
 
   marksTableBody.innerHTML = "";
 
-  if (unsubscribeMarks) unsubscribeMarks();
+  if (typeof unsubscribeMarks === "function") {
+    unsubscribeMarks();
+  }
 
-  // ==============================
-  // 🔥 FIREBASE LISTENER
-  // ==============================
-  unsubscribeMarks = onValue(learnersRef, (snapshot) => {
+  // =========================
+  // ⚡ FIREBASE QUERY
+  // =========================
 
-    marksTableBody.innerHTML = "";
+  const baseRef = learnersRef;
+
+  const queryRef = selectedGrade
+    ? query(baseRef, orderByChild("grade"), equalTo(selectedGrade))
+    : baseRef;
+
+  try {
+
+    const snapshot = await get(queryRef);
+
+    if (!snapshot.exists()) {
+      Swal.fire("No data found");
+      return;
+    }
+
+    const dataObj = snapshot.val();
+    const entries = Object.entries(dataObj);
+    const totalCount = entries.length;
 
     const tempStorage = [];
-    const grades = new Set();
-    const gradeGroups = {};
-    let noMarksFound = true;
+    const fragment = document.createDocumentFragment();
 
-    let sums = {
-      eng: 0, math: 0, preTech: 0, kiswahili: 0,
-      science: 0, social: 0, agriculture: 0,
-      cre: 0, creativeArt: 0, totalMarks: 0, totalLevels: 0
-    };
+    // =========================
+    // ⚡ FIXED LOOP (UI FRIENDLY)
+    // =========================
+    for (let i = 0; i < entries.length; i++) {
 
-    let learnersCount = 0;
-
-    totalCount = snapshot.numChildren ? snapshot.numChildren() : snapshot.size || 0;
-    loadedCount = 0;
-
-    snapshot.forEach(childSnapshot => {
+      const [key, data] = entries[i];
 
       loadedCount++;
 
-      // ==============================
-      // 🔥 LIVE STATUS UPDATE
-      // ==============================
-      Swal.update({
-        html: `
-          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      const m = data.marks?.[examPeriod];
 
-            <div style="display:flex;gap:6px;margin-top:10px;">
-              <span style="width:10px;height:10px;background:#4285f4;border-radius:50%;animation:bounce 1s infinite;"></span>
-              <span style="width:10px;height:10px;background:#34a853;border-radius:50%;animation:bounce 1s infinite 0.2s;"></span>
-              <span style="width:10px;height:10px;background:#fbbc05;border-radius:50%;animation:bounce 1s infinite 0.4s;"></span>
-              <span style="width:10px;height:10px;background:#ea4335;border-radius:50%;animation:bounce 1s infinite 0.6s;"></span>
-            </div>
+      grades.add(data.grade);
 
-            <div id="statusText" style="font-size:14px;color:#555;">
-              Processing marks...
-            </div>
+      updateProgress(loadedCount, totalCount);
 
-            <div id="countText" style="font-size:12px;color:#777;">
-              ${loadedCount} / ${totalCount} students
-            </div>
+      // 🔥 allow UI rendering every 10 records
+      if (i % 10 === 0) {
+        await sleep(0);
+      }
 
-          </div>
-        `
+      if (!m) continue;
+
+      noMarksFound = false;
+
+      const rowTotal = subjects.reduce(
+        (sum, s) => sum + +(m[s] || 0),
+        0
+      );
+
+      const totalLevel = subjects.reduce(
+        (sum, s) => sum + +(m[s + "Lev"] || 0),
+        0
+      );
+
+      const learnerObj = {
+        key,
+        data,
+        marks: m,
+        rowTotal,
+        totalLevel
+      };
+
+      tempStorage.push({
+        key,
+        name: data.name,
+        grade: data.grade,
+        phone: data.phone || "",
+        marks: m
       });
 
-      const data = childSnapshot.val();
-      const marks = data.marks?.[examPeriod];
-
-      if (data.grade) grades.add(data.grade);
-
-      if (marks && (!selectedGrade || data.grade === selectedGrade)) {
-
-        noMarksFound = false;
-
-        const rowTotal =
-          (+marks.eng || 0) +
-          (+marks.math || 0) +
-          (+marks.preTech || 0) +
-          (+marks.kiswahili || 0) +
-          (+marks.science || 0) +
-          (+marks.social || 0) +
-          (+marks.agriculture || 0) +
-          (+marks.cre || 0) +
-          (+marks.creativeArt || 0);
-
-        const totalLevel =
-          (+marks.engLev || 0) +
-          (+marks.mathLev || 0) +
-          (+marks.preTechLev || 0) +
-          (+marks.kiswahiliLev || 0) +
-          (+marks.scienceLev || 0) +
-          (+marks.socialLev || 0) +
-          (+marks.agricultureLev || 0) +
-          (+marks.creLev || 0) +
-          (+marks.creativeArtLev || 0);
-
-        const learnerObj = {
-          key: childSnapshot.key,
-          data,
-          marks,
-          rowTotal,
-          totalLevel
-        };
-
-        tempStorage.push({
-          key: childSnapshot.key,
-          name: data.name,
-          grade: data.grade,
-          phone: data.phone || "",
-          marks: marks
-        });
-
-        if (!gradeGroups[data.grade]) {
-          gradeGroups[data.grade] = [];
-        }
-
-        gradeGroups[data.grade].push(learnerObj);
+      if (!gradeGroups[data.grade]) {
+        gradeGroups[data.grade] = [];
       }
-    });
+
+      gradeGroups[data.grade].push(learnerObj);
+    }
 
     window.loadedMarksLearners = tempStorage;
 
-    const fragment = document.createDocumentFragment();
-
+    // =========================
+    // PROCESS RESULTS
+    // =========================
     Object.keys(gradeGroups).forEach(grade => {
 
-      const learners = gradeGroups[grade];
-      learners.sort((a, b) => b.rowTotal - a.rowTotal);
+      gradeGroups[grade]
+        .sort((a, b) => b.rowTotal - a.rowTotal)
+        .forEach((learner, index) => {
 
-      learners.forEach((learner, index) => {
+          learnersCount++;
 
-        learnersCount++;
+          const { data, marks, rowTotal, totalLevel } = learner;
 
-        const { data, marks, rowTotal, totalLevel } = learner;
+          subjects.forEach(s => {
+            sums[s] += +(marks[s] || 0);
+          });
 
-        sums.eng += (+marks.eng || 0);
-        sums.math += (+marks.math || 0);
-        sums.preTech += (+marks.preTech || 0);
-        sums.kiswahili += (+marks.kiswahili || 0);
-        sums.science += (+marks.science || 0);
-        sums.social += (+marks.social || 0);
-        sums.agriculture += (+marks.agriculture || 0);
-        sums.cre += (+marks.cre || 0);
-        sums.creativeArt += (+marks.creativeArt || 0);
-        sums.totalMarks += rowTotal;
-        sums.totalLevels += totalLevel;
+          sums.totalMarks += rowTotal;
+          sums.totalLevels += totalLevel;
 
-        const row = document.createElement("tr");
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${data.name}</td>
+            <td>${data.grade}</td>
+          `;
 
-        row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${data.name}</td>
-          <td>${data.grade}</td>
-        `;
-
-        fragment.appendChild(row);
-      });
+          fragment.appendChild(row);
+        });
     });
 
     marksTableBody.appendChild(fragment);
-
-    // ==============================
-    // FINAL COMPLETE STATE
-    // ==============================
-    setTimeout(() => {
-      Swal.update({
-        title: 'Finalizing...',
-        html: `
-          <div style="text-align:center;">
-            <div>Preparing results...</div>
-            <b>${learnersCount} students</b>
-          </div>
-        `
-      });
-    }, 300);
 
     updateTotalsAndAverages(sums, learnersCount);
     renderSubjectAverages(sums, learnersCount);
@@ -6898,39 +6879,45 @@ function loadMarksUnified() {
     calculateTopStudents();
     updateMarksCoverage(totalCount, learnersCount);
 
-    setTimeout(() => {
-      Swal.close();
-    }, 600);
+    Swal.close();
 
-    // ==============================
-    // FINAL ALERT
-    // ==============================
-    if (!noMarksFound) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Marks Ready 🎉',
-        text: `${learnersCount} students processed successfully`,
-        timer: 2500,
-        showConfirmButton: false
-      });
-    } else {
-      Swal.fire({
-        icon: 'info',
-        title: 'No Marks Found',
-        text: `No marks found for ${selectedGrade || "all grades"} in ${examPeriod}`
-      });
-    }
+    Swal.fire({
+      icon: noMarksFound ? 'info' : 'success',
+      title: noMarksFound ? 'No Marks Found' : 'Marks Ready 🎉',
+      text: noMarksFound
+        ? `No marks found for ${selectedGrade || "all grades"}`
+        : `${learnersCount} students processed successfully`,
+      timer: 2500,
+      showConfirmButton: false
+    });
 
-  });
+  } catch (error) {
+
+    console.error("Firebase load error:", error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Loading Failed",
+      text: "Check internet or database connection"
+    });
+  }
 }
+
+// =========================
+// BUTTON EVENT
+// =========================
 
 document.getElementById("loadMarksByPeriodBtn")
   .addEventListener("click", () => {
-    const selectedExamPeriod = document.getElementById("marksExamPeriodSelect").value;
+
+    const selectedExamPeriod =
+      document.getElementById("marksExamPeriodSelect").value;
 
     if (!selectedExamPeriod) {
-      showToast("Please select an exam period to view marks.", "error");
-      return;
+      return showToast(
+        "Please select an exam period to view marks.",
+        "error"
+      );
     }
 
     loadMarksUnified();

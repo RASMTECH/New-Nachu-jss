@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+     <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1705,19 +1705,7 @@ button[onclick^="show"] {
   gap: 15px;
   margin-top: 20px;
 }
-.editable-mark-cell {
-  background: #fffdf0;
-  border: 1px solid #ffd54f;
-  transition: 0.2s;
-  min-width: 40px;
-  text-align: center;
-}
 
-.editable-mark-cell:focus {
-  outline: none;
-  background: #fff3cd;
-  transform: scale(1.02);
-}
 /* LISTS */
 .lists-grid {
   display: grid;
@@ -2179,6 +2167,23 @@ button[onclick^="show"] {
     min-height: 30px;
   }
 }
+.hidden-section {
+  display: none;
+}
+
+.control-btn {
+  padding: 10px 15px;
+  background: #2d89ef;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.hidden-section {
+  display: none !important;
+}
+
 .results-dispatch-panel-title {
   background: linear-gradient(270deg, #1e3c72, #2a5298, #00c6ff, #0072ff);
   background-size: 800% 800%;
@@ -2207,7 +2212,6 @@ button[onclick^="show"] {
   50% { box-shadow: 0 0 20px rgba(0,198,255,0.6); }
   100% { box-shadow: 0 0 10px rgba(0,198,255,0.3); }
 }
-
 .yellow-btn {
   background-color: #f1c40f;
   color: #fff;
@@ -2217,6 +2221,7 @@ button[onclick^="show"] {
 .yellow-btn:hover {
   background-color: #d4ac0d;
 }
+
 
 @media print {
 
@@ -2278,6 +2283,54 @@ button[onclick^="show"] {
   button {
     display: none !important;
   }
+}
+
+.card {
+  padding:10px 15px;
+  border-radius:8px;
+  background:#f4f6f8;
+  font-weight:bold;
+  min-width:160px;
+  text-align:center;
+}
+.dot-loader {
+  display: inline-block;
+  font-weight: bold;
+}
+
+.dot-loader span {
+  display: inline-block;
+  animation: bounce 1.2s infinite ease-in-out;
+  font-size: 20px;
+  margin: 0 2px;
+}
+
+.dot-loader span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot-loader span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid #0d1b4c;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  position: relative;
 }
 </style>
 
@@ -2692,7 +2745,206 @@ backdrop-filter: blur(8px);
     </div>
   </div>
 </div>
+<!-- ================= PAYROLL SECTION ================= -->
+<div id="payrollSection" class="table-container section-container" style="display:none;">
 
+  <!-- ================= HEADER ================= -->
+  <h2 class="section-header" style="text-align:center; margin-bottom:10px;">
+    💰 Staff Payroll Management
+  </h2>
+<!-- ================= ADD STAFF CARD ================= -->
+<div class="staff-form"
+  style="
+    margin-bottom:20px;
+    padding:20px;
+    border-radius:14px;
+    position:relative;
+    overflow:hidden;
+
+    background-image:url('https://i.imgur.com/1oPtqX3.jpeg');
+    background-size:cover;
+    background-position:center;
+    border:1px solid rgba(255,255,255,0.2);
+  ">
+
+  <!-- 🔥 DARK OVERLAY -->
+  <div style="
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:0;
+  "></div>
+
+  <!-- CONTENT -->
+  <div style="position:relative; z-index:1;">
+
+    <h3 style="margin-bottom:14px; color:#fff; letter-spacing:0.5px;">
+      ➕ Add Staff Details
+    </h3>
+
+    <!-- ROW 1 -->
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+      <input id="staffName" placeholder="Full Name" class="styled-input"
+        style="flex:1; min-width:180px;">
+
+      <input id="staffRole" placeholder="Role / Position" class="styled-input"
+        style="flex:1; min-width:180px;">
+    </div>
+
+    <!-- ROW 2 -->
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+      <input id="staffKraPin" placeholder="KRA PIN (e.g. A123456789Z)" class="styled-input"
+        style="flex:1; min-width:180px; text-transform:uppercase;">
+
+      <input id="staffIdNumber" placeholder="ID Number" class="styled-input"
+        style="flex:1; min-width:180px;">
+    </div>
+
+    <!-- ROW 3 -->
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <input id="staffSalary" type="number" placeholder="Basic Salary (KES)" class="styled-input"
+        style="flex:1; min-width:180px;">
+    </div>
+
+    <!-- BUTTON -->
+    <button id="addStaffBtn" class="btn save-btn"
+      style="
+        margin-top:15px;
+        width:100%;
+        padding:12px;
+        font-weight:bold;
+        font-size:14px;
+      ">
+      💾 Save Staff
+    </button>
+
+  </div>
+</div>
+  <!-- ================= MAIN ACTION ================= -->
+  <div style="text-align:center; margin-bottom:15px;">
+    <button id="payrollControlBtn" class="btn load-btn" style="padding:10px 20px; font-size:15px;">
+      📊 Open Payroll System
+    </button>
+  </div>
+
+<!-- ================= FILTER PANEL ================= -->
+<div class="filter-bar"
+  style="
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    justify-content:center;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.3);
+
+    /* 🔥 BACKGROUND IMAGE */
+    background-image: url('https://i.imgur.com/rWXFgWt.jpeg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+  ">
+
+  <!-- 🔥 DARK OVERLAY FOR READABILITY -->
+  <div style="
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.55);
+    z-index:0;
+  "></div>
+
+  <!-- CONTENT WRAPPER -->
+  <div style="position:relative; z-index:1; display:flex; gap:15px; flex-wrap:wrap; align-items:flex-end; justify-content:center; width:100%;">
+
+    <!-- YEAR -->
+    <div class="input-group" style="min-width:160px;">
+      <label style="color:#fff;">📅 Year</label>
+      <select id="salaryYear" class="styled-input">
+        <option value="">Select Year</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+        <option value="2029">2029</option>
+      </select>
+    </div>
+
+    <!-- STAFF -->
+    <div class="input-group" style="min-width:200px;">
+      <label style="color:#fff;">👨‍🏫 Staff</label>
+      <select id="staffSelect" class="styled-input"></select>
+
+      <button id="deleteStaffBtn"
+        class="btn delete-btn"
+        style="
+          margin-top:6px;
+          width:auto;
+          padding:6px 10px;
+          font-size:12px;
+          border-radius:6px;
+          background:#ffebee;
+          color:#c62828;
+          border:1px solid #c62828;
+          cursor:pointer;
+        ">
+        🗑️ Delete Staff
+      </button>
+    </div>
+
+    <!-- AMOUNT -->
+    <div class="input-group" style="min-width:160px;">
+      <label style="color:#fff;">💰 Amount</label>
+      <input type="number" id="salaryAmount" class="styled-input" placeholder="Enter amount">
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="button-group" style="display:flex; flex-direction:column; gap:8px; min-width:160px;">
+
+      <button id="paySalaryBtn" class="btn save-btn">
+        💰 Pay Salary
+      </button>
+
+      <button id="loadPayrollBtn" class="btn load-btn">
+        📊 Load Payroll
+      </button>
+<button id="generatePayslipBtn" class="btn load-btn" style="margin-top:8px;">
+  🧾 Generate Payslip
+</button>
+    </div>
+
+  </div>
+
+</div>
+  <!-- ================= DASHBOARD ================= -->
+  <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center; margin:20px 0;">
+
+    <div class="card" style="min-width:150px; text-align:center;">
+      👥 Staff<br><span id="totalStaff">0</span>
+    </div>
+
+    <div class="card" style="min-width:150px; text-align:center;">
+      💰 Total Paid<br><span id="totalSalaryPaid">0</span>
+    </div>
+
+    <div class="card" style="min-width:150px; text-align:center;">
+      📉 Balance<br><span id="totalSalaryBalance">0</span>
+    </div>
+
+  </div>
+
+  <!-- ================= TABLE ================= -->
+  <div id="payrollTable" style="margin-top:10px;">
+    <div style="text-align:center; padding:20px; color:#888;">
+      Please select a year to view payroll
+    </div>
+  </div>
+
+</div>
 <div id="attendanceStats" style="margin:10px 0; font-weight:bold;"></div>
 <!-- ================= ATTENDANCE REGISTER ================= -->
 <div id="attendanceSection" class="table-container" style="display:none;">
@@ -18217,7 +18469,728 @@ function setOfflineStatus() {
   el.classList.add("offline");
   el.textContent = "🔴 Offline";
 }
+// ===============================
+// 🔥 GLOBAL VARIABLES
+// ===============================
+let allStaff = [];
+let payrollListener = null;
+let payrollRefGlobal = null;
+let payrollCallback = null;
 
+// 🔥 YEAR STATE
+let currentPayrollYear = new Date().getFullYear().toString();
+
+
+// ===============================
+// 🧠 SECTION CONTROLLER
+// ===============================
+function closeAllSections() {
+
+  document.querySelectorAll(".main-section, .table-container, .section-container")
+    .forEach(sec => sec.style.display = "none");
+
+  // 🔥 SAFE CLEANUP
+  if (payrollRefGlobal) {
+    off(payrollRefGlobal);
+  }
+
+  payrollRefGlobal = null;
+  payrollCallback = null;
+}
+
+
+// ===============================
+// 📌 AUTO SCROLL
+// ===============================
+function smoothScrollTo(el) {
+  if (!el) return;
+  setTimeout(() => {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 200);
+}
+
+
+// ===============================
+// 🧠 SAFE YEAR GETTER
+// ===============================
+function getSelectedYear() {
+  const el = document.getElementById("salaryYear");
+  return el?.value || currentPayrollYear;
+}
+
+
+// ===============================
+// 👨‍🏫 LOAD STAFF
+// ===============================
+window.loadStaff = async function () {
+
+  const select = document.getElementById("staffSelect");
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Select Staff</option>';
+
+  const snap = await get(ref(db, "staff"));
+  const data = snap.val();
+
+  allStaff = [];
+
+  if (data) {
+    allStaff = Object.entries(data).map(([id, val]) => ({
+      id,
+      ...val
+    }));
+  }
+
+  allStaff.forEach(s => {
+    select.innerHTML += `
+      <option value="${s.id}">
+        ${s.name} - ${s.role}
+      </option>
+    `;
+  });
+};
+
+
+// ===============================
+// 🗑️ DELETE STAFF
+// ===============================
+document.getElementById("deleteStaffBtn").addEventListener("click", async () => {
+
+  const staffId = document.getElementById("staffSelect").value;
+
+  if (!staffId) {
+    Swal.fire("Select Staff", "Choose a staff first", "warning");
+    return;
+  }
+
+  const confirm = await Swal.fire({
+    title: "Delete Staff?",
+    text: "This will remove staff permanently",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes Delete"
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  await remove(ref(db, "staff/" + staffId));
+
+  Swal.fire("Deleted", "Staff removed", "success");
+
+  loadStaff();
+});
+
+
+// ===============================
+// 💰 PAY SALARY
+// ===============================
+document.getElementById("paySalaryBtn").addEventListener("click", async () => {
+
+  const staffId = document.getElementById("staffSelect").value;
+  const amount = Number(document.getElementById("salaryAmount").value);
+
+  const year = getSelectedYear();
+  currentPayrollYear = year;
+
+  if (!staffId || !amount || !year) {
+    Swal.fire("Missing Fields", "Fill all payroll fields", "warning");
+    return;
+  }
+
+  const staff = allStaff.find(s => s.id === staffId);
+  if (!staff) return;
+
+  const payrollRef = ref(db, `payroll/${year}/${staffId}`);
+  const historyRef = ref(db, `payroll/${year}/${staffId}/history`);
+
+  const snap = await get(payrollRef);
+  const data = snap.val() || {};
+
+  const salary = Number(data.salary || staff.salary || 0);
+  const paid = Number(data.paid || 0) + amount;
+
+  await set(payrollRef, {
+    staffId,
+    name: staff.name,
+    role: staff.role,
+    salary,
+    paid,
+    balance: salary - paid,
+    month: new Date().toLocaleString("default", { month: "long" }),
+    lastUpdated: new Date().toLocaleString()
+  });
+
+  await push(historyRef, {
+    amount,
+    type: "SALARY PAYMENT",
+    reference: "PAY-" + Date.now(),
+    date: new Date().toLocaleString()
+  });
+
+  Swal.fire("Success", "Salary Paid", "success");
+
+  document.getElementById("salaryAmount").value = "";
+
+  loadPayroll();
+  smoothScrollTo(document.getElementById("payrollTable"));
+});
+
+
+// ===============================
+// 🚀 OPEN PAYROLL
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+
+  const payrollBtn = document.getElementById("payrollControlBtn");
+
+  if (payrollBtn) {
+    payrollBtn.addEventListener("click", async () => {
+
+      closeAllSections();
+
+      const section = document.getElementById("payrollSection");
+      section.style.display = "block";
+
+      smoothScrollTo(section);
+
+      const yearEl = document.getElementById("salaryYear");
+
+      if (!yearEl.value) {
+        yearEl.value = currentPayrollYear;
+      }
+
+      currentPayrollYear = yearEl.value;
+
+      setTimeout(() => yearEl.focus(), 300);
+
+      if (allStaff.length === 0) {
+        await loadStaff();
+      }
+
+      loadPayroll();
+    });
+  }
+
+});
+
+
+// ===============================
+// 🚀 LOAD PAYROLL
+// ===============================
+window.loadPayroll = function () {
+
+  const yearEl = document.getElementById("salaryYear");
+  const container = document.getElementById("payrollTable");
+
+  if (!yearEl || !container) return;
+
+  const year = yearEl.value;
+
+  if (!year) {
+    container.innerHTML = "⚠️ Please select a year";
+    return;
+  }
+
+  // 🔥 CLEAN OLD LISTENER
+  if (payrollRefGlobal) {
+    off(payrollRefGlobal);
+  }
+
+  payrollRefGlobal = null;
+  payrollCallback = null;
+
+  container.innerHTML = `
+    <div style="text-align:center; padding:20px;">
+      ⏳ Loading payroll for ${year}...
+    </div>
+  `;
+
+  const payrollRef = ref(db, "payroll/" + year);
+  payrollRefGlobal = payrollRef;
+
+  let fired = false;
+
+  const timeout = setTimeout(() => {
+    if (!fired) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+          ⏳ Loading payroll for <b>${year}</b>
+          <div class="dot-loader">
+            <span>●</span><span>●</span><span>●</span>
+          </div>
+        </div>
+      `;
+    }
+  }, 5000);
+
+  payrollCallback = (snapshot) => {
+
+    fired = true;
+    clearTimeout(timeout);
+
+    const data = snapshot.val() || {};
+
+    if (!Object.keys(data).length) {
+      container.innerHTML = `❌ No payroll data found for <b>${year}</b>`;
+      return;
+    }
+
+    let html = `
+      <div style="overflow:auto;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Month</th>
+            <th>Salary</th>
+            <th>Paid</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    let i = 1;
+    let totalPaid = 0;
+    let totalBalance = 0;
+
+    Object.values(data).forEach(s => {
+
+      const salary = Number(s.salary || 0);
+      const paid = Number(s.paid || 0);
+      const balance = salary - paid;
+
+      totalPaid += paid;
+      totalBalance += balance;
+
+      html += `
+        <tr>
+          <td>${i++}</td>
+          <td>${s.name || ""}</td>
+          <td>${s.role || ""}</td>
+          <td>${s.month || "-"}</td>
+          <td>${salary}</td>
+          <td>${paid}</td>
+          <td style="color:${balance > 0 ? 'red' : 'green'};">
+            ${balance}
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `
+        <tr style="font-weight:bold;">
+          <td colspan="5">TOTAL</td>
+          <td>${totalPaid}</td>
+          <td>${totalBalance}</td>
+        </tr>
+      </tbody>
+      </table>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    // ===============================
+    // 🔥 KPI UPDATE FIX
+    // ===============================
+    const totalStaff = Object.keys(data).length;
+
+    document.getElementById("totalStaff").textContent = totalStaff;
+    document.getElementById("totalSalaryPaid").textContent = totalPaid;
+    document.getElementById("totalSalaryBalance").textContent = totalBalance;
+  };
+
+  onValue(payrollRef, payrollCallback);
+};
+
+
+// ===============================
+// 📊 LOAD BUTTON
+// ===============================
+document.getElementById("loadPayrollBtn").addEventListener("click", () => {
+
+  const yearEl = document.getElementById("salaryYear");
+
+  if (!yearEl.value) {
+    Swal.fire("Select Year", "Please choose a year first", "warning");
+    return;
+  }
+
+  currentPayrollYear = yearEl.value;
+
+  const container = document.getElementById("payrollTable");
+  container.innerHTML = `
+    <div style="text-align:center; padding:20px;">
+      ⏳ Loading payroll for ${currentPayrollYear}...
+    </div>
+  `;
+
+  loadPayroll();
+});
+
+
+// ===============================
+// ➕ ADD STAFF (WITH KRA PIN + ID)
+// ===============================
+document.getElementById("addStaffBtn").addEventListener("click", async () => {
+
+  const name = document.getElementById("staffName").value.trim();
+  const role = document.getElementById("staffRole").value.trim();
+  const salary = Number(document.getElementById("staffSalary").value);
+
+  const kraPin = document.getElementById("staffKraPin").value.trim().toUpperCase();
+  const idNumber = document.getElementById("staffIdNumber").value.trim();
+
+  // ===============================
+  // ✅ VALIDATION
+  // ===============================
+  if (!name || !role || !salary || !kraPin || !idNumber) {
+    Swal.fire("Missing", "Fill all staff fields", "warning");
+    return;
+  }
+
+  // Basic KRA PIN format check (A123456789Z)
+  const kraRegex = /^[A-Z][0-9]{9}[A-Z]$/;
+  if (!kraRegex.test(kraPin)) {
+    Swal.fire("Invalid KRA PIN", "Format should be like A123456789Z", "error");
+    return;
+  }
+
+  // Basic ID number check (numbers only, 6–10 digits typical)
+  const idRegex = /^[0-9]{6,10}$/;
+  if (!idRegex.test(idNumber)) {
+    Swal.fire("Invalid ID", "Enter a valid ID number", "error");
+    return;
+  }
+
+  try {
+    await set(push(ref(db, "staff")), {
+      name,
+      role,
+      salary,
+      kraPin,
+      idNumber,
+      createdAt: Date.now()
+    });
+
+    Swal.fire("Success", "Staff added", "success");
+
+    // ===============================
+    // 🧹 CLEAR FORM
+    // ===============================
+    document.getElementById("staffName").value = "";
+    document.getElementById("staffRole").value = "";
+    document.getElementById("staffSalary").value = "";
+    document.getElementById("staffKraPin").value = "";
+    document.getElementById("staffIdNumber").value = "";
+
+    loadStaff();
+
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", "Failed to add staff", "error");
+  }
+});
+// ===============================
+// 🧾 GOVERNMENT-STYLE PAYSLIP (FINAL UPGRADED)
+// ===============================
+
+document.getElementById("generatePayslipBtn").addEventListener("click", generatePayslip);
+
+async function generatePayslip() {
+
+  const staffId = document.getElementById("staffSelect").value;
+  const year = getSelectedYear();
+
+  if (!staffId || !year) {
+    Swal.fire("Missing Data", "Select staff and year", "warning");
+    return;
+  }
+
+  const staff = allStaff.find(s => s.id === staffId);
+
+  if (!staff) {
+    Swal.fire("Error", "Staff not found", "error");
+    return;
+  }
+
+  try {
+    const payrollRef = ref(db, `payroll/${year}/${staffId}`);
+    const snap = await get(payrollRef);
+
+    if (!snap.exists()) {
+      Swal.fire("No Data", "No payroll record found", "info");
+      return;
+    }
+
+    const data = snap.val();
+
+    const salary = parseFloat(data.salary) || 0;
+    const paid = parseFloat(data.paid) || 0;
+
+    const deductions = calculateDeductions(salary);
+    const netPay = salary - deductions.total;
+
+    openPayslipWindow({
+      staff,
+      year,
+      data,
+      salary,
+      paid,
+      deductions,
+      netPay,
+      refNo: `PSL-${Date.now()}`
+    });
+
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", "Failed to generate payslip", "error");
+  }
+}
+
+
+// ===============================
+// 🧮 DEDUCTION CALCULATOR
+// ===============================
+function calculateDeductions(salary) {
+
+  const nhif = salary * 0.02;
+  const nssf = salary * 0.06;
+  const tax = salary * 0.10;
+
+  return {
+    nhif,
+    nssf,
+    tax,
+    total: nhif + nssf + tax
+  };
+}
+
+
+// ===============================
+// 🪟 OPEN PAYSLIP WINDOW
+// ===============================
+function openPayslipWindow({ staff, year, data, salary, paid, deductions, netPay, refNo }) {
+
+  const win = window.open("", "_blank");
+
+  win.document.write(`
+    <html>
+    <head>
+      <title>Payslip - ${staff.name}</title>
+
+      <style>
+        body {
+          font-family: 'Segoe UI', Arial, sans-serif;
+          background: #eef2f7;
+          padding: 20px;
+        }
+
+        .container {
+          max-width: 850px;
+          margin: auto;
+          background: white;
+          padding: 25px;
+          border: 2px solid #0d1b4c;
+          position: relative;
+        }
+
+        .watermark {
+          position: absolute;
+          opacity: 0.05;
+          font-size: 90px;
+          transform: rotate(-30deg);
+          top: 40%;
+          left: 10%;
+          font-weight: bold;
+        }
+
+        /* HEADER */
+        .header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-bottom: 3px solid #0d1b4c;
+          padding: 10px 15px;
+          margin-bottom: 20px;
+        }
+
+        .header img {
+          width: 75px;
+        }
+
+        .title {
+          font-size: 18px;
+          font-weight: bold;
+          color: #0d1b4c;
+        }
+
+        .subtitle {
+          font-size: 13px;
+          color: #555;
+        }
+
+        /* GRID */
+        .grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          font-size: 14px;
+          margin-bottom: 20px;
+        }
+
+        .box {
+          padding: 8px;
+          border: 1px solid #ddd;
+          background: #fafafa;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        th, td {
+          border: 1px solid #ddd;
+          padding: 10px;
+        }
+
+        th {
+          background: #0d1b4c;
+          color: white;
+        }
+
+        .total {
+          font-weight: bold;
+          background: #e8eaf6;
+        }
+
+        .footer {
+          text-align: center;
+          font-size: 12px;
+          margin-top: 20px;
+          color: #666;
+        }
+
+        .btn {
+          text-align: center;
+          margin-top: 15px;
+        }
+
+        button {
+          padding: 10px 15px;
+          background: #0d1b4c;
+          color: white;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+        }
+      </style>
+    </head>
+
+    <body>
+
+      <div class="container">
+
+        <div class="watermark">OFFICIAL</div>
+
+        <!-- HEADER -->
+        <div class="header">
+
+          <img src="https://i.imgur.com/wCqDVog.jpeg" />
+
+          <div style="text-align:center; flex:1;">
+            <div class="title">REPUBLIC OF KENYA</div>
+            <div class="subtitle">MINISTRY OF EDUCATION</div>
+            <div class="subtitle">OFFICIAL PAYSLIP</div>
+          </div>
+
+          <div style="width:80px; font-size:10px; text-align:center; color:#888;">
+            VERIFIED
+          </div>
+
+        </div>
+
+        <!-- STAFF INFO -->
+        <div class="grid">
+
+          <div class="box"><b>Name:</b> ${staff.name || "-"}</div>
+          <div class="box"><b>Role:</b> ${staff.role || "-"}</div>
+
+          <div class="box"><b>KRA PIN:</b> ${staff.kraPin || "-"}</div>
+          <div class="box"><b>ID Number:</b> ${staff.idNumber || "-"}</div>
+
+          <div class="box"><b>Year:</b> ${year}</div>
+          <div class="box"><b>Month:</b> ${data.month || "-"}</div>
+
+          <div class="box"><b>Reference:</b> ${refNo}</div>
+          <div class="box"><b>Date:</b> ${new Date().toLocaleString()}</div>
+
+        </div>
+
+        <!-- TABLE -->
+        <table>
+          <tr>
+            <th>Description</th>
+            <th>Amount (KES)</th>
+          </tr>
+
+          ${row("Basic Salary", salary)}
+          ${row("Paid Amount", paid)}
+          ${row("NHIF (2%)", deductions.nhif)}
+          ${row("NSSF (6%)", deductions.nssf)}
+          ${row("PAYE Tax (10%)", deductions.tax)}
+
+          <tr class="total">
+            <td>Total Deductions</td>
+            <td>${formatMoney(deductions.total)}</td>
+          </tr>
+
+          <tr class="total">
+            <td>Net Pay</td>
+            <td>${formatMoney(netPay)}</td>
+          </tr>
+        </table>
+
+        <div class="footer">
+          This is a system-generated payslip. No signature required.
+        </div>
+
+        <div class="btn">
+          <button onclick="window.print()">🖨️ Print Payslip</button>
+        </div>
+
+      </div>
+
+    </body>
+    </html>
+  `);
+
+  win.document.close();
+}
+
+
+// ===============================
+// HELPERS
+// ===============================
+function row(label, value) {
+  return `
+    <tr>
+      <td>${label}</td>
+      <td>${formatMoney(value)}</td>
+    </tr>
+  `;
+}
+
+function formatMoney(amount) {
+  return Number(amount).toLocaleString("en-KE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
 window.addEventListener("online", setOnlineStatus);
 window.addEventListener("offline", setOfflineStatus);
 

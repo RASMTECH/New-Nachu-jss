@@ -2763,6 +2763,7 @@ backdrop-filter: blur(8px);
     </div>
   </div>
 </div>
+
 <!-- ================= PAYROLL SECTION ================= -->
 <div id="payrollSection" class="table-container section-container" style="display:none;">
 
@@ -2844,6 +2845,18 @@ backdrop-filter: blur(8px);
     <button id="payrollControlBtn" class="btn load-btn" style="padding:10px 20px; font-size:15px;">
       📊 Open Payroll System
     </button>
+
+<button id="giveAdvanceBtn" style="
+  background:#ff9800;
+  color:white;
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-left:10px;
+">
+  💰 Give Advance
+</button>
   </div>
 
 <!-- ================= FILTER PANEL ================= -->
@@ -18780,7 +18793,7 @@ if (!document.getElementById("payrollTable")) return;
     const data = snapshot.val() || {};
 
     if (!Object.keys(data).length) {
-      container.innerHTML = `❌ No payroll data found for <b>${year}</b>`;
+      container.innerHTML = `No payroll data found for <b>${year}</b>`;
       return;
     }
 

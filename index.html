@@ -3596,49 +3596,89 @@ backdrop-filter: blur(8px);
 
 
 <!-- Wrapped form, hidden by default -->
-<div id="registrationContainer" style="display: none; margin-top: 20px; max-width: 450px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-image: url('https://i.imgur.com/2RVKHHF.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<div id="registrationContainer" style="display: none; margin-top: 20px; max-width: 450px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-image: url('https://i.imgur.com/Y5Eo4YU.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
   <h2 style="color: white; background-color: rgba(255, 215, 0, 0.8); padding: 10px 12px; border-radius: 4px; text-align: center;">
     Register Learner
   </h2>
 
-  <form id="learnerForm">
-    <label style="color: white;">Name:</label>
-    <input type="text" id="name" placeholder="Enter name" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+<form id="learnerForm">
 
-    <label style="color: white;">Gender:</label>
-    <select id="gender" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;">
-      <option value="">Select Gender</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-    </select><br>
+  <!-- 🔥 NAME (NOW SUPPORTS BULK) -->
+  <label style="color: white;">Name(s):</label>
+  <textarea id="name" placeholder="Enter one name OR paste multiple names (one per line)"
+  style="width: 100%; height: 90px; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.85); border: none; border-radius: 4px; resize: vertical;"></textarea>
 
-    <label style="color: white;">Grade:</label>
-    <input type="text" id="grade" placeholder="Enter grade e.g. Grade 9A" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
+  <small style="color: #ddd;">Tip: Paste multiple names line by line for bulk registration</small><br><br>
+<div id="bulkInfo" style="margin-top:6px; display:none;">
+  <span id="bulkBadge" style="
+    background:#ff9800;
+    color:white;
+    padding:3px 8px;
+    border-radius:4px;
+    font-size:12px;
+    margin-right:6px;">
+    BULK MODE
+  </span>
 
-    <label style="color: white;">Age:</label>
-    <input type="number" id="age" placeholder="Enter age" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
-
-    <label style="color: white;">Parent Name:</label>
-    <input type="text" id="parentName" placeholder="Enter parent name" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
-
-    <label style="color: white;">Parent Phone:</label>
-    <input type="tel" id="parentPhone" placeholder="Enter phone number" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
-
-    <label style="color: white;">Birth Certificate No:</label>
-    <input type="text" id="birthCert" placeholder="Enter birth certificate no" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
-
-    <label style="color: white;">Admission Number:</label>
-    <input type="text" id="admissionNo" placeholder="Enter admission number" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
-
-    <label style="color: white;">Learner Photo:</label>
-    <input type="file" id="photo" accept="image/*" required style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255, 255, 255, 0.8); border: none; border-radius: 4px;"><br>
-
-    <button type="button" id="registerButton"
-      style="padding: 10px 14px; background: #3F51B5; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 12px; width: 100%;">
-      <i class="fas fa-user-plus" style="margin-right: 6px;"></i> Register Learner
-    </button>
-  </form>
+  <span id="nameCount" style="color:#fff; font-size:13px;"></span>
 </div>
+  <!-- 🔥 GENDER -->
+  <label style="color: white;">Gender:</label>
+  <select id="gender" style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.8); border: none; border-radius: 4px;">
+    <option value="">Select Gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+  </select>
+
+  <small style="color:#ddd;">Used for single OR applied to all in bulk</small><br><br>
+
+  <!-- 🔥 GRADE -->
+  <label style="color: white;">Grade:</label>
+  <input type="text" id="grade" placeholder="Enter grade e.g. Grade 9A"
+  style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.8); border: none; border-radius: 4px;"><br>
+
+  <!-- 🔥 AGE -->
+  <label style="color: white;">Age:</label>
+  <input type="number" id="age" placeholder="Leave empty for auto"
+  style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.8); border: none; border-radius: 4px;"><br>
+
+  <!-- 🔥 PARENT NAME -->
+  <label style="color: white;">Parent Name:</label>
+  <input type="text" id="parentName" placeholder="Optional (applies to all in bulk)"
+  style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.8); border: none; border-radius: 4px;"><br>
+
+  <!-- 🔥 PHONE -->
+  <label style="color: white;">Parent Phone:</label>
+  <input type="tel" id="parentPhone" placeholder="Optional"
+  style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.8); border: none; border-radius: 4px;"><br>
+
+  <!-- 🔥 BIRTH CERT -->
+  <label style="color: white;">Birth Certificate No:</label>
+  <input type="text" id="birthCert" placeholder="Optional"
+  style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.8); border: none; border-radius: 4px;"><br>
+
+  <!-- 🔥 ADMISSION -->
+  <label style="color: white;">Admission Number:</label>
+  <input type="text" id="admissionNo" placeholder="Leave empty for auto-generation"
+  style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.8); border: none; border-radius: 4px;"><br>
+
+  <!-- 🔥 PHOTO -->
+  <label style="color: white;">Learner Photo:</label>
+  <input type="file" id="photo" accept="image/*"
+  style="width: 100%; padding: 8px; margin: 6px 0; background-color: rgba(255,255,255,0.8); border: none; border-radius: 4px;"><br>
+
+  <small style="color:#ddd;">Optional (shared if bulk)</small><br><br>
+
+  <!-- 🔥 BUTTON -->
+  <button type="button" id="registerButton"
+    style="padding: 12px; background: linear-gradient(135deg,#3F51B5,#5C6BC0); color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 12px; width: 100%; font-size: 15px;">
+    <i class="fas fa-user-plus" style="margin-right: 6px;"></i>
+    Register Learner(s)
+  </button>
+
+</form>
+</div>
+
 
 
 </div>
@@ -5158,13 +5198,12 @@ async function generateAdmissionNumber() {
     return `${year}/${nextNumber}`;
 }
 
-// 🔹 Learner registration
 document.getElementById('registerButton').addEventListener('click', async () => {
 
     const registerBtn = document.getElementById('registerButton');
-    registerBtn.disabled = true; // prevent double click
+    registerBtn.disabled = true;
 
-    const name = document.getElementById('name').value.trim();
+    const nameInput = document.getElementById('name').value.trim();
     const gender = document.getElementById('gender').value;
     const grade = document.getElementById('grade').value;
     let age = document.getElementById('age').value;
@@ -5174,86 +5213,177 @@ document.getElementById('registerButton').addEventListener('click', async () => 
     let admissionNo = document.getElementById('admissionNo').value.trim();
     const photo = document.getElementById('photo').files[0];
 
-    if (!name || !gender || !grade) {
+    if (!nameInput || !grade) {
         Swal.fire({
             icon: 'error',
             title: 'Missing Required Fields',
-            text: 'Please fill in Name, Gender, and Grade before submitting.',
+            text: 'Please fill in Name and Grade.',
             confirmButtonColor: '#d33'
         });
         registerBtn.disabled = false;
         return;
     }
 
-    // 🔹 Auto-generate age if empty
-    if (!age) {
-        age = getRandomAgeByGrade(grade);
-    }
-
-    // 🔹 Auto-generate admission number if empty
-    if (!admissionNo) {
-        admissionNo = await generateAdmissionNumber();
-    }
+    // 🔹 Save grade
+    localStorage.setItem('lastGrade', grade);
 
     const year = new Date().getFullYear();
 
-    const learnerData = {
-        name,
-        gender,
-        grade,
-        age,
-        admissionNo,
-        admissionYear: year, // store for dynamic age calculation
-        ...(parentName && { parentName }),
-        ...(parentPhone && { parentPhone }),
-        ...(birthCert && { birthCert }),
-        ...(photo && { photo: URL.createObjectURL(photo) }),
-    };
+    // 🔥 EXCEL + NORMAL PARSE
+    let namesArray = nameInput
+        .split(/\r?\n|\t/) // supports Excel paste
+        .map(n => n.trim())
+        .filter(n => n);
 
-    const newLearnerRef = push(learnersRef);
+    // 🔥 REMOVE DUPLICATES (PASTE LEVEL)
+    namesArray = [...new Set(namesArray)];
 
-    // 🔵 Centered spinner
-    Swal.fire({
-        title: 'Registering...',
-        text: 'Please wait',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => {
-            Swal.showLoading();
+    const isBulk = namesArray.length > 1;
+
+    // ===============================
+    // 🔥 BULK REGISTRATION (LIVE COUNT)
+    // ===============================
+    if (isBulk) {
+
+        let successCount = 0;
+        const total = namesArray.length;
+
+        Swal.fire({
+            title: 'Bulk Registering...',
+            html: `Starting... (0 / ${total})`,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        for (let i = 0; i < total; i++) {
+
+            const name = namesArray[i];
+
+            try {
+                let finalAge = age || getRandomAgeByGrade(grade);
+                let finalAdmission = await generateAdmissionNumber();
+
+              const learnerData = {
+    name,
+    gender: gender || "Male",
+    grade,
+                    age: finalAge,
+                    admissionNo: finalAdmission,
+                    admissionYear: year,
+                    ...(parentName && { parentName }),
+                    ...(parentPhone && { parentPhone }),
+                    ...(birthCert && { birthCert }),
+                    ...(photo && { photo: URL.createObjectURL(photo) }),
+                };
+
+                const newLearnerRef = push(learnersRef);
+                await set(newLearnerRef, learnerData);
+
+                successCount++;
+
+                // 🔥 LIVE COUNTER UPDATE
+                Swal.update({
+                    html: `Registering... <b>${successCount}</b> / ${total}`
+                });
+
+                // optional smooth delay (nice UX)
+                await new Promise(r => setTimeout(r, 80));
+
+            } catch (err) {
+                console.error("Error adding learner:", name, err);
+            }
         }
-    });
 
-    set(newLearnerRef, learnerData)
-        .then(() => {
+        registerBtn.disabled = false;
 
-            registerBtn.disabled = false;
+        Swal.fire({
+            icon: 'success',
+            title: 'Bulk Registration Complete 🎉',
+            html: `<b>${successCount}</b> learners registered successfully`,
+            confirmButtonColor: '#28a745'
+        });
+    }
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: `Learner registered. Admission No: ${admissionNo}, Age: ${age}`,
-                confirmButtonColor: '#28a745'
-            });
+    // ===============================
+    // 🔥 SINGLE REGISTRATION
+    // ===============================
+    else {
 
-            document.getElementById('learnerForm').reset();
-            loadLearners(); // reload learners
-
-        })
-        .catch(err => {
-
-            registerBtn.disabled = false;
-
-            console.error("Error adding learner: ", err);
+        if (!gender) {
             Swal.fire({
                 icon: 'error',
-                title: 'Registration Failed',
-                text: 'There was an issue saving learner data.',
+                title: 'Missing Gender',
+                text: 'Please select gender for single registration.',
                 confirmButtonColor: '#d33'
             });
-        });
-});
+            registerBtn.disabled = false;
+            return;
+        }
 
-// 🔹 Example: compute age dynamically when displaying
+        if (!age) age = getRandomAgeByGrade(grade);
+        if (!admissionNo) admissionNo = await generateAdmissionNumber();
+
+       const learnerData = {
+    name,
+    gender: gender || "Male",
+    grade,
+            age,
+            admissionNo,
+            admissionYear: year,
+            ...(parentName && { parentName }),
+            ...(parentPhone && { parentPhone }),
+            ...(birthCert && { birthCert }),
+            ...(photo && { photo: URL.createObjectURL(photo) }),
+        };
+
+        const newLearnerRef = push(learnersRef);
+
+        await set(newLearnerRef, learnerData);
+
+        registerBtn.disabled = false;
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: `Learner registered. Admission No: ${admissionNo}, Age: ${age}`,
+            confirmButtonColor: '#28a745'
+        });
+    }
+
+    // 🔹 Reset form but keep grade
+    document.getElementById('learnerForm').reset();
+
+    const savedGrade = localStorage.getItem('lastGrade');
+    if (savedGrade) {
+        document.getElementById('grade').value = savedGrade;
+    }
+
+    loadLearners();
+});
+const nameField = document.getElementById('name');
+const bulkInfo = document.getElementById('bulkInfo');
+const nameCount = document.getElementById('nameCount');
+
+nameField.addEventListener('input', () => {
+
+    const value = nameField.value.trim();
+
+    if (!value) {
+        bulkInfo.style.display = 'none';
+        return;
+    }
+
+    const names = value.split("\n").map(n => n.trim()).filter(n => n);
+
+    if (names.length > 1) {
+        bulkInfo.style.display = 'block';
+        nameCount.textContent = `${names.length} learners detected`;
+    } else {
+        bulkInfo.style.display = 'none';
+    }
+
+});
 function displayLearner(learner) {
     const dynamicAge = getAgeByGradeAndAdmissionYear(learner.grade, learner.admissionYear);
     console.log(`Name: ${learner.name}, Grade: ${learner.grade}, Age: ${dynamicAge}, AdmissionNo: ${learner.admissionNo}`);
@@ -5417,23 +5547,16 @@ function showLoadingSpinner() {
         }
       </style>
     `,
-
     allowOutsideClick: false,
     allowEscapeKey: false,
-
-    // ✅ ADD OK BUTTON
     showConfirmButton: true,
     confirmButtonText: "OK",
-    confirmButtonColor: "#3085d6",
-
-    didOpen: () => {
-      // clear table if needed
-      if (typeof tableBody !== "undefined") {
-        tableBody.innerHTML = "";
-      }
-    }
+    confirmButtonColor: "#3085d6"
   });
 }
+window.addEventListener("load", () => {
+    showLoadingSpinner();
+});
 function animateCounter(id, target) {
   const el = document.getElementById(id);
   let count = 0;
@@ -6344,21 +6467,12 @@ window.generateGradeCertificate = function () {
 
   }, 800); // small delay for better UX
 };
-// ================= LOADING SPINNER =================
-function hideLoadingSpinner() {
-  if (!spinnerContainer) return;
 
-  spinnerContainer.style.display = "none";
-
-  if (countdownInterval) {
-    clearInterval(countdownInterval);
-  }
-}
 
 // ================= DATA FETCH =================
 async function loadLearners() {
   try {
-    showLoadingSpinner();
+ 
 
     const snapshot = await get(learnersRef);
 

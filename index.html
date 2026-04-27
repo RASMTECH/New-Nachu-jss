@@ -3760,23 +3760,27 @@ Rasm Does It All – Just Click and See It Done!.</span>
     </h2>
   <!-- Learners Table -->
   <table class="learners-table" style="margin-top: 20px;">
-    <thead>
-      <tr>
-<th style="background-color: #f44336; color: white; text-align: center;">Select</th>
-        <th>No.</th>
-        <th>Photo</th>
-        <th>Name</th>
-        <th>Gender</th>
-        <th>Grade</th>
-        <th>Age</th>
-        <th>Parent Name</th>
-        <th>Parent Phone No</th>
-        <th>Birth Certificate No</th>
-        <th>Admission Number</th>
-        <th>Photo Edit</th>
-       <th>Action</th>
-      </tr>
-    </thead>
+<thead>
+  <tr>
+    <th style="background-color: #f44336; color: white; text-align: center;">
+      <input type="checkbox" id="selectAllLearners">
+    </th>
+
+    <th>No.</th>
+    <th>Photo</th>
+    <th>Name</th>
+    <th>Gender</th>
+    <th>Grade</th>
+    <th>Age</th>
+    <th>Parent Name</th>
+    <th>Parent Phone No</th>
+    <th>Birth Certificate No</th>
+    <th>Admission Number</th>
+    <th>Photo Edit</th>
+    <th>Action</th>
+  </tr>
+</thead>
+
     <tbody id="learnersList"></tbody>
   </table>
 <div id="spinnerContainer" style="text-align:center; margin: 20px 0; display: none;">
@@ -6554,9 +6558,20 @@ function buildRow(data, index) {
   tr.dataset.key = data.key;
 
   tr.innerHTML = `
-    <td><input type="checkbox" class="select-learner"></td>
+    <td>
+      <input 
+        type="checkbox" 
+        class="select-learner" 
+        data-key="${data.key}"
+      >
+    </td>
+
     <td>${index}</td>
-    <td><img src="${data.photo || 'default.png'}" class="learner-photo"></td>
+
+    <td>
+      <img src="${data.photo || 'default.png'}" class="learner-photo">
+    </td>
+
     ${editableCell(data.name)}
     ${editableCell(data.gender)}
     ${editableCell(data.grade)}
@@ -6565,19 +6580,47 @@ function buildRow(data, index) {
     ${editableCell(data.parentPhone)}
     ${editableCell(data.birthCert)}
     ${editableCell(data.admissionNo)}
-    <td><button class="edit-photo-btn btn-blue"><i class="fas fa-camera"></i></button></td>
-    <td><button class="delete-btn btn-red"><i class="fas fa-trash-alt"></i></button></td>
+
+    <td>
+      <button class="edit-photo-btn btn-blue">
+        <i class="fas fa-camera"></i>
+      </button>
+    </td>
+
+    <td>
+      <button class="delete-btn btn-red">
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </td>
   `;
 
+  // 🔥 attach existing features
   attachInlineEdit(tr, data);
   attachPhotoEdit(tr, data);
   attachDelete(tr, data);
+
+  // 🔥 OPTIONAL: row highlight when selected (better UX)
+  const checkbox = tr.querySelector(".select-learner");
+
+  checkbox.addEventListener("change", () => {
+    tr.style.backgroundColor = checkbox.checked ? "#fff3cd" : "";
+  });
 
   return tr;
 }
 function editableCell(value) {
   return `<td contenteditable="true" class="editable">${value || ""}</td>`;
 }
+document.getElementById("selectAllLearners").addEventListener("change", function () {
+
+    const checkboxes = tableBody.querySelectorAll(".select-learner");
+
+    checkboxes.forEach(cb => {
+        cb.checked = this.checked;
+    });
+
+});
+
 
 // ================= INLINE EDIT =================
 function attachInlineEdit(row, data) {
